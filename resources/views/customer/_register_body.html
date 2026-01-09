@@ -1,0 +1,91 @@
+<div class="page-register">
+  <div class="register-wrapper">
+
+    <a href="#" id="btn-back" class="back-button">
+      <span class="icon">←</span> Kembali
+    </a>
+
+    <div class="register-header">
+      <div class="register-logo-wrap">
+        <div class="register-logo-box">
+          <span>K</span>
+        </div>
+      </div>
+      <h1 class="register-title">Daftar Member</h1>
+      <p class="register-subtitle">Buat akun untuk mulai order</p>
+    </div>
+
+    <div class="card card-accent">
+      <div class="card-header">
+        <div class="card-header-title">Buat Akun</div>
+        <div class="card-header-desc">Isi data dengan benar</div>
+      </div>
+
+      <div id="register-error" class="alert-error" style="display:none;"></div>
+
+      <div class="form">
+
+        <div class="form-group">
+          <label class="form-label" for="full_name">Nama Lengkap</label>
+          <div class="field-wrapper">
+            <span class="field-icon-left">👤</span>          
+
+            <!-- PENTING: name="name" untuk Fortify -->
+            <input class="input-control" id="full_name" name="name" type="text" placeholder="Nama lengkap" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="username">Username</label>
+          <div class="field-wrapper">
+            <span class="field-icon-left">👤</span>
+            <input class="input-control" id="username" name="username" type="text" placeholder="Username" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email</label>
+          <div class="field-wrapper">
+            <span class="field-icon-left">✉</span>
+            <input class="input-control" id="email" name="email" type="email" placeholder="email@domain.com" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="phone">Phone</label>
+          <div class="field-wrapper">
+            <span class="field-icon-left">👤</span>
+            <input class="input-control" id="phone" name="phone" type="text" placeholder="Phone" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="field-wrapper">
+            <span class="field-icon-left">🔒</span>
+            <input class="input-control" id="password" name="password" type="password" placeholder="Minimal 6 karakter" required>
+            <button type="button" id="toggle-password" class="field-icon-right-btn">👁</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password_confirmation">Konfirmasi Password</label>
+          <div class="field-wrapper">
+            <span class="field-icon-left">🔒</span>
+            <input class="input-control" id="password_confirmation" name="password_confirmation" type="password" placeholder="Ulangi password" required>
+            <button type="button" id="toggle-password-confirmation" class="field-icon-right-btn">👁</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-red btn-full">Daftar</button>
+
+        <div class="login-section">
+          <p>Sudah punya akun?</p>
+          <button type="button" id="btn-go-login" class="btn-login">Login</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

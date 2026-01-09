@@ -1,0 +1,396 @@
+    :root {
+      --bg-main: #2a2a2a;
+      --bg-card: #1f1f1f;
+      --bg-card-soft: #332727;
+      --border-dark: #4a4a4a;
+      --red-main: #c62828;
+      --red-hover: #a52020;
+      --text-main: #ffffff;
+      --text-muted: #e0e0e0;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --shadow-soft: 0 16px 40px rgba(0, 0, 0, 0.7);
+      --green: #4caf50;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    /* LAYOUT */
+
+    .page-register {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.25rem;
+    }
+
+    .register-wrapper {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    /* BUTTONS */
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 0.55rem 1.3rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.08s ease;
+    }
+
+    .btn-red {
+      background-color: var(--red-main);
+      color: #ffffff;
+      box-shadow: 0 10px 26px rgba(198, 40, 40, 0.5);
+      border: 1px solid #8b1f1f;
+    }
+
+    .btn-red:hover {
+      background-color: var(--red-hover);
+      box-shadow: 0 14px 34px rgba(198, 40, 40, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: #ffffff;
+      border-radius: 999px;
+      padding-inline: 0.9rem;
+      padding-block: 0.45rem;
+      border: none;
+    }
+
+    .btn-ghost:hover {
+      background-color: #3a3a3a;
+    }
+
+    .btn-google {
+      background-color: #ffffff;
+      color: #111111;
+      border-radius: 999px;
+      border: 1px solid #dddddd;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+      font-size: 0.95rem;
+    }
+
+    .btn-google:hover {
+      background-color: #ffffff;
+      border-color: var(--red-main);
+      box-shadow: 0 0 0 2px rgba(198, 40, 40, 0.25);
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    /* BACK BUTTON */
+
+    .back-button {
+      margin-bottom: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .back-button span.icon {
+      font-size: 1.1rem;
+    }
+
+    /* HEADER */
+
+    .register-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .register-logo-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .register-logo-box {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background-color: var(--red-main);
+      border: 2px solid var(--border-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 26px rgba(198, 40, 40, 0.55);
+    }
+
+    .register-logo-box span {
+      font-size: 2.1rem;
+      color: #f5e6d3;
+    }
+
+    .register-title {
+      font-size: 1.7rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .register-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    /* CARD BASE */
+
+    .card {
+      background: linear-gradient(180deg, #3b2c2c, #281e1e);
+      border-radius: var(--radius-lg);
+      border: 1px solid #5c3b3b;
+      box-shadow: var(--shadow-soft);
+      padding: 1.4rem 1.6rem 1.6rem;
+    }
+
+    .card-accent {
+      border-width: 2px;
+      border-color: var(--red-main);
+    }
+
+    .card-header {
+      text-align: center;
+      margin-bottom: 0.8rem;
+    }
+
+    .card-header-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+
+    .card-header-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* FORM */
+
+    .form {
+      margin-top: 0.4rem;
+    }
+
+    .form-group {
+      margin-bottom: 0.9rem;
+    }
+
+    .form-label {
+      font-size: 0.8rem;
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+
+    .field-wrapper {
+      position: relative;
+    }
+
+    .field-icon-left {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      font-size: 0.9rem;
+      color: #ffffff;
+      opacity: 0.9;
+    }
+
+    .field-icon-right-btn {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      color: #ffffff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .input-control {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--border-dark);
+      background-color: #1f1f1f;
+      color: #ffffff;
+      padding: 0.6rem 0.75rem;
+      padding-left: 2.4rem;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+      height: 2.8rem;
+    }
+
+    .input-control::placeholder {
+      color: #cfcfcf;
+    }
+
+    .input-control:focus {
+      border-color: var(--red-main);
+      box-shadow: 0 0 0 1px rgba(198, 40, 40, 0.6);
+      background-color: #222222;
+    }
+
+    /* ALERT ERROR */
+
+    .alert-error {
+      background: rgba(198, 40, 40, 0.18);
+      border-radius: 10px;
+      border: 1px solid #ff5252;
+      padding: 0.55rem 0.75rem;
+      font-size: 0.78rem;
+      color: #ffe5e5;
+      margin-bottom: 0.9rem;
+    }
+
+    /* LOGIN CTA */
+
+    .login-section {
+      text-align: center;
+      margin-top: 0.6rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .login-section p {
+      font-size: 0.83rem;
+      margin-bottom: 0.45rem;
+      color: var(--text-muted);
+    }
+
+    .btn-login {
+      background-color: var(--red-main);
+      color: #ffffff;
+      border-radius: 999px;
+      border: 1px solid var(--border-dark);
+      padding: 0.55rem 1.1rem;
+      font-size: 0.9rem;
+      width: 100%;
+    }
+
+    .btn-login:hover {
+      background-color: var(--red-hover);
+    }
+
+    /* DIVIDER */
+
+    .divider {
+      position: relative;
+      margin: 1.2rem 0 1rem;
+      height: 1px;
+      background: transparent;
+    }
+
+    .divider::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-top: 1px solid var(--border-dark);
+    }
+
+    .divider span {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background-color: var(--bg-main);
+      padding: 0.05rem 0.6rem;
+      font-size: 0.78rem;
+      color: #ffffff;
+    }
+
+    /* TERMS */
+
+    .terms-text {
+      margin-top: 0.75rem;
+      font-size: 0.72rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    /* BENEFIT CARD */
+
+    .benefit-card {
+      margin-top: 1.4rem;
+      background: linear-gradient(180deg, #3b2c2c, #271e1e);
+      border-radius: var(--radius-lg);
+      border: 1px solid #5c3b3b;
+      box-shadow: var(--shadow-soft);
+      padding: 1.1rem 1.4rem 1.3rem;
+    }
+
+    .benefit-title {
+      text-align: center;
+      font-size: 1rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .benefit-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .benefit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      font-size: 0.85rem;
+    }
+
+    .benefit-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background-color: var(--red-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.9rem;
+    }
+
+    .benefit-icon span {
+      color: #ffffff;
+    }
+
+    @media (max-width: 480px) {
+      .register-title {
+        font-size: 1.5rem;
+      }
+      .register-logo-box {
+        width: 64px;
+        height: 64px;
+      }
+    }

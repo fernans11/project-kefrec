@@ -1,48 +1,37 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Member - KeFrec</title>
 
-        <x-validation-errors class="mb-4" />
+  <link rel="stylesheet" href="{{ asset('css/login-page.css') }}">
+</head>
+<body>
 
-        @session('status')
-            <div class="mb-4 font-medium text-sm text-green-600">
-                {{ $value }}
-            </div>
-        @endsession
+  @if ($errors->any())
+    <div style="max-width:420px;margin:16px auto;color:#fff;background:#b91c1c;padding:12px 14px;border-radius:10px;">
+      <ul style="margin:0;padding-left:18px;">
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+  @endif
 
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
+  <form id="login-form" method="POST" action="{{ route('login') }}">
+    @csrf
 
-            <div>
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            </div>
+    {!! file_get_contents(resource_path('views/customer/_login_body.html')) !!}
+  </form>
 
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
-            </div>
+  <script>
+    window.__KEFREC__ = {
+      landingUrl: "{{ route('landing') }}",
+      registerUrl: "{{ route('register') }}",
+    };
+  </script>
 
-            <div class="block mt-4">
-                <label for="remember_me" class="flex items-center">
-                    <x-checkbox id="remember_me" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                @if (Route::has('password.request'))
-                    <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
-                    </a>
-                @endif
-
-                <x-button class="ms-4">
-                    {{ __('Log in') }}
-                </x-button>
-            </div>
-        </form>
-    </x-authentication-card>
-</x-guest-layout>
+  <script src="{{ asset('js/login-page.js') }}"></script>
+</body>
+</html>

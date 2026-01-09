@@ -1,0 +1,79 @@
+<div class="auth-page">
+  <div class="auth-container">
+
+    <button type="button" id="btn-back" class="back-button">
+      <span class="back-arrow">←</span> Kembali
+    </button>
+
+    <div class="auth-header">
+      <div class="auth-logo-wrapper">
+        <div class="auth-logo-box">
+          <span class="auth-logo-fallback">K</span>
+        </div>
+      </div>
+      <h1 class="auth-title">Login Member</h1>
+      <p class="auth-subtitle">Masuk ke akun member anda</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Selamat datang kembali</div>
+        <div class="card-description">Silakan login untuk melanjutkan</div>
+      </div>
+
+      <div id="login-error" class="alert-error hidden"></div>
+
+      <div class="form">
+        <div class="field">
+          <label class="field-label" for="login-email">Email atau Username</label>
+          <div class="field-input-wrapper">
+            <span class="field-icon">✉</span>
+
+            <!-- PENTING: name="email" untuk Fortify -->
+            <input
+              class="input"
+              id="login-email"
+              name="email"
+              type="text"
+              placeholder="Masukkan email atau username"
+              required
+              autocomplete="username"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="login-password">Password</label>
+          <div class="field-input-wrapper">
+            <span class="field-icon">🔒</span>
+
+            <!-- PENTING: name="password" untuk Fortify -->
+            <input
+              class="input"
+              id="login-password"
+              name="password"
+              type="password"
+              placeholder="Masukkan password"
+              required
+              autocomplete="current-password"
+            />
+
+            <button type="button" id="toggle-password" class="toggle-password">👁</button>
+          </div>
+        </div>
+
+        <div class="forgot-row">
+          <button type="button" id="btn-forgot" class="forgot-link">Lupa Password?</button>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Masuk</button>
+
+        <div class="register-section">
+          <div class="register-text">Belum punya akun?</div>
+          <button type="button" id="btn-go-register" class="btn btn-outline">Daftar Member</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

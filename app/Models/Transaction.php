@@ -2,25 +2,44 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Transaction extends Model
 {
-    use HasFactory;
-
-    // jika nama tabel "transactions" (default plural), tidak perlu diisi apa-apa
-    // kalau berbeda, tambahkan:
-    // protected $table = 'nama_tabel_kamu';
-
     protected $fillable = [
-        'user_id',
-        'total_amount',
-        'paid_at',
-        // tambahkan field lain sesuai kebutuhan
+        'invoice_no',
+        'customer_id',
+        'cashier_id',
+        'subtotal',
+        'discount',
+        'tax',
+        'total',
+        'payment_method',
+        'paid_amount',
+        'change_amount',
+        'status',
+        'stock_deducted_at',
     ];
 
     protected $casts = [
-        'paid_at' => 'datetime',
+        'subtotal' => 'integer',
+        'discount' => 'integer',
+        'tax' => 'integer',
+        'total' => 'integer',
+        'paid_amount' => 'integer',
+        'change_amount' => 'integer',
+        'stock_deducted_at' => 'datetime',
     ];
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(TransactionItem::class);
+    }
+
+    public function cashier(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'cashier_id');
+    }
 }
