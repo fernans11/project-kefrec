@@ -1028,6 +1028,19 @@
       color: #ffecec;
     }
 
+    .payment-method-btn.is-disabled {
+      background: #2b2b2b;
+      border-color: #3a3a3a;
+      color: #b9b9b9;
+      cursor: not-allowed;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .payment-method-btn.is-disabled .payment-method-desc {
+      color: #9a9a9a;
+    }
+
     .checkout-form-group {
       display: flex;
       flex-direction: column;

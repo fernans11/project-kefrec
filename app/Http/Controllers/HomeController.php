@@ -14,9 +14,19 @@ class HomeController extends Controller
 
         $usertype = Auth::user()->usertype;
 
-        // admin -> panel Filament
-        if ($usertype === 'admin') {
+        // admin/owner -> panel Filament
+        if (in_array($usertype, ['admin', 'owner'], true)) {
             return redirect('/admin');
+        }
+
+        // kasir -> halaman persetujuan pesanan
+        if (in_array($usertype, ['cashier', 'kasir'], true)) {
+            return redirect()->route('cashier.orders.index');
+        }
+
+        // dapur -> board pesanan
+        if (in_array($usertype, ['kitchen', 'dapur'], true)) {
+            return redirect()->route('kitchen.orders.index');
         }
 
         // selain admin -> halaman member

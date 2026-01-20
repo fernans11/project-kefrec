@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use App\Filament\Resources\ProductResource\RelationManagers\IngredientsRelationManager;
 
 class ProductResource extends Resource
 {
@@ -19,7 +20,7 @@ class ProductResource extends Resource
     protected static ?string $navigationLabel = 'Produk / Menu';
     protected static ?string $modelLabel = 'Produk';
     protected static ?string $pluralModelLabel = 'Produk';
-    protected static ?string $navigationGroup = 'Manajemen Product';
+    protected static ?string $navigationGroup = 'Master Data';
     protected static ?int $navigationSort = 10;
 
     public static function form(Form $form): Form
@@ -108,7 +109,7 @@ class ProductResource extends Resource
                             ->default(false),
 
                         Forms\Components\Toggle::make('is_new')
-                            ->label('New')
+                            ->label('Baru')
                             ->default(false),
 
                         Forms\Components\TextInput::make('rating')
@@ -180,7 +181,7 @@ class ProductResource extends Resource
                     ->toggleable(),
 
                 Tables\Columns\IconColumn::make('is_new')
-                    ->label('New')
+                    ->label('Baru')
                     ->boolean()
                     ->toggleable(),
 
@@ -206,7 +207,7 @@ class ProductResource extends Resource
 
                 Tables\Filters\TernaryFilter::make('is_active')->label('Aktif'),
                 Tables\Filters\TernaryFilter::make('is_popular')->label('Popular'),
-                Tables\Filters\TernaryFilter::make('is_new')->label('New'),
+                Tables\Filters\TernaryFilter::make('is_new')->label('Baru'),
                 Tables\Filters\TernaryFilter::make('track_stock')->label('Track Stok'),
             ])
             ->actions([
@@ -221,7 +222,9 @@ class ProductResource extends Resource
 
     public static function getRelations(): array
     {
-        return [];
+        return [
+            IngredientsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

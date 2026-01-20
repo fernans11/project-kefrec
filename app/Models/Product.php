@@ -30,6 +30,8 @@ class Product extends Model
         'price' => 'integer',
         'rating' => 'float',
         'sort_order' => 'integer',
+        'stock' => 'integer',
+        'track_stock' => 'boolean',
     ];
 
     public function ingredients(): BelongsToMany

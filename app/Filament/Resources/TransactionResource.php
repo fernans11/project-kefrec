@@ -3,10 +3,16 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TransactionResource\Pages;
+use App\Filament\Resources\TransactionResource\Widgets\DailyRevenueSummary;
+use App\Filament\Resources\TransactionResource\Widgets\PaymentMethodSummary;
+use App\Filament\Resources\TransactionResource\Widgets\CategorySummary;
+use App\Filament\Resources\TransactionResource\Widgets\TopProductsSummary;
+use App\Filament\Resources\TransactionResource\Widgets\TopCustomersSummary;
 use App\Models\Product;
 use App\Models\Transaction;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -21,6 +27,7 @@ class TransactionResource extends Resource
     protected static ?string $modelLabel = 'Transaksi';
     protected static ?string $pluralModelLabel = 'Transaksi';
     protected static ?string $navigationGroup = 'Manajemen Transaksi';
+    protected static ?int $navigationSort = 50;
 
     public static function form(Form $form): Form
     {
@@ -39,19 +46,27 @@ class TransactionResource extends Resource
                         ->label('Status')
                         ->required()
                         ->options([
-                            'draft' => 'Draft',
-                            'paid' => 'Paid',
-                            'processing' => 'Processing',
-                            'ready' => 'Ready',
-                            'completed' => 'Completed',
-                            'cancelled' => 'Cancelled',
+                            'draft' => 'Draf',
+                            'pending_cashier' => 'Menunggu Kasir',
+                            'paid' => 'Dibayar',
+                            'processing' => 'Diproses',
+                            'ready' => 'Siap Diambil',
+                            'completed' => 'Selesai',
+                            'cancelled' => 'Dibatalkan',
                         ])
-                        ->default('draft'),
+                        ->default('draft')
+                        ->disableOptionWhen(function (string $value, ?Transaction $record): bool {
+                            if (! $record) {
+                                return false;
+                            }
+
+                            return ! Transaction::canTransition((string) $record->status, $value);
+                        }),
 
                     Forms\Components\Select::make('payment_method')
                         ->label('Metode Pembayaran')
                         ->options([
-                            'cash' => 'Cash',
+                            'cash' => 'Tunai',
                             'qris' => 'QRIS',
                             'transfer' => 'Transfer',
                         ])
@@ -66,7 +81,7 @@ class TransactionResource extends Resource
                         ->required(),
 
                     Forms\Components\Select::make('customer_id')
-                        ->label('Customer (Opsional)')
+                        ->label('Pelanggan (Opsional)')
                         ->relationship('customer', 'name')
                         ->searchable()
                         ->preload()
@@ -239,7 +254,7 @@ class TransactionResource extends Resource
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('customer.name')
-                    ->label('Customer')
+                    ->label('Pelanggan')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
@@ -252,23 +267,36 @@ class TransactionResource extends Resource
                     ->label('Pembayaran')
                     ->badge()
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'cash' => 'Cash',
+                        'cash' => 'Tunai',
                         'qris' => 'QRIS',
                         'transfer' => 'Transfer',
                         default => '-',
                     })
                     ->toggleable(),
 
+                Tables\Columns\TextColumn::make('items.product.category')
+                    ->label('Kategori')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->formatStateUsing(function ($record) {
+                        $categories = $record->items
+                            ->pluck('product.category')
+                            ->filter()
+                            ->unique()
+                            ->values();
+                        return $categories->isEmpty() ? '-' : $categories->join(', ');
+                    }),
+
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'draft' => 'Draft',
-                        'paid' => 'Paid',
-                        'processing' => 'Processing',
-                        'ready' => 'Ready',
-                        'completed' => 'Completed',
-                        'cancelled' => 'Cancelled',
+                        'draft' => 'Draf',
+                        'pending_cashier' => 'Menunggu Kasir',
+                        'paid' => 'Dibayar',
+                        'processing' => 'Diproses',
+                        'ready' => 'Siap Diambil',
+                        'completed' => 'Selesai',
+                        'cancelled' => 'Dibatalkan',
                         default => $state,
                     })
                     ->sortable(),
@@ -280,25 +308,202 @@ class TransactionResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')->options([
-                    'draft' => 'Draft',
-                    'paid' => 'Paid',
-                    'processing' => 'Processing',
-                    'ready' => 'Ready',
-                    'completed' => 'Completed',
-                    'cancelled' => 'Cancelled',
+                    'draft' => 'Draf',
+                    'pending_cashier' => 'Menunggu Kasir',
+                    'paid' => 'Dibayar',
+                    'processing' => 'Diproses',
+                    'ready' => 'Siap Diambil',
+                    'completed' => 'Selesai',
+                    'cancelled' => 'Dibatalkan',
                 ]),
                 Tables\Filters\SelectFilter::make('payment_method')->options([
-                    'cash' => 'Cash',
+                    'cash' => 'Tunai',
                     'qris' => 'QRIS',
                     'transfer' => 'Transfer',
                 ]),
+                Tables\Filters\Filter::make('periode')
+                    ->form([
+                        Forms\Components\DatePicker::make('from')->label('Dari'),
+                        Forms\Components\DatePicker::make('until')->label('Sampai'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when($data['from'] ?? null, fn ($q, $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['until'] ?? null, fn ($q, $date) => $q->whereDate('created_at', '<=', $date));
+                    }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()->label('Lihat'),
+                Tables\Actions\Action::make('approve_cashier')
+                    ->label('Setujui')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => $record->status === 'pending_cashier')
+                    ->action(function ($record) {
+                        if (! Transaction::canTransition((string) $record->status, 'processing')) {
+                            Notification::make()
+                                ->title('Status tidak valid')
+                                ->body('Transaksi tidak bisa disetujui dari status saat ini.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+                        $record->update(['status' => 'processing']);
+                    }),
+                Tables\Actions\Action::make('mark_ready')
+                    ->label('Siap')
+                    ->color('info')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => $record->status === 'processing')
+                    ->action(function ($record) {
+                        if (! Transaction::canTransition((string) $record->status, 'ready')) {
+                            Notification::make()
+                                ->title('Status tidak valid')
+                                ->body('Transaksi tidak bisa diubah ke status siap.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+                        $record->update(['status' => 'ready']);
+                    }),
+                Tables\Actions\Action::make('mark_completed')
+                    ->label('Selesai')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => $record->status === 'ready')
+                    ->action(function ($record) {
+                        if (! Transaction::canTransition((string) $record->status, 'completed')) {
+                            Notification::make()
+                                ->title('Status tidak valid')
+                                ->body('Transaksi tidak bisa diselesaikan dari status saat ini.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+                        $record->update(['status' => 'completed']);
+                        $record->deductStockIfNeeded();
+                        $record->recordCashflowIfNeeded();
+                    }),
+                Tables\Actions\EditAction::make()->label('Ubah'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('export_csv')
+                        ->label('Export CSV (Lengkap)')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->action(function ($records) {
+                            $timestamp = now()->format('Ymd_His');
+                            $filename = "transactions_{$timestamp}.zip";
+
+                            $records->loadMissing(['customer', 'cashier', 'items.product']);
+
+                            $tmpFile = tempnam(sys_get_temp_dir(), 'kefrec_csv_');
+                            $zip = new \ZipArchive();
+                            $zip->open($tmpFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+
+                            $summary = fopen('php://temp', 'w+');
+                            fputcsv($summary, [
+                                'Invoice',
+                                'Tanggal',
+                                'Customer',
+                                'Kasir',
+                                'Status',
+                                'Metode Pembayaran',
+                                'Subtotal',
+                                'Diskon',
+                                'Pajak',
+                                'Total',
+                                'Bayar',
+                                'Kembalian',
+                            ]);
+                                foreach ($records as $record) {
+                                    fputcsv($summary, [
+                                        $record->invoice_no,
+                                        $record->created_at?->format('Y-m-d H:i:s'),
+                                        $record->customer?->name ?? '-',
+                                        $record->cashier?->name ?? '-',
+                                        match ($record->status) {
+                                            'draft' => 'Draf',
+                                            'pending_cashier' => 'Menunggu Kasir',
+                                            'paid' => 'Dibayar',
+                                            'processing' => 'Diproses',
+                                            'ready' => 'Siap Diambil',
+                                            'completed' => 'Selesai',
+                                            'cancelled' => 'Dibatalkan',
+                                            default => $record->status,
+                                        },
+                                        match ($record->payment_method) {
+                                            'cash' => 'Tunai',
+                                            'qris' => 'QRIS',
+                                            'transfer' => 'Transfer',
+                                            default => $record->payment_method ?? '-',
+                                        },
+                                        $record->subtotal,
+                                        $record->discount,
+                                        $record->tax,
+                                        $record->total,
+                                        $record->paid_amount,
+                                        $record->change_amount,
+                                    ]);
+                                }
+                            rewind($summary);
+                            $zip->addFromString('transactions_summary.csv', stream_get_contents($summary));
+                            fclose($summary);
+
+                            $items = fopen('php://temp', 'w+');
+                            fputcsv($items, [
+                                'Invoice',
+                                'Tanggal',
+                                'Customer',
+                                'Status',
+                                'Metode Pembayaran',
+                                'Kategori',
+                                'Produk',
+                                'Qty',
+                                'Harga',
+                                'Subtotal Item',
+                            ]);
+                            foreach ($records as $record) {
+                                foreach ($record->items as $item) {
+                                    fputcsv($items, [
+                                        $record->invoice_no,
+                                        $record->created_at?->format('Y-m-d H:i:s'),
+                                        $record->customer?->name ?? '-',
+                                        match ($record->status) {
+                                            'draft' => 'Draf',
+                                            'pending_cashier' => 'Menunggu Kasir',
+                                            'paid' => 'Dibayar',
+                                            'processing' => 'Diproses',
+                                            'ready' => 'Siap Diambil',
+                                            'completed' => 'Selesai',
+                                            'cancelled' => 'Dibatalkan',
+                                            default => $record->status,
+                                        },
+                                        match ($record->payment_method) {
+                                            'cash' => 'Tunai',
+                                            'qris' => 'QRIS',
+                                            'transfer' => 'Transfer',
+                                            default => $record->payment_method ?? '-',
+                                        },
+                                        $item->product?->category ?? '-',
+                                        $item->product?->name ?? '-',
+                                        $item->qty,
+                                        $item->price,
+                                        $item->subtotal,
+                                    ]);
+                                }
+                            }
+                            rewind($items);
+                            $zip->addFromString('transactions_items.csv', stream_get_contents($items));
+                            fclose($items);
+
+                            $zip->close();
+
+                            return response()->download($tmpFile, $filename, [
+                                'Content-Type' => 'application/zip',
+                            ])->deleteFileAfterSend(true);
+                        }),
+                    Tables\Actions\DeleteBulkAction::make()->label('Hapus'),
                 ]),
             ]);
     }
@@ -306,7 +511,7 @@ class TransactionResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         // memastikan relasi terbaca cepat di tabel
-        return parent::getEloquentQuery()->with(['cashier', 'customer']);
+        return parent::getEloquentQuery()->with(['cashier', 'customer', 'items.product']);
     }
 
     public static function getPages(): array
@@ -314,7 +519,19 @@ class TransactionResource extends Resource
         return [
             'index' => Pages\ListTransactions::route('/'),
             'create' => Pages\CreateTransaction::route('/create'),
+            'view' => Pages\ViewTransaction::route('/{record}'),
             'edit' => Pages\EditTransaction::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            DailyRevenueSummary::class,
+            PaymentMethodSummary::class,
+            CategorySummary::class,
+            TopProductsSummary::class,
+            TopCustomersSummary::class,
         ];
     }
 }

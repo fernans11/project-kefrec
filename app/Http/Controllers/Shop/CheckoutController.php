@@ -32,6 +32,7 @@ class CheckoutController extends Controller
 
         $data = $request->validate([
             'payment_method' => ['required', 'in:cash,qris,transfer'],
+            'paid_amount' => ['nullable', 'integer', 'min:0'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'integer', 'distinct', 'exists:products,id'],
             'items.*.qty' => ['required', 'integer', 'min:1', 'max:999'],
@@ -100,15 +101,25 @@ class CheckoutController extends Controller
             $tax = (int) floor(max(0, $subtotal - $discount) * 0.1);
             $total = max(0, ($subtotal - $discount) + $tax);
 
-            // Status: agar selaras dengan UI Anda (setelah klik Konfirmasi Pembayaran dianggap sukses)
-            $status = 'paid';
+            $paidAmount = (int) ($data['paid_amount'] ?? 0);
+            if ($data['payment_method'] !== 'cash') {
+                $paidAmount = $total;
+            }
+            if ($paidAmount <= 0) {
+                $paidAmount = $total;
+            }
+            $changeAmount = max(0, $paidAmount - $total);
+
+            // Status: bayar sukses, lanjut persetujuan kasir
+            $status = 'pending_cashier';
+
+            $user = auth()->user();
+            $customerId = $user?->customer?->id;
 
             $trx = Transaction::create([
                 'invoice_no' => $invoiceNo,
-
-                // customer_id: struktur customer Anda belum “dipatok” untuk checkout ini.
-                // Supaya stabil dan tidak tebak-tebakan: simpan NULL dulu.
-                'customer_id' => null,
+                // customer_id: relasi customer diisi dari user yang login
+                'customer_id' => $customerId,
 
                 // cashier_id juga NULL (kasir akan punya flow sendiri via Filament)
                 'cashier_id' => null,
@@ -119,8 +130,8 @@ class CheckoutController extends Controller
                 'total' => $total,
 
                 'payment_method' => $data['payment_method'],
-                'paid_amount' => 0,
-                'change_amount' => 0,
+                'paid_amount' => $paidAmount,
+                'change_amount' => $changeAmount,
                 'status' => $status,
             ]);
 

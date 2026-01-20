@@ -55,6 +55,7 @@ const closeQrisBtn = document.getElementById('btn-close-qris');
 const closeTransferBtn = document.getElementById('btn-close-transfer');
 const closeSuccessBtn = document.getElementById('btn-close-success');
 const successBackBtn = document.getElementById('btn-success-back');
+const successTrackBtn = document.getElementById('btn-success-track');
 
 const qrisTotalTextEl = document.getElementById('qris-total-text');
 const transferTotalTextEl = document.getElementById('transfer-total-text');
@@ -72,6 +73,7 @@ let selectedPaymentMethod = null;
 let currentOrderNumber = '';
 let currentOrderTotal = 0;
 let currentOrderMethodLabel = '';
+let currentOrderId = null;
 let isPlacingOrder = false;
 
 async function fetchMenu(category = 'Semua') {
@@ -367,6 +369,9 @@ if (closeCheckoutBtn) closeCheckoutBtn.addEventListener('click', () => closeOver
 // payment method
 paymentMethodButtons.forEach(btn => {
   btn.addEventListener('click', () => {
+    if (btn.classList.contains('is-disabled')) {
+      return;
+    }
     selectedPaymentMethod = btn.dataset.method;
     paymentMethodButtons.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -431,6 +436,7 @@ if (confirmPaymentBtn) {
 
       const result = await placeOrder(selectedPaymentMethod);
 
+      currentOrderId = result.transaction_id || null;
       currentOrderNumber = result.invoice_no || ('TRX-' + String(result.transaction_id || ''));
       currentOrderTotal = Number(result.total || 0);
 
@@ -473,6 +479,13 @@ function finishOrderAndReset() {
 }
 if (successBackBtn) successBackBtn.addEventListener('click', finishOrderAndReset);
 if (closeSuccessBtn) closeSuccessBtn.addEventListener('click', finishOrderAndReset);
+if (successTrackBtn) successTrackBtn.addEventListener('click', () => {
+  if (!currentOrderId) {
+    finishOrderAndReset();
+    return;
+  }
+  window.location.href = `/orders/${currentOrderId}`;
+});
 
 // ---------- PROFILE DROPDOWN (NEW, SAFE) ----------
 (function initProfileDropdown() {

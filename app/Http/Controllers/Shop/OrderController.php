@@ -13,7 +13,7 @@ class OrderController extends Controller
     {
         $user = auth()->user();
 
-        $customer = Customer::where('email', $user->email)->first();
+        $customer = $user?->customer;
 
         $orders = Transaction::query()
             ->when($customer, fn ($q) => $q->where('customer_id', $customer->id))
@@ -27,7 +27,7 @@ class OrderController extends Controller
     {
         // Simple security: pastikan hanya lihat order miliknya (berdasarkan email customer)
         $user = auth()->user();
-        $customer = Customer::where('email', $user->email)->first();
+        $customer = $user?->customer;
 
         abort_if(!$customer || $transaction->customer_id !== $customer->id, 403);
 

@@ -5,6 +5,10 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Shop\CartController;
 use App\Http\Controllers\Shop\CheckoutController;
 use App\Http\Controllers\Shop\OrderController;
+use App\Http\Controllers\Cashier\OrderApprovalController;
+use App\Http\Controllers\Kitchen\OrderBoardController;
+use App\Http\Controllers\Kitchen\IngredientStockController;
+use App\Http\Controllers\Attendance\AttendanceSelfController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +20,15 @@ Route::get('/', fn () => view('customer.landing'))->name('landing');
 // Opsional: tetap buka landing yang sama (SPA-like via JS)
 Route::get('/menu', fn () => view('customer.landing'))->name('menu.page');
 Route::get('/cart', fn () => view('customer.landing'))->name('cart.page');
+
+/*
+|--------------------------------------------------------------------------
+| Staff Self Attendance (Public)
+|--------------------------------------------------------------------------
+*/
+Route::get('/attendance', [AttendanceSelfController::class, 'index'])->name('attendance.self');
+Route::post('/attendance/check-in', [AttendanceSelfController::class, 'checkIn'])->name('attendance.check-in');
+Route::post('/attendance/check-out', [AttendanceSelfController::class, 'checkOut'])->name('attendance.check-out');
 
 /*
 |--------------------------------------------------------------------------
@@ -63,4 +76,16 @@ Route::middleware([
     // orders biarkan dulu seperti punya Anda (tidak kita fokuskan)
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{transaction}', [OrderController::class, 'show'])->name('orders.show');
+
+    // Kasir: persetujuan pesanan
+    Route::get('/cashier/orders', [OrderApprovalController::class, 'index'])->name('cashier.orders.index');
+    Route::post('/cashier/orders/{transaction}/approve', [OrderApprovalController::class, 'approve'])->name('cashier.orders.approve');
+
+    // Dapur: board pesanan
+    Route::get('/kitchen/orders', [OrderBoardController::class, 'index'])->name('kitchen.orders.index');
+    Route::post('/kitchen/orders/{transaction}/ready', [OrderBoardController::class, 'markReady'])->name('kitchen.orders.ready');
+    Route::post('/kitchen/orders/{transaction}/completed', [OrderBoardController::class, 'markCompleted'])->name('kitchen.orders.completed');
+
+    // Dapur: cek stok bahan baku
+    Route::get('/kitchen/ingredients', [IngredientStockController::class, 'index'])->name('kitchen.ingredients.index');
 });
