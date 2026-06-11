@@ -420,6 +420,22 @@ async function placeOrder(paymentMethod) {
   return await res.json();
 }
 
+async function syncCurrentPayment() {
+  if (!currentOrderId) return null;
+
+  const res = await fetch(`/orders/${currentOrderId}/sync-payment`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-CSRF-TOKEN': getCsrfToken(),
+    },
+    body: JSON.stringify({})
+  });
+
+  return res.ok ? await res.json() : null;
+}
+
 if (confirmPaymentBtn) {
   confirmPaymentBtn.addEventListener('click', async () => {
     if (!selectedPaymentMethod) return;
@@ -448,12 +464,29 @@ if (confirmPaymentBtn) {
 
       if (selectedPaymentMethod === 'cash') {
         openOverlay(successModalEl);
-      } else if (selectedPaymentMethod === 'qris') {
-        if (qrisTotalTextEl) qrisTotalTextEl.textContent = formatIDR(currentOrderTotal);
-        openOverlay(qrisModalEl);
-      } else if (selectedPaymentMethod === 'transfer') {
-        if (transferTotalTextEl) transferTotalTextEl.textContent = formatIDR(currentOrderTotal);
-        openOverlay(transferModalEl);
+      } else {
+        if (!result.snap_token || !window.snap) {
+          throw new Error('Snap Midtrans belum siap. Pastikan client key dan koneksi internet benar.');
+        }
+
+        window.snap.pay(result.snap_token, {
+          onSuccess: async function () {
+            await syncCurrentPayment();
+            openOverlay(successModalEl);
+          },
+          onPending: async function () {
+            await syncCurrentPayment();
+            alert('Pembayaran masih tertunda. Jika sudah melakukan simulasi pembayaran, buka detail pesanan lalu klik Cek Status Pembayaran.');
+            window.location.href = `/orders/${currentOrderId}`;
+          },
+          onError: function () {
+            alert('Pembayaran gagal atau ditolak oleh Midtrans.');
+          },
+          onClose: function () {
+            alert('Pembayaran belum selesai. Anda bisa melanjutkan pembayaran atau membatalkan pesanan dari halaman detail pesanan.');
+            window.location.href = `/orders/${currentOrderId}`;
+          }
+        });
       }
     } catch (e) {
       console.error(e);

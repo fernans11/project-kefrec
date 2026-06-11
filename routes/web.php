@@ -9,6 +9,7 @@ use App\Http\Controllers\Cashier\OrderApprovalController;
 use App\Http\Controllers\Kitchen\OrderBoardController;
 use App\Http\Controllers\Kitchen\IngredientStockController;
 use App\Http\Controllers\Attendance\AttendanceSelfController;
+use App\Http\Controllers\MidtransNotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,7 @@ Route::get('/cart', fn () => view('customer.landing'))->name('cart.page');
 Route::get('/attendance', [AttendanceSelfController::class, 'index'])->name('attendance.self');
 Route::post('/attendance/check-in', [AttendanceSelfController::class, 'checkIn'])->name('attendance.check-in');
 Route::post('/attendance/check-out', [AttendanceSelfController::class, 'checkOut'])->name('attendance.check-out');
+Route::post('/midtrans/notification', [MidtransNotificationController::class, 'handle'])->name('midtrans.notification');
 
 /*
 |--------------------------------------------------------------------------
@@ -76,6 +78,8 @@ Route::middleware([
     // orders biarkan dulu seperti punya Anda (tidak kita fokuskan)
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{transaction}', [OrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{transaction}/sync-payment', [OrderController::class, 'syncPayment'])->name('orders.sync-payment');
+    Route::post('/orders/{transaction}/cancel-payment', [OrderController::class, 'cancelPayment'])->name('orders.cancel-payment');
 
     // Kasir: persetujuan pesanan
     Route::get('/cashier/orders', [OrderApprovalController::class, 'index'])->name('cashier.orders.index');

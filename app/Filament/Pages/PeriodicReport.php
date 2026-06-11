@@ -68,6 +68,7 @@ class PeriodicReport extends Page implements HasTable
                         'ready' => 'Siap Diambil',
                         'processing' => 'Diproses',
                         'paid' => 'Dibayar',
+                        'pending_payment' => 'Menunggu Pembayaran',
                         'pending_cashier' => 'Menunggu Kasir',
                         'draft' => 'Draf',
                         'cancelled' => 'Dibatalkan',

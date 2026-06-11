@@ -65,6 +65,7 @@ class ListTransactions extends ListRecords
                 $record->cashier?->name ?? '-',
                 match ($record->status) {
                     'draft' => 'Draf',
+                    'pending_payment' => 'Menunggu Pembayaran',
                     'pending_cashier' => 'Menunggu Kasir',
                     'paid' => 'Dibayar',
                     'processing' => 'Diproses',
@@ -112,6 +113,7 @@ class ListTransactions extends ListRecords
                     $record->customer?->name ?? '-',
                     match ($record->status) {
                         'draft' => 'Draf',
+                        'pending_payment' => 'Menunggu Pembayaran',
                         'pending_cashier' => 'Menunggu Kasir',
                         'paid' => 'Dibayar',
                         'processing' => 'Diproses',

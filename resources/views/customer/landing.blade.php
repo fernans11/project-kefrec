@@ -20,8 +20,14 @@
         profileUrl: "{{ url('/user/profile') }}",
         homeUrl: "{{ route('home') }}",
         landingUrl: "{{ route('landing') }}",
+        midtransClientKey: "{{ config('services.midtrans.client_key') }}",
     };
 </script>
+@if (config('services.midtrans.client_key'))
+    <script
+        src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
+        data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+@endif
 
 <div id="kefrec-root">
 
@@ -185,6 +191,6 @@
     </main>
 </div>
 
-<script src="{{ asset('js/customer-landing.js') }}"></script>
+<script src="{{ asset('js/customer-landing.js') }}?v=midtrans-1"></script>
 </body>
 </html>

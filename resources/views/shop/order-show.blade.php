@@ -7,6 +7,11 @@
     <title>Detail Pesanan - KeFrec Coffee Shop</title>
 
     <link rel="stylesheet" href="{{ asset('css/customer-landing.css') }}">
+    @if ($transaction->status === 'pending_payment' && $transaction->snap_token && config('services.midtrans.client_key'))
+        <script
+            src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
+            data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+    @endif
 </head>
 <body>
     <header class="navbar">
@@ -37,6 +42,7 @@
                     $status = 'pending_cashier';
                 }
                 $steps = [
+                    'pending_payment' => 'Menunggu Pembayaran',
                     'pending_cashier' => 'Menunggu Kasir',
                     'processing' => 'Diproses Dapur',
                     'ready' => 'Siap Diambil',
@@ -82,7 +88,27 @@
                                     </div>
                                 @endforeach
                             </div>
-                            @if ($status === 'pending_cashier')
+                            @if ($status === 'pending_payment')
+                                <div style="margin-top:0.5rem;font-size:0.85rem;color:var(--text-muted);">
+                                    Menunggu pembayaran Anda dikonfirmasi oleh Midtrans.
+                                </div>
+                                <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.8rem;">
+                                    @if ($transaction->snap_token)
+                                        <button class="btn btn-red btn-small" type="button" id="btn-pay-midtrans">
+                                            Lanjutkan Pembayaran
+                                        </button>
+                                    @endif
+                                    <button class="btn btn-outline-light btn-small" type="button" id="btn-sync-payment">
+                                        Cek Status Pembayaran
+                                    </button>
+                                    <form method="POST" action="{{ route('orders.cancel-payment', $transaction) }}" style="margin:0;">
+                                        @csrf
+                                        <button class="btn btn-outline-light btn-small" type="submit" onclick="return confirm('Batalkan pesanan ini?')">
+                                            Batalkan Pesanan
+                                        </button>
+                                    </form>
+                                </div>
+                            @elseif ($status === 'pending_cashier')
                                 <div style="margin-top:0.5rem;font-size:0.85rem;color:var(--text-muted);">
                                     Menunggu kasir menyetujui pesanan Anda.
                                 </div>
@@ -110,5 +136,70 @@
             </section>
         </div>
     </main>
+    @if ($transaction->status === 'pending_payment')
+        <script>
+            function csrfToken() {
+                const meta = document.querySelector('meta[name="csrf-token"]');
+                return meta ? meta.getAttribute('content') : '';
+            }
+
+            async function syncPayment() {
+                const response = await fetch("{{ route('orders.sync-payment', $transaction) }}", {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken(),
+                    },
+                    body: JSON.stringify({}),
+                });
+
+                if (!response.ok) {
+                    alert('Gagal mengecek status pembayaran.');
+                    return null;
+                }
+
+                const result = await response.json();
+                if (result.status === 'pending_cashier') {
+                    window.location.reload();
+                    return result;
+                }
+
+                alert('Status pembayaran saat ini: ' + (result.payment_status || result.status || 'pending'));
+                return result;
+            }
+
+            const syncBtn = document.getElementById('btn-sync-payment');
+            if (syncBtn) {
+                syncBtn.addEventListener('click', syncPayment);
+            }
+
+            const payBtn = document.getElementById('btn-pay-midtrans');
+            if (payBtn) {
+                payBtn.addEventListener('click', function () {
+                    if (!window.snap) {
+                        alert('Snap Midtrans belum siap. Refresh halaman lalu coba lagi.');
+                        return;
+                    }
+
+                    window.snap.pay("{{ $transaction->snap_token }}", {
+                        onSuccess: async function () {
+                            await syncPayment();
+                            window.location.reload();
+                        },
+                        onPending: async function () {
+                            await syncPayment();
+                        },
+                        onError: function () {
+                            alert('Pembayaran gagal atau ditolak oleh Midtrans.');
+                        },
+                        onClose: function () {
+                            alert('Pembayaran belum selesai. Anda masih bisa lanjutkan pembayaran dari halaman ini.');
+                        }
+                    });
+                });
+            }
+        </script>
+    @endif
 </body>
 </html>

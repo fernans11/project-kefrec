@@ -33,6 +33,7 @@ class LatestTransactions extends BaseWidget
                     ->label('Status')
                     ->badge()
                     ->formatStateUsing(fn ($state) => match ($state) {
+                        'pending_payment' => 'Menunggu Pembayaran',
                         'pending_cashier' => 'Menunggu Kasir',
                         'paid' => 'Dibayar',
                         'processing' => 'Diproses',

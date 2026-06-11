@@ -13,6 +13,9 @@ class Transaction extends Model
 {
     protected $fillable = [
         'invoice_no',
+        'midtrans_order_id',
+        'midtrans_transaction_id',
+        'snap_token',
         'customer_id',
         'cashier_id',
         'subtotal',
@@ -20,6 +23,10 @@ class Transaction extends Model
         'tax',
         'total',
         'payment_method',
+        'payment_status',
+        'payment_type',
+        'payment_payload',
+        'paid_at',
         'paid_amount',
         'change_amount',
         'status',
@@ -33,13 +40,16 @@ class Transaction extends Model
         'total' => 'integer',
         'paid_amount' => 'integer',
         'change_amount' => 'integer',
+        'payment_payload' => 'array',
+        'paid_at' => 'datetime',
         'stock_deducted_at' => 'datetime',
     ];
 
     public static function allowedStatusTransitions(): array
     {
         return [
-            'draft' => ['pending_cashier', 'paid', 'cancelled'],
+            'draft' => ['pending_payment', 'pending_cashier', 'paid', 'cancelled'],
+            'pending_payment' => ['pending_cashier', 'cancelled'],
             'pending_cashier' => ['processing', 'cancelled'],
             'paid' => ['processing', 'cancelled'],
             'processing' => ['ready', 'cancelled'],

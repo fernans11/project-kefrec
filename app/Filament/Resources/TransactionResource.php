@@ -47,6 +47,7 @@ class TransactionResource extends Resource
                         ->required()
                         ->options([
                             'draft' => 'Draf',
+                            'pending_payment' => 'Menunggu Pembayaran',
                             'pending_cashier' => 'Menunggu Kasir',
                             'paid' => 'Dibayar',
                             'processing' => 'Diproses',
@@ -291,6 +292,7 @@ class TransactionResource extends Resource
                     ->badge()
                     ->formatStateUsing(fn ($state) => match ($state) {
                         'draft' => 'Draf',
+                        'pending_payment' => 'Menunggu Pembayaran',
                         'pending_cashier' => 'Menunggu Kasir',
                         'paid' => 'Dibayar',
                         'processing' => 'Diproses',
@@ -309,6 +311,7 @@ class TransactionResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')->options([
                     'draft' => 'Draf',
+                    'pending_payment' => 'Menunggu Pembayaran',
                     'pending_cashier' => 'Menunggu Kasir',
                     'paid' => 'Dibayar',
                     'processing' => 'Diproses',
@@ -424,6 +427,7 @@ class TransactionResource extends Resource
                                         $record->cashier?->name ?? '-',
                                         match ($record->status) {
                                             'draft' => 'Draf',
+                                            'pending_payment' => 'Menunggu Pembayaran',
                                             'pending_cashier' => 'Menunggu Kasir',
                                             'paid' => 'Dibayar',
                                             'processing' => 'Diproses',
@@ -471,6 +475,7 @@ class TransactionResource extends Resource
                                         $record->customer?->name ?? '-',
                                         match ($record->status) {
                                             'draft' => 'Draf',
+                                            'pending_payment' => 'Menunggu Pembayaran',
                                             'pending_cashier' => 'Menunggu Kasir',
                                             'paid' => 'Dibayar',
                                             'processing' => 'Diproses',

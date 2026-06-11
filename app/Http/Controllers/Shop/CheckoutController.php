@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
+use App\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -20,7 +21,7 @@ class CheckoutController extends Controller
         return redirect()->route('home');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, MidtransService $midtrans)
     {
         // Pastikan request ini memang JSON (fetch Anda sudah mengirim Accept JSON) :contentReference[oaicite:7]{index=7}
         if (!$request->expectsJson()) {
@@ -101,23 +102,23 @@ class CheckoutController extends Controller
             $tax = (int) floor(max(0, $subtotal - $discount) * 0.1);
             $total = max(0, ($subtotal - $discount) + $tax);
 
+            $isMidtransPayment = in_array($data['payment_method'], ['qris', 'transfer'], true);
             $paidAmount = (int) ($data['paid_amount'] ?? 0);
-            if ($data['payment_method'] !== 'cash') {
-                $paidAmount = $total;
-            }
-            if ($paidAmount <= 0) {
+            if ($isMidtransPayment) {
+                $paidAmount = 0;
+            } elseif ($paidAmount <= 0) {
                 $paidAmount = $total;
             }
             $changeAmount = max(0, $paidAmount - $total);
 
-            // Status: bayar sukses, lanjut persetujuan kasir
-            $status = 'pending_cashier';
+            $status = $isMidtransPayment ? 'pending_payment' : 'pending_cashier';
 
             $user = auth()->user();
             $customerId = $user?->customer?->id;
 
             $trx = Transaction::create([
                 'invoice_no' => $invoiceNo,
+                'midtrans_order_id' => $isMidtransPayment ? $invoiceNo : null,
                 // customer_id: relasi customer diisi dari user yang login
                 'customer_id' => $customerId,
 
@@ -130,6 +131,7 @@ class CheckoutController extends Controller
                 'total' => $total,
 
                 'payment_method' => $data['payment_method'],
+                'payment_status' => $isMidtransPayment ? 'pending' : 'manual',
                 'paid_amount' => $paidAmount,
                 'change_amount' => $changeAmount,
                 'status' => $status,
@@ -154,6 +156,27 @@ class CheckoutController extends Controller
             return $trx->fresh()->load('items.product');
         });
 
+        if (in_array($result->payment_method, ['qris', 'transfer'], true)) {
+            try {
+                $snapToken = $midtrans->createSnapToken($result);
+                $result->update(['snap_token' => $snapToken]);
+                $result->snap_token = $snapToken;
+            } catch (\Throwable $exception) {
+                $result->update([
+                    'status' => 'cancelled',
+                    'payment_status' => 'snap_failed',
+                    'payment_payload' => [
+                        'message' => $exception->getMessage(),
+                    ],
+                ]);
+
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'Gagal membuat pembayaran Midtrans: ' . $exception->getMessage(),
+                ], 422);
+            }
+        }
+
         // Response format yang aman untuk fetch() Anda:
         // JS Anda memakai invoice_no / transaction_id / total :contentReference[oaicite:8]{index=8}
         return response()->json([
@@ -165,6 +188,7 @@ class CheckoutController extends Controller
             'subtotal' => $result->subtotal,
             'tax' => $result->tax,
             'total' => $result->total,
+            'snap_token' => $result->snap_token,
         ], 201);
     }
 

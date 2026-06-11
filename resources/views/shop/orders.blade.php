@@ -23,6 +23,7 @@
                         @forelse ($orders as $o)
                             @php
                                 $statusLabel = match ($o->status) {
+                                    'pending_payment' => 'Menunggu Pembayaran',
                                     'pending_cashier' => 'Menunggu Kasir',
                                     'processing' => 'Diproses Dapur',
                                     'ready' => 'Siap Diambil',

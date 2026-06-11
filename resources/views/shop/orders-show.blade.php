@@ -15,6 +15,7 @@
                         $status = 'pending_cashier';
                     }
                     $steps = [
+                        'pending_payment' => 'Menunggu Pembayaran',
                         'pending_cashier' => 'Menunggu Kasir',
                         'processing' => 'Diproses Dapur',
                         'ready' => 'Siap Diambil',
@@ -52,7 +53,11 @@
                                 </div>
                             @endforeach
                         </div>
-                        @if ($status === 'pending_cashier')
+                        @if ($status === 'pending_payment')
+                            <div class="mt-2 text-sm text-gray-600">
+                                Menunggu pembayaran Anda dikonfirmasi oleh Midtrans.
+                            </div>
+                        @elseif ($status === 'pending_cashier')
                             <div class="mt-2 text-sm text-gray-600">
                                 Menunggu kasir menyetujui pesanan Anda.
                             </div>
