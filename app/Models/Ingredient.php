@@ -11,6 +11,11 @@ class Ingredient extends Model
         'name', 'unit', 'stock', 'min_stock',
     ];
 
+    protected $casts = [
+        'stock' => 'decimal:2',
+        'min_stock' => 'decimal:2',
+    ];
+
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(\App\Models\Product::class)

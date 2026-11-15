@@ -23,7 +23,7 @@ class CheckoutController extends Controller
 
     public function store(Request $request, MidtransService $midtrans)
     {
-        // Pastikan request ini memang JSON (fetch Anda sudah mengirim Accept JSON) :contentReference[oaicite:7]{index=7}
+        // Pastikan request ini memang JSON (fetch Anda sudah mengirim Accept JSON).
         if (!$request->expectsJson()) {
             return response()->json([
                 'ok' => false,
@@ -34,12 +34,33 @@ class CheckoutController extends Controller
         $data = $request->validate([
             'payment_method' => ['required', 'in:cash,qris,transfer'],
             'paid_amount' => ['nullable', 'integer', 'min:0'],
+            'customer_name' => ['nullable', 'string', 'max:100'],
+            'table_number' => ['required', 'string', 'max:25'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'integer', 'distinct', 'exists:products,id'],
             'items.*.qty' => ['required', 'integer', 'min:1', 'max:999'],
+        ], [
+            'table_number.required' => 'Nomor meja wajib diisi.',
+            'table_number.max' => 'Nomor meja maksimal 25 karakter.',
+            'customer_name.max' => 'Nama pelanggan maksimal 100 karakter.',
         ]);
 
-        $result = DB::transaction(function () use ($data) {
+        $isMidtransPayment = in_array($data['payment_method'], ['qris', 'transfer'], true);
+        if ($isMidtransPayment && ! $request->user()) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Silakan login terlebih dahulu untuk pembayaran QRIS atau Transfer Bank.',
+                'redirect_url' => route('login'),
+            ], 401);
+        }
+
+        if ($data['payment_method'] === 'cash' && ! $request->user() && trim((string) ($data['customer_name'] ?? '')) === '') {
+            throw ValidationException::withMessages([
+                'customer_name' => ['Nama pelanggan wajib diisi untuk checkout tunai tanpa login.'],
+            ]);
+        }
+
+        $result = DB::transaction(function () use ($data, $request) {
             $invoiceNo = $this->generateInvoiceNo();
 
             $items = collect($data['items'])
@@ -113,8 +134,10 @@ class CheckoutController extends Controller
 
             $status = $isMidtransPayment ? 'pending_payment' : 'pending_cashier';
 
-            $user = auth()->user();
+            $user = $request->user();
             $customerId = $user?->customer?->id;
+            $guestName = trim((string) ($data['customer_name'] ?? ''));
+            $tableNumber = trim((string) ($data['table_number'] ?? ''));
 
             $trx = Transaction::create([
                 'invoice_no' => $invoiceNo,
@@ -132,6 +155,11 @@ class CheckoutController extends Controller
 
                 'payment_method' => $data['payment_method'],
                 'payment_status' => $isMidtransPayment ? 'pending' : 'manual',
+                'payment_payload' => [
+                    'customer_type' => $user ? 'member' : 'guest',
+                    'customer_name' => $user?->name ?? $guestName,
+                    'table_number' => $tableNumber,
+                ],
                 'paid_amount' => $paidAmount,
                 'change_amount' => $changeAmount,
                 'status' => $status,
@@ -165,9 +193,9 @@ class CheckoutController extends Controller
                 $result->update([
                     'status' => 'cancelled',
                     'payment_status' => 'snap_failed',
-                    'payment_payload' => [
+                    'payment_payload' => array_merge($result->payment_payload ?? [], [
                         'message' => $exception->getMessage(),
-                    ],
+                    ]),
                 ]);
 
                 return response()->json([
@@ -178,7 +206,7 @@ class CheckoutController extends Controller
         }
 
         // Response format yang aman untuk fetch() Anda:
-        // JS Anda memakai invoice_no / transaction_id / total :contentReference[oaicite:8]{index=8}
+        // JS Anda memakai invoice_no / transaction_id / total.
         return response()->json([
             'ok' => true,
             'message' => 'Checkout berhasil',

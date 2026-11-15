@@ -105,12 +105,18 @@ class ProductResource extends Resource
                             ->default(true),
 
                         Forms\Components\Toggle::make('is_popular')
-                            ->label('Popular')
-                            ->default(false),
+                            ->label('Best Seller Otomatis')
+                            ->helperText('Dihitung otomatis dari 2 menu terlaris per kategori berdasarkan transaksi selesai.')
+                            ->default(false)
+                            ->disabled()
+                            ->dehydrated(false),
 
                         Forms\Components\Toggle::make('is_new')
-                            ->label('Baru')
-                            ->default(false),
+                            ->label('Produk Baru Otomatis')
+                            ->helperText('Aktif otomatis saat menu baru dibuat.')
+                            ->default(false)
+                            ->disabled()
+                            ->dehydrated(false),
 
                         Forms\Components\TextInput::make('rating')
                             ->label('Rating')
@@ -132,6 +138,9 @@ class ProductResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query
+                ->withSum(['completedTransactionItems as completed_order_qty' => fn ($query) => $query], 'qty')
+                ->withSum(['completedTransactionItems as completed_order_revenue' => fn ($query) => $query], 'subtotal'))
             ->defaultSort('sort_order')
             ->columns([
                 Tables\Columns\TextColumn::make('sort_order')
@@ -175,8 +184,21 @@ class ProductResource extends Resource
                     ->toggleable()
                     ->formatStateUsing(fn ($state, $record) => (bool) $record->track_stock ? (string) $state : '-'),
 
+                Tables\Columns\TextColumn::make('completed_order_qty')
+                    ->label('Terjual')
+                    ->numeric()
+                    ->default(0)
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('completed_order_revenue')
+                    ->label('Total Penjualan')
+                    ->money('IDR', true)
+                    ->default(0)
+                    ->sortable()
+                    ->toggleable(),
+
                 Tables\Columns\IconColumn::make('is_popular')
-                    ->label('Popular')
+                    ->label('Best Seller')
                     ->boolean()
                     ->toggleable(),
 
@@ -206,7 +228,7 @@ class ProductResource extends Resource
                     ]),
 
                 Tables\Filters\TernaryFilter::make('is_active')->label('Aktif'),
-                Tables\Filters\TernaryFilter::make('is_popular')->label('Popular'),
+                Tables\Filters\TernaryFilter::make('is_popular')->label('Best Seller'),
                 Tables\Filters\TernaryFilter::make('is_new')->label('Baru'),
                 Tables\Filters\TernaryFilter::make('track_stock')->label('Track Stok'),
             ])

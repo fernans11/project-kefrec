@@ -2,7 +2,8 @@
   <div class="auth-container">
 
     <button type="button" id="btn-back" class="back-button">
-      <span class="back-arrow">←</span> Kembali
+      <span class="back-arrow" data-lucide="arrow-left"></span>
+      Kembali
     </button>
 
     <div class="auth-header">
@@ -27,7 +28,7 @@
         <div class="field">
           <label class="field-label" for="login-email">Email atau Username</label>
           <div class="field-input-wrapper">
-            <span class="field-icon">✉</span>
+            <span class="field-icon" data-lucide="mail"></span>
 
             <!-- PENTING: name="email" untuk Fortify -->
             <input
@@ -45,7 +46,7 @@
         <div class="field">
           <label class="field-label" for="login-password">Password</label>
           <div class="field-input-wrapper">
-            <span class="field-icon">🔒</span>
+            <span class="field-icon" data-lucide="lock"></span>
 
             <!-- PENTING: name="password" untuk Fortify -->
             <input
@@ -58,7 +59,9 @@
               autocomplete="current-password"
             />
 
-            <button type="button" id="toggle-password" class="toggle-password">👁</button>
+            <button type="button" id="toggle-password" class="toggle-password" aria-label="Tampilkan password">
+              <span data-lucide="eye"></span>
+            </button>
           </div>
         </div>
 

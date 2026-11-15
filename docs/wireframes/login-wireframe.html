@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe Login Member - KeFrec</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eeeeee;
+      color: #111111;
+    }
+
+    .canvas {
+      min-height: 100vh;
+      padding: 32px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 64px;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .artboard-group {
+      display: grid;
+      gap: 10px;
+    }
+
+    .artboard-title {
+      color: #b8b8b8;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .artboard {
+      width: 360px;
+      min-height: 620px;
+      background: #ffffff;
+      border: 1px solid #f2f2f2;
+      padding: 24px;
+      position: relative;
+    }
+
+    .desktop-artboard {
+      width: 760px;
+      min-height: 620px;
+      display: grid;
+      place-items: center;
+      padding: 38px;
+    }
+
+    .login-frame {
+      width: 360px;
+      display: grid;
+      gap: 24px;
+    }
+
+    .top-action {
+      width: 78px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .x-icon,
+    .menu-icon {
+      width: 14px;
+      height: 14px;
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .x-icon::before,
+    .x-icon::after {
+      content: "";
+      position: absolute;
+      top: 6px;
+      left: 1px;
+      width: 12px;
+      height: 2px;
+      background: #111111;
+    }
+
+    .x-icon::before {
+      transform: rotate(45deg);
+    }
+
+    .x-icon::after {
+      transform: rotate(-45deg);
+    }
+
+    .menu-icon::before {
+      content: "";
+      display: block;
+      width: 16px;
+      height: 2px;
+      background: #111111;
+      box-shadow: 0 5px 0 #111111, 0 10px 0 #111111;
+    }
+
+    .auth-header {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .logo-placeholder {
+      width: 86px;
+      height: 86px;
+      border: 5px solid #000000;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .logo-placeholder::before {
+      content: "";
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      width: 24px;
+      height: 24px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: #000000;
+    }
+
+    .logo-placeholder::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 15px;
+      width: 50px;
+      height: 30px;
+      transform: translateX(-50%);
+      border-radius: 50% 50% 42% 42%;
+      background: #000000;
+    }
+
+    .caption {
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .line {
+      height: 3px;
+      background: #111111;
+      border-radius: 999px;
+    }
+
+    .line.thick {
+      height: 5px;
+    }
+
+    .line.light {
+      height: 1px;
+      background: #c8c8c8;
+    }
+
+    .w-40 {
+      width: 40px;
+    }
+
+    .w-70 {
+      width: 70px;
+    }
+
+    .w-110 {
+      width: 110px;
+    }
+
+    .w-150 {
+      width: 150px;
+    }
+
+    .w-full {
+      width: 100%;
+    }
+
+    .login-card {
+      border: 1px solid #999999;
+      padding: 22px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .card-heading {
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field-label {
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .input-box {
+      height: 38px;
+      border: 1px solid #555555;
+      border-radius: 2px;
+      display: grid;
+      grid-template-columns: 26px 1fr 24px;
+      align-items: center;
+      gap: 8px;
+      padding: 0 10px;
+    }
+
+    .input-box.no-action {
+      grid-template-columns: 26px 1fr;
+    }
+
+    .mini-icon {
+      width: 18px;
+      height: 18px;
+      border: 1px solid #111111;
+      position: relative;
+    }
+
+    .mini-icon.mail::before,
+    .mini-icon.mail::after {
+      content: "";
+      position: absolute;
+      top: 8px;
+      width: 13px;
+      height: 1px;
+      background: #111111;
+    }
+
+    .mini-icon.mail::before {
+      left: 1px;
+      transform: rotate(28deg);
+    }
+
+    .mini-icon.mail::after {
+      right: 1px;
+      transform: rotate(-28deg);
+    }
+
+    .mini-icon.lock {
+      border-radius: 2px;
+    }
+
+    .mini-icon.lock::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: -8px;
+      width: 8px;
+      height: 8px;
+      border: 2px solid #111111;
+      border-bottom: 0;
+      border-radius: 8px 8px 0 0;
+      background: #ffffff;
+    }
+
+    .eye {
+      width: 20px;
+      height: 12px;
+      border: 1px solid #111111;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .eye::after {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 3px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #111111;
+    }
+
+    .forgot {
+      justify-self: end;
+      font-size: 10px;
+      font-weight: 700;
+      text-decoration: underline;
+    }
+
+    .button {
+      height: 38px;
+      border: 2px solid #111111;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eeeeee;
+    }
+
+    .button.primary {
+      background: #111111;
+      color: #ffffff;
+    }
+
+    .register-area {
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+      padding-top: 6px;
+    }
+
+    .notes {
+      display: grid;
+      gap: 13px;
+      margin-top: 18px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .note-item {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .note-box {
+      height: 34px;
+      border: 1px solid #aaaaaa;
+      background:
+        linear-gradient(to bottom right, transparent 49%, #999999 50%, transparent 51%),
+        linear-gradient(to top right, transparent 49%, #999999 50%, transparent 51%);
+    }
+
+    .mobile-login {
+      display: grid;
+      gap: 18px;
+    }
+
+    .mobile-card {
+      border-top: 1px solid #bcbcbc;
+      border-bottom: 1px solid #bcbcbc;
+      padding: 22px 0;
+      display: grid;
+      gap: 16px;
+    }
+
+    .bottom-label {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 18px;
+      display: grid;
+      gap: 7px;
+      justify-items: center;
+      color: #777777;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 820px) {
+      .canvas {
+        padding: 22px;
+        gap: 36px;
+      }
+
+      .desktop-artboard {
+        width: 100%;
+        max-width: 760px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .artboard,
+      .desktop-artboard {
+        width: 100%;
+      }
+
+      .login-frame {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="canvas">
+    <section class="artboard-group">
+      <div class="artboard-title">Desktop - Login Member</div>
+      <div class="artboard desktop-artboard">
+        <div class="login-frame">
+          <div class="top-action">
+            <span class="x-icon"></span>
+            <span>Kembali</span>
+          </div>
+
+          <div class="auth-header">
+            <div class="logo-placeholder" aria-label="Logo placeholder"></div>
+            <div class="caption">Login Member</div>
+            <div class="line thick w-150"></div>
+            <div class="line w-110"></div>
+          </div>
+
+          <div class="login-card">
+            <div class="card-heading">
+              <div class="caption">Selamat datang kembali</div>
+              <div class="line thick w-150"></div>
+              <div class="line w-110"></div>
+            </div>
+
+            <div class="field">
+              <div class="field-label">Email atau Username</div>
+              <div class="input-box no-action">
+                <div class="mini-icon mail"></div>
+                <div class="line light w-full"></div>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-label">Password</div>
+              <div class="input-box">
+                <div class="mini-icon lock"></div>
+                <div class="line light w-full"></div>
+                <div class="eye"></div>
+              </div>
+            </div>
+
+            <div class="forgot">Lupa Password?</div>
+            <div class="button primary">Masuk</div>
+
+            <div class="register-area">
+              <div class="caption">Belum punya akun?</div>
+              <div class="button w-full">Daftar Member</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="artboard-group">
+      <div class="artboard-title">Mobile - Login Member</div>
+      <div class="artboard">
+        <div class="mobile-login">
+          <div class="top-action">
+            <span class="menu-icon"></span>
+          </div>
+
+          <div class="auth-header">
+            <div class="logo-placeholder" aria-label="Logo placeholder"></div>
+            <div class="caption">Login Member</div>
+            <div class="line thick w-150"></div>
+            <div class="line w-110"></div>
+          </div>
+
+          <div class="mobile-card">
+            <div class="caption">Selamat datang kembali</div>
+            <div class="line thick w-150"></div>
+            <div class="line w-110"></div>
+
+            <div class="field">
+              <div class="field-label">Email atau Username</div>
+              <div class="input-box no-action">
+                <div class="mini-icon mail"></div>
+                <div class="line light w-full"></div>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-label">Password</div>
+              <div class="input-box">
+                <div class="mini-icon lock"></div>
+                <div class="line light w-full"></div>
+                <div class="eye"></div>
+              </div>
+            </div>
+
+            <div class="forgot">Lupa Password?</div>
+            <div class="button primary">Masuk</div>
+            <div class="button">Daftar Member</div>
+          </div>
+        </div>
+
+        <div class="bottom-label">
+          <div class="line light w-full"></div>
+          <div>Wireframe dibuat dari struktur halaman login project KeFrec</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="artboard-group">
+      <div class="artboard-title">Komponen Login</div>
+      <div class="artboard">
+        <div class="notes">
+          <div class="note-item">
+            <div class="note-box"></div>
+            <div>
+              <div>Logo / brand area</div>
+              <div class="line w-110"></div>
+            </div>
+          </div>
+
+          <div class="note-item">
+            <div class="note-box"></div>
+            <div>
+              <div>Header halaman</div>
+              <div class="line w-150"></div>
+              <div class="line w-70"></div>
+            </div>
+          </div>
+
+          <div class="note-item">
+            <div class="note-box"></div>
+            <div>
+              <div>Form input email/username</div>
+              <div class="line w-150"></div>
+            </div>
+          </div>
+
+          <div class="note-item">
+            <div class="note-box"></div>
+            <div>
+              <div>Form input password</div>
+              <div class="line w-150"></div>
+            </div>
+          </div>
+
+          <div class="note-item">
+            <div class="note-box"></div>
+            <div>
+              <div>Aksi utama: Masuk</div>
+              <div class="line w-110"></div>
+            </div>
+          </div>
+
+          <div class="note-item">
+            <div class="note-box"></div>
+            <div>
+              <div>Aksi tambahan: daftar member</div>
+              <div class="line w-150"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-label">
+          <div class="line light w-full"></div>
+          <div>Low-fidelity grayscale wireframe</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

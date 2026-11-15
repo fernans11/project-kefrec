@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Pembelian Bahan Baku - Laravel</title>
+  <style>
+    :root {
+      --page: #09090b;
+      --topbar: #18181b;
+      --sidebar: #09090b;
+      --panel: #18181b;
+      --panel-2: #242427;
+      --panel-3: #202024;
+      --border: #2e2e33;
+      --border-2: #3f3f46;
+      --text: #ffffff;
+      --muted: #a1a1aa;
+      --yellow: #f5b800;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #eeeeee;
+      font-family: Arial, "Segoe UI", sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .figure {
+      width: 1260px;
+      background: #ffffff;
+      padding: 18px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, .16);
+    }
+
+    .caption {
+      color: #111111;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .app {
+      min-height: 1180px;
+      color: var(--text);
+      background: var(--page);
+      border: 1px solid #d7d7d7;
+      overflow: visible;
+      display: grid;
+      grid-template-rows: 64px 1fr;
+    }
+
+    .topbar {
+      background: var(--topbar);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #050506;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 275px 1fr;
+      min-height: 0;
+    }
+
+    .sidebar {
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      padding: 22px 14px;
+      overflow: visible;
+    }
+
+    .nav-group {
+      margin-bottom: 24px;
+    }
+
+    .nav-head {
+      height: 28px;
+      padding: 0 8px;
+      color: var(--muted);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-head::after {
+      content: "^";
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .nav-item {
+      height: 40px;
+      border-radius: 8px;
+      padding: 0 10px;
+      color: #f4f4f5;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    .nav-item.active {
+      background: var(--panel);
+      color: var(--yellow);
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      border: 1.7px solid currentColor;
+      border-radius: 4px;
+      flex: 0 0 auto;
+      opacity: .95;
+    }
+
+    .content {
+      padding: 32px 0 60px;
+      overflow: visible;
+    }
+
+    .content-inner {
+      width: 900px;
+      max-width: calc(100% - 92px);
+      margin: 0 auto;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #b9c7e7;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .breadcrumb span:last-child {
+      color: #d4d4d8;
+    }
+
+    h1 {
+      font-size: 30px;
+      line-height: 1;
+      margin-bottom: 24px;
+      font-weight: 800;
+    }
+
+    .section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+
+    .section-title {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .section-body {
+      padding: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .grid-total {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: #e4e4e7;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .required {
+      color: var(--yellow);
+      margin-left: 2px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      background: var(--panel-2);
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      padding: 11px 12px;
+      height: 42px;
+    }
+
+    textarea {
+      height: 72px;
+      resize: none;
+      line-height: 1.45;
+    }
+
+    input[disabled] {
+      color: #d4d4d8;
+      opacity: 1;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .repeater {
+      display: grid;
+      gap: 12px;
+    }
+
+    .item-card {
+      background: var(--panel-3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .item-title {
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .remove {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid var(--border-2);
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+    }
+
+    .item-grid {
+      display: grid;
+      grid-template-columns: 2.4fr .9fr 1.1fr 1.1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .add-row {
+      height: 38px;
+      border: 1px dashed var(--border-2);
+      border-radius: 8px;
+      color: var(--yellow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      background: rgba(245, 184, 0, .06);
+    }
+
+    .actions {
+      margin-top: 22px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn {
+      height: 40px;
+      min-width: 92px;
+      border-radius: 8px;
+      border: 1px solid var(--border-2);
+      background: var(--panel);
+      color: #f4f4f5;
+      font-weight: 800;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .btn.primary {
+      min-width: 132px;
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: #151515;
+    }
+
+    .note {
+      color: #222222;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <section class="figure">
+    <div class="caption">Gambar 5.x Rancangan Input Pembelian Bahan Baku</div>
+
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">Laravel</div>
+        <div class="avatar">F</div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <div class="nav-head">Dashboard</div>
+            <div class="nav-item"><span class="nav-icon"></span>Dashboard</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Master Data</div>
+            <div class="nav-item"><span class="nav-icon"></span>Produk / Menu</div>
+            <div class="nav-item"><span class="nav-icon"></span>Bahan Baku</div>
+            <div class="nav-item"><span class="nav-icon"></span>Supplier</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Manajemen Transaksi</div>
+            <div class="nav-item"><span class="nav-icon"></span>Transaksi</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Keuangan</div>
+            <div class="nav-item"><span class="nav-icon"></span>Keuangan</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Pembelian</div>
+            <div class="nav-item active"><span class="nav-icon"></span>Pembelian Bahan Baku</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Retur</div>
+            <div class="nav-item"><span class="nav-icon"></span>Retur Penjualan</div>
+            <div class="nav-item"><span class="nav-icon"></span>Retur Pembelian</div>
+          </div>
+        </aside>
+
+        <main class="content">
+          <div class="content-inner">
+            <div class="breadcrumb">
+              <span>Pembelian</span>
+              <span>&gt;</span>
+              <span>Create</span>
+            </div>
+
+            <h1>Create Pembelian</h1>
+
+            <section class="section">
+              <div class="section-title">Informasi Pembelian</div>
+              <div class="section-body">
+                <div class="grid-3">
+                  <div class="field">
+                    <label>Nomor PO<span class="required">*</span></label>
+                    <input type="text" value="PO-260710-A8K2LM" disabled>
+                    <div class="hint">Nomor dibuat otomatis oleh sistem.</div>
+                  </div>
+
+                  <div class="field">
+                    <label>Supplier<span class="required">*</span></label>
+                    <select>
+                      <option>CV Sumber Kopi Nusantara</option>
+                    </select>
+                    <div class="hint">Pilih pemasok tempat bahan baku dibeli.</div>
+                  </div>
+
+                  <div class="field">
+                    <label>Tanggal Pembelian</label>
+                    <input type="text" value="10/07/2026">
+                    <div class="hint">Tanggal transaksi pembelian.</div>
+                  </div>
+
+                  <div class="field">
+                    <label>Status<span class="required">*</span></label>
+                    <select>
+                      <option>Draf - belum menambah stok</option>
+                    </select>
+                    <div class="hint">Gunakan Diterima jika bahan sudah diterima.</div>
+                  </div>
+
+                  <div class="field full">
+                    <label>Catatan</label>
+                    <textarea>Pembelian bahan baku untuk stok mingguan cafe.</textarea>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <div class="section-title">Item Pembelian</div>
+              <div class="section-body">
+                <div class="repeater">
+                  <div class="item-card">
+                    <div class="item-head">
+                      <div class="item-title">Daftar Item 1</div>
+                      <div class="remove">x</div>
+                    </div>
+                    <div class="item-grid">
+                      <div class="field">
+                        <label>Bahan Baku<span class="required">*</span></label>
+                        <select>
+                          <option>Biji Kopi Arabica</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label>Qty<span class="required">*</span></label>
+                        <input type="text" value="5000">
+                      </div>
+                      <div class="field">
+                        <label>Harga<span class="required">*</span></label>
+                        <input type="text" value="75000">
+                      </div>
+                      <div class="field">
+                        <label>Subtotal</label>
+                        <input type="text" value="375000000" disabled>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="item-card">
+                    <div class="item-head">
+                      <div class="item-title">Daftar Item 2</div>
+                      <div class="remove">x</div>
+                    </div>
+                    <div class="item-grid">
+                      <div class="field">
+                        <label>Bahan Baku<span class="required">*</span></label>
+                        <select>
+                          <option>Susu UHT</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label>Qty<span class="required">*</span></label>
+                        <input type="text" value="24">
+                      </div>
+                      <div class="field">
+                        <label>Harga<span class="required">*</span></label>
+                        <input type="text" value="18000">
+                      </div>
+                      <div class="field">
+                        <label>Subtotal</label>
+                        <input type="text" value="432000" disabled>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="add-row">+ Tambah Daftar Item</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <div class="section-title">Total</div>
+              <div class="section-body">
+                <div class="grid-total">
+                  <div class="field">
+                    <label>Subtotal</label>
+                    <input type="text" value="375432000" disabled>
+                  </div>
+                  <div class="field">
+                    <label>Pajak</label>
+                    <input type="text" value="0">
+                  </div>
+                  <div class="field">
+                    <label>Total</label>
+                    <input type="text" value="375432000" disabled>
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <button class="btn">Cancel</button>
+                  <button class="btn primary">Create</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <p class="note">
+      <strong>Keterangan:</strong> Halaman input pembelian bahan baku digunakan untuk mencatat pembelian dari supplier.
+      Data yang diinput meliputi nomor PO, supplier, tanggal pembelian, status, catatan, daftar item bahan baku, pajak, subtotal, dan total.
+    </p>
+  </section>
+</body>
+</html>

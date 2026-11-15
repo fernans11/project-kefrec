@@ -14,6 +14,7 @@ class ProductApiController extends Controller
 
         $query = Product::query()
             ->where('is_active', true)
+            ->orderByDesc('is_popular')
             ->orderBy('sort_order')
             ->orderBy('id');
 

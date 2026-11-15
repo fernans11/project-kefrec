@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Output Detail Transaksi - Laravel</title>
+  <style>
+    :root {
+      --page: #09090b;
+      --topbar: #18181b;
+      --sidebar: #09090b;
+      --panel: #18181b;
+      --panel-2: #242427;
+      --border: #2e2e33;
+      --border-2: #3f3f46;
+      --text: #ffffff;
+      --muted: #a1a1aa;
+      --yellow: #f5b800;
+      --green: #22c55e;
+      --blue: #3b82f6;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #eeeeee;
+      font-family: Arial, "Segoe UI", sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .figure {
+      width: 1320px;
+      background: #ffffff;
+      padding: 18px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, .16);
+    }
+
+    .caption {
+      color: #111111;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .app {
+      min-height: 980px;
+      color: var(--text);
+      background: var(--page);
+      border: 1px solid #d7d7d7;
+      display: grid;
+      grid-template-rows: 64px 1fr;
+      overflow: visible;
+    }
+
+    .topbar {
+      background: var(--topbar);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+
+    .brand { font-size: 20px; font-weight: 800; }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #050506;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 275px 1fr;
+    }
+
+    .sidebar {
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      padding: 22px 14px;
+    }
+
+    .nav-group { margin-bottom: 24px; }
+
+    .nav-head {
+      height: 28px;
+      padding: 0 8px;
+      color: var(--muted);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-head::after {
+      content: "^";
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .nav-item {
+      height: 40px;
+      border-radius: 8px;
+      padding: 0 10px;
+      color: #f4f4f5;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    .nav-item.active {
+      background: var(--panel);
+      color: var(--yellow);
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      border: 1.7px solid currentColor;
+      border-radius: 4px;
+      flex: 0 0 auto;
+      opacity: .95;
+    }
+
+    .content { padding: 34px 44px 56px; }
+
+    .content-inner {
+      max-width: 930px;
+      margin: 0 auto;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #b9c7e7;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .breadcrumb span:last-child { color: #d4d4d8; }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      border: 1px solid var(--border-2);
+      background: var(--panel);
+      color: #f4f4f5;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .btn.primary {
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: #151515;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .summary-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      display: grid;
+      gap: 9px;
+      min-height: 92px;
+      align-content: center;
+    }
+
+    .summary-label {
+      color: #b8c4df;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .summary-value {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .panel-head {
+      min-height: 56px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .panel-body { padding: 20px; }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .label {
+      color: #e4e4e7;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .value {
+      min-height: 42px;
+      border: 1px solid var(--border-2);
+      background: var(--panel-2);
+      border-radius: 8px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--green);
+      border: 1px solid rgba(34, 197, 94, .45);
+      background: rgba(34, 197, 94, .12);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 15px 18px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    th {
+      background: var(--panel-2);
+      color: #f4f4f5;
+      font-weight: 900;
+    }
+
+    td { color: #ffffff; }
+
+    td.money,
+    th.money { text-align: right; }
+
+    .total-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .note {
+      color: #222222;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <section class="figure">
+    <div class="caption">Gambar 5.x Halaman Output Detail Transaksi</div>
+
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">Laravel</div>
+        <div class="avatar">F</div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <div class="nav-item"><span class="nav-icon"></span>Dashboard</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Master Data</div>
+            <div class="nav-item"><span class="nav-icon"></span>Produk / Menu</div>
+            <div class="nav-item"><span class="nav-icon"></span>Bahan Baku</div>
+            <div class="nav-item"><span class="nav-icon"></span>Supplier</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Manajemen Transaksi</div>
+            <div class="nav-item active"><span class="nav-icon"></span>Transaksi</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Keuangan</div>
+            <div class="nav-item"><span class="nav-icon"></span>Keuangan</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Retur</div>
+            <div class="nav-item"><span class="nav-icon"></span>Retur Penjualan</div>
+            <div class="nav-item"><span class="nav-icon"></span>Retur Pembelian</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Laporan</div>
+            <div class="nav-item"><span class="nav-icon"></span>Laporan Periodik</div>
+            <div class="nav-item"><span class="nav-icon"></span>Laporan Absensi</div>
+          </div>
+        </aside>
+
+        <main class="content">
+          <div class="content-inner">
+            <div class="breadcrumb">
+              <span>Transaksi</span>
+              <span>&gt;</span>
+              <span>View</span>
+            </div>
+
+            <div class="title-row">
+              <h1>View Transaksi</h1>
+              <div class="actions">
+                <div class="btn">Ubah</div>
+              </div>
+            </div>
+
+            <div class="summary">
+              <section class="summary-card">
+                <div class="summary-label">Invoice</div>
+                <div class="summary-value">INV-260710-8KIVPP</div>
+              </section>
+              <section class="summary-card">
+                <div class="summary-label">Status</div>
+                <div class="summary-value"><span class="badge">Selesai</span></div>
+              </section>
+              <section class="summary-card">
+                <div class="summary-label">Pembayaran</div>
+                <div class="summary-value">Tunai</div>
+              </section>
+              <section class="summary-card">
+                <div class="summary-label">Total</div>
+                <div class="summary-value">Rp 66.000</div>
+              </section>
+            </div>
+
+            <section class="panel">
+              <div class="panel-head">Informasi Transaksi</div>
+              <div class="panel-body">
+                <div class="detail-grid">
+                  <div class="field">
+                    <div class="label">Invoice</div>
+                    <div class="value">INV-260710-8KIVPP</div>
+                  </div>
+                  <div class="field">
+                    <div class="label">Kasir</div>
+                    <div class="value">Fernando</div>
+                  </div>
+                  <div class="field">
+                    <div class="label">Pelanggan</div>
+                    <div class="value">Fadli Avianto</div>
+                  </div>
+                  <div class="field">
+                    <div class="label">Metode Pembayaran</div>
+                    <div class="value">Tunai</div>
+                  </div>
+                  <div class="field">
+                    <div class="label">Tanggal</div>
+                    <div class="value">10 Jul 2026 13:25</div>
+                  </div>
+                  <div class="field">
+                    <div class="label">Status</div>
+                    <div class="value">Selesai</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">Item Transaksi</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Produk</th>
+                    <th>Qty</th>
+                    <th class="money">Harga</th>
+                    <th class="money">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Kopi Susu Aren</td>
+                    <td>2</td>
+                    <td class="money">IDR 24,000.00</td>
+                    <td class="money">IDR 48,000.00</td>
+                  </tr>
+                  <tr>
+                    <td>Americano</td>
+                    <td>1</td>
+                    <td class="money">IDR 18,000.00</td>
+                    <td class="money">IDR 18,000.00</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">Pembayaran &amp; Total</div>
+              <div class="panel-body">
+                <div class="total-grid">
+                  <div class="field">
+                    <div class="label">Subtotal</div>
+                    <div class="value">Rp 66.000</div>
+                  </div>
+                  <div class="field">
+                    <div class="label">Diskon</div>
+                    <div class="value">Rp 0</div>
+                  </div>
+                  <div class="field">
+                    <div class="label">Pajak</div>
+                    <div class="value">Rp 0</div>
+                  </div>
+                  <div class="field">
+                    <div class="label">Total</div>
+                    <div class="value">Rp 66.000</div>
+                  </div>
+                  <div class="field">
+                    <div class="label">Bayar</div>
+                    <div class="value">Rp 100.000</div>
+                  </div>
+                  <div class="field">
+                    <div class="label">Kembalian</div>
+                    <div class="value">Rp 34.000</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <p class="note">
+      <strong>Keterangan:</strong> Halaman output detail transaksi menampilkan informasi lengkap transaksi penjualan,
+      meliputi invoice, kasir, pelanggan, status, metode pembayaran, daftar item, subtotal, diskon, pajak, total, jumlah bayar, dan kembalian.
+    </p>
+  </section>
+</body>
+</html>

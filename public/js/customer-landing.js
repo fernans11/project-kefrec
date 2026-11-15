@@ -20,6 +20,10 @@ const API_URL = (window.__KEFREC__ && window.__KEFREC__.productsApiUrl)
   : "/api/products";
 
 const CHECKOUT_URL = "/checkout";
+const LOGIN_URL = (window.__KEFREC__ && window.__KEFREC__.loginUrl)
+  ? window.__KEFREC__.loginUrl
+  : "/login";
+const IS_AUTHENTICATED = Boolean(window.__KEFREC__ && window.__KEFREC__.isAuthenticated);
 
 const menuGridEl = document.getElementById('menu-grid');
 const tabsEl = document.getElementById('menu-tabs');
@@ -64,6 +68,9 @@ const successMethodEl = document.getElementById('success-method');
 const successTotalEl = document.getElementById('success-total');
 
 const paymentMethodButtons = document.querySelectorAll('.payment-method-btn');
+const checkoutNameGroupEl = document.getElementById('checkout-name-group');
+const checkoutNameEl = document.getElementById('checkout-name');
+const checkoutTableEl = document.getElementById('checkout-table');
 
 let activeFilter = 'Semua';
 let menuItems = []; // <-- from DB
@@ -95,7 +102,7 @@ function renderMenu() {
 
   if (!menuItems.length) {
     menuGridEl.innerHTML = `
-      <div style="padding:1rem;color:#e0e0e0;">
+      <div style="padding:1rem;color:var(--text-muted);">
         Menu belum tersedia atau gagal dimuat.
       </div>
     `;
@@ -108,15 +115,19 @@ function renderMenu() {
     card.dataset.id = item.id;
 
     const img = item.image_url || 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1200&q=80';
+    const badges = [
+      item.is_popular ? '<span class="badge badge-popular">Best Seller</span>' : '',
+      item.is_new ? '<span class="badge badge-new">Baru</span>' : '',
+    ].join('');
 
     card.innerHTML = `
       <div class="menu-image-wrapper">
         <img src="${img}" alt="${item.name}" class="menu-image">
-        <div class="menu-badges"></div>
+        <div class="menu-badges">${badges}</div>
         <span class="badge badge-category">${item.category || '-'}</span>
         ${item.rating ? `
           <span class="badge badge-rating">
-            <span class="star">★</span>
+            <span class="star" data-lucide="star"></span>
             <span>${Number(item.rating).toFixed(1)}</span>
           </span>` : ''}
       </div>
@@ -131,6 +142,7 @@ function renderMenu() {
     `;
 
     menuGridEl.appendChild(card);
+    if (window.KefrecIcons) window.KefrecIcons.render(card);
   });
 }
 
@@ -176,6 +188,16 @@ function removeCartItem(itemId) {
   renderCart();
 }
 
+function clearCart() {
+  cart = [];
+  renderCart();
+}
+
+function openSuccessAndClearCart() {
+  clearCart();
+  openOverlay(successModalEl);
+}
+
 // ---------- RENDER CART ----------
 function renderCart() {
   const totalItems = getCartTotalItems();
@@ -217,10 +239,13 @@ function renderCart() {
               <div class="cart-item-total">${formatIDR(item.price * item.quantity)}</div>
             </div>
           </div>
-          <button class="cart-remove-btn cart-remove" type="button" title="Hapus">🗑️</button>
+          <button class="cart-remove-btn cart-remove" type="button" title="Hapus" aria-label="Hapus">
+            <span data-lucide="trash"></span>
+          </button>
         `;
 
         cartItemsEl.appendChild(row);
+        if (window.KefrecIcons) window.KefrecIcons.render(row);
       });
     }
 
@@ -258,11 +283,14 @@ function renderCheckoutFromCart() {
             <button class="checkout-qty-btn checkout-plus" type="button">+</button>
           </div>
           <div class="checkout-item-total">${formatIDR(item.price * item.quantity)}</div>
-          <button class="checkout-remove-btn checkout-remove" type="button" title="Hapus">🗑️</button>
+          <button class="checkout-remove-btn checkout-remove" type="button" title="Hapus" aria-label="Hapus">
+            <span data-lucide="trash"></span>
+          </button>
         </div>
       `;
 
       checkoutItemsEl.appendChild(row);
+      if (window.KefrecIcons) window.KefrecIcons.render(row);
     });
   }
 
@@ -353,9 +381,17 @@ function openCheckout() {
   selectedPaymentMethod = null;
   paymentMethodButtons.forEach(b => b.classList.remove('active'));
   if (confirmPaymentBtn) confirmPaymentBtn.disabled = true;
+  if (checkoutNameGroupEl) checkoutNameGroupEl.style.display = IS_AUTHENTICATED ? 'none' : 'flex';
+  if (checkoutNameEl && IS_AUTHENTICATED) checkoutNameEl.value = '';
 
   renderCheckoutFromCart();
   openOverlay(checkoutOverlayEl);
+}
+
+function redirectToLogin() {
+  const url = new URL(LOGIN_URL, window.location.origin);
+  url.searchParams.set('redirect', window.location.href);
+  window.location.href = url.toString();
 }
 
 const btnCheckout = document.getElementById('btn-checkout');
@@ -372,7 +408,15 @@ paymentMethodButtons.forEach(btn => {
     if (btn.classList.contains('is-disabled')) {
       return;
     }
-    selectedPaymentMethod = btn.dataset.method;
+
+    const method = btn.dataset.method;
+    if (!IS_AUTHENTICATED && (method === 'qris' || method === 'transfer')) {
+      alert('Silakan login terlebih dahulu untuk pembayaran QRIS atau Transfer Bank.');
+      redirectToLogin();
+      return;
+    }
+
+    selectedPaymentMethod = method;
     paymentMethodButtons.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     if (confirmPaymentBtn) confirmPaymentBtn.disabled = false;
@@ -382,6 +426,8 @@ paymentMethodButtons.forEach(btn => {
 async function placeOrder(paymentMethod) {
   const payload = {
     payment_method: paymentMethod,
+    customer_name: checkoutNameEl ? checkoutNameEl.value.trim() : '',
+    table_number: checkoutTableEl ? checkoutTableEl.value.trim() : '',
     items: cart.map(i => ({
       product_id: Number(i.id),
       qty: Number(i.quantity)
@@ -405,6 +451,11 @@ async function placeOrder(paymentMethod) {
     try {
       if (ct.includes('application/json')) {
         const j = await res.json();
+        if (res.status === 401 && j.redirect_url) {
+          alert(j.message || 'Silakan login terlebih dahulu.');
+          window.location.href = j.redirect_url;
+          return null;
+        }
         msg = j.message || msg;
       } else {
         msg = await res.text();
@@ -442,6 +493,24 @@ if (confirmPaymentBtn) {
     if (!cart.length) return;
     if (isPlacingOrder) return;
 
+    if (!IS_AUTHENTICATED && (selectedPaymentMethod === 'qris' || selectedPaymentMethod === 'transfer')) {
+      alert('Silakan login terlebih dahulu untuk pembayaran QRIS atau Transfer Bank.');
+      redirectToLogin();
+      return;
+    }
+
+    if (!IS_AUTHENTICATED && selectedPaymentMethod === 'cash' && checkoutNameEl && checkoutNameEl.value.trim() === '') {
+      alert('Nama pelanggan wajib diisi untuk pembayaran tunai tanpa login.');
+      checkoutNameEl.focus();
+      return;
+    }
+
+    if (checkoutTableEl && checkoutTableEl.value.trim() === '') {
+      alert('Nomor meja wajib diisi.');
+      checkoutTableEl.focus();
+      return;
+    }
+
     isPlacingOrder = true;
     confirmPaymentBtn.disabled = true;
     confirmPaymentBtn.textContent = 'Memproses...';
@@ -451,6 +520,7 @@ if (confirmPaymentBtn) {
       currentOrderMethodLabel = methodLabelMap[selectedPaymentMethod] || 'Tunai';
 
       const result = await placeOrder(selectedPaymentMethod);
+      if (!result) return;
 
       currentOrderId = result.transaction_id || null;
       currentOrderNumber = result.invoice_no || ('TRX-' + String(result.transaction_id || ''));
@@ -463,7 +533,7 @@ if (confirmPaymentBtn) {
       closeOverlay(checkoutOverlayEl);
 
       if (selectedPaymentMethod === 'cash') {
-        openOverlay(successModalEl);
+        openSuccessAndClearCart();
       } else {
         if (!result.snap_token || !window.snap) {
           throw new Error('Snap Midtrans belum siap. Pastikan client key dan koneksi internet benar.');
@@ -472,7 +542,7 @@ if (confirmPaymentBtn) {
         window.snap.pay(result.snap_token, {
           onSuccess: async function () {
             await syncCurrentPayment();
-            openOverlay(successModalEl);
+            openSuccessAndClearCart();
           },
           onPending: async function () {
             await syncCurrentPayment();
@@ -499,15 +569,14 @@ if (confirmPaymentBtn) {
   });
 }
 
-if (qrisPaidBtn) qrisPaidBtn.addEventListener('click', () => { closeOverlay(qrisModalEl); openOverlay(successModalEl); });
+if (qrisPaidBtn) qrisPaidBtn.addEventListener('click', () => { closeOverlay(qrisModalEl); openSuccessAndClearCart(); });
 if (closeQrisBtn) closeQrisBtn.addEventListener('click', () => { closeOverlay(qrisModalEl); openOverlay(checkoutOverlayEl); });
 
-if (transferPaidBtn) transferPaidBtn.addEventListener('click', () => { closeOverlay(transferModalEl); openOverlay(successModalEl); });
+if (transferPaidBtn) transferPaidBtn.addEventListener('click', () => { closeOverlay(transferModalEl); openSuccessAndClearCart(); });
 if (closeTransferBtn) closeTransferBtn.addEventListener('click', () => { closeOverlay(transferModalEl); openOverlay(checkoutOverlayEl); });
 
 function finishOrderAndReset() {
-  cart = [];
-  renderCart();
+  clearCart();
   closeOverlay(successModalEl);
 }
 if (successBackBtn) successBackBtn.addEventListener('click', finishOrderAndReset);
@@ -556,6 +625,10 @@ if (successTrackBtn) successTrackBtn.addEventListener('click', () => {
     if (e.key === 'Escape') close();
   });
 })();
+
+if (checkoutNameGroupEl) {
+  checkoutNameGroupEl.style.display = IS_AUTHENTICATED ? 'none' : 'flex';
+}
 
 // ---------- INIT ----------
 (async function init() {

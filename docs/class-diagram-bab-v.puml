@@ -1,0 +1,373 @@
+@startuml
+title Class Diagram Sistem Informasi KEFREC
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam linetype ortho
+hide empty members
+
+package "Controller" #E8F1FB {
+  class CheckoutController <<controller>> {
+    +index()
+    +store(request: Request, midtrans: MidtransService)
+    -generateInvoiceNo(): string
+  }
+  class CartController <<controller>> {
+    -cart(): array
+    -save(cart: array): void
+    +index()
+    +add(product: Product, request: Request)
+    +update(request: Request)
+    +remove(productId: string)
+    +clear()
+  }
+  class OrderController <<controller>> {
+    +index()
+    +show(transaction: Transaction)
+    +syncPayment(transaction: Transaction, midtrans: MidtransService): JsonResponse
+    +cancelPayment(transaction: Transaction, midtrans: MidtransService)
+    -authorizeCustomerOrder(transaction: Transaction): void
+    -applyMidtransStatus(transaction: Transaction, payload: array): void
+  }
+  class MidtransNotificationController <<controller>> {
+    +handle(request: Request, midtrans: MidtransService): JsonResponse
+  }
+  class OrderApprovalController <<controller>> {
+    +index(): View
+    +approve(request: Request, transaction: Transaction): RedirectResponse
+    -assertCashier(): void
+  }
+  class OrderBoardController <<controller>> {
+    +index(): View
+    +markReady(request: Request, transaction: Transaction): RedirectResponse
+    +markCompleted(request: Request, transaction: Transaction): RedirectResponse
+    -assertKitchen(): void
+  }
+  class AttendanceSelfController <<controller>> {
+    +index()
+    +employee(): View
+    +checkIn(request: Request): RedirectResponse
+    +checkOut(request: Request): RedirectResponse
+    -isEmployeeRole(usertype: string): bool
+  }
+  class MemberController <<controller>> {
+    +index(): View
+    +activeOrders(): View
+    +storeComplaint(request: Request): RedirectResponse
+  }
+}
+
+package "Service dan Support" #FFF3D8 {
+  class MidtransService <<service>> {
+    +createSnapToken(transaction: Transaction): string
+    +verifySignature(payload: array): bool
+    +getStatus(orderId: string): array
+    +cancel(orderId: string): array
+  }
+  class AuditLogger <<support>> {
+    {static} +log(action: string, subject: Model, description: string, metadata: array): void
+  }
+  class MemberStats <<support>> {
+    {static} +forCustomer(customer: Customer): array
+    {static} +empty(): array
+    {static} +pointsForTotal(total: int): int
+    {static} +statusForPoints(points: int): string
+  }
+  class BestSellerUpdater <<support>> {
+    {static} +sync(): void
+    {static} -bestSellerIdsForCategory(category: string): array
+  }
+}
+
+package "Model / Entity" #EAF7EA {
+  class User <<entity>> {
+    +id: bigint
+    +name: string
+    +email: string
+    +phone: string
+    +usertype: string
+    +canAccessPanel(panel: Panel): bool
+    +customer(): HasOne
+    #booted(): void
+    +isEmployeeRole(): bool
+  }
+  class Customer <<entity>> {
+    +id: bigint
+    +user_id: bigint
+    +name: string
+    +email: string
+    +phone: string
+    +is_member: bool
+    +user(): BelongsTo
+    +transactions(): HasMany
+  }
+  class Category <<entity>> {
+    +id: bigint
+    +name: string
+    +slug: string
+    +is_active: bool
+    +products(): HasMany
+  }
+  class Product <<entity>> {
+    +id: bigint
+    +category_id: bigint
+    +name: string
+    +price: int
+    +stock: int
+    +track_stock: bool
+    +is_active: bool
+    +is_popular: bool
+    #booted(): void
+    +ingredients(): BelongsToMany
+    +transactionItems(): HasMany
+    +completedTransactionItems(): HasMany
+  }
+  class Ingredient <<entity>> {
+    +id: bigint
+    +name: string
+    +unit: string
+    +stock: decimal
+    +min_stock: decimal
+    +products(): BelongsToMany
+  }
+  class Transaction <<entity>> {
+    +id: bigint
+    +invoice_no: string
+    +customer_id: bigint
+    +cashier_id: bigint
+    +total: int
+    +payment_method: string
+    +payment_status: string
+    +status: string
+    +stock_deducted_at: datetime
+    {static} +allowedStatusTransitions(): array
+    {static} +canTransition(fromStatus: string, nextStatus: string): bool
+    +canTransitionTo(nextStatus: string): bool
+    #booted(): void
+    +items(): HasMany
+    +cashier(): BelongsTo
+    +customer(): BelongsTo
+    {static} +generateInvoiceNo(): string
+    +deductStockIfNeeded(): void
+    +recordCashflowIfNeeded(): void
+  }
+  class TransactionItem <<entity>> {
+    +id: bigint
+    +transaction_id: bigint
+    +product_id: bigint
+    +qty: int
+    +price: int
+    +subtotal: int
+    +transaction(): BelongsTo
+    +product(): BelongsTo
+  }
+  class Supplier <<entity>> {
+    +id: bigint
+    +name: string
+    +email: string
+    +phone: string
+    +purchases(): HasMany
+  }
+  class Purchase <<entity>> {
+    +id: bigint
+    +invoice_no: string
+    +supplier_id: bigint
+    +status: string
+    +total: int
+    +received_at: datetime
+    {static} +allowedStatusTransitions(): array
+    {static} +canTransition(fromStatus: string, nextStatus: string): bool
+    +canTransitionTo(nextStatus: string): bool
+    #booted(): void
+    +supplier(): BelongsTo
+    +items(): HasMany
+    {static} +generateInvoiceNo(): string
+    +applyReceiptIfNeeded(): void
+    +recalculateTotalsFromItems(): void
+    -recordCashflowIfNeeded(): void
+    -cashflowNote(): string
+  }
+  class PurchaseItem <<entity>> {
+    +id: bigint
+    +purchase_id: bigint
+    +ingredient_id: bigint
+    +qty: decimal
+    +price: int
+    +subtotal: int
+    +purchase(): BelongsTo
+    +ingredient(): BelongsTo
+  }
+  class SalesReturn <<entity>> {
+    +id: bigint
+    +return_no: string
+    +transaction_id: bigint
+    +customer_id: bigint
+    +status: string
+    +total: int
+    +processed_at: datetime
+    {static} +allowedStatusTransitions(): array
+    {static} +canTransition(fromStatus: string, nextStatus: string): bool
+    +canTransitionTo(nextStatus: string): bool
+    #booted(): void
+    +transaction(): BelongsTo
+    +customer(): BelongsTo
+    +items(): HasMany
+    {static} +generateReturnNo(): string
+    +applyReturnIfNeeded(): void
+  }
+  class SalesReturnItem <<entity>> {
+    +id: bigint
+    +sales_return_id: bigint
+    +product_id: bigint
+    +qty: decimal
+    +price: int
+    +subtotal: int
+    +salesReturn(): BelongsTo
+    +product(): BelongsTo
+  }
+  class PurchaseReturn <<entity>> {
+    +id: bigint
+    +return_no: string
+    +purchase_id: bigint
+    +supplier_id: bigint
+    +status: string
+    +total: int
+    +processed_at: datetime
+    {static} +allowedStatusTransitions(): array
+    {static} +canTransition(fromStatus: string, nextStatus: string): bool
+    +canTransitionTo(nextStatus: string): bool
+    #booted(): void
+    +purchase(): BelongsTo
+    +supplier(): BelongsTo
+    +items(): HasMany
+    {static} +generateReturnNo(): string
+    +applyReturnIfNeeded(): void
+  }
+  class PurchaseReturnItem <<entity>> {
+    +id: bigint
+    +purchase_return_id: bigint
+    +ingredient_id: bigint
+    +qty: decimal
+    +price: int
+    +subtotal: int
+    +purchaseReturn(): BelongsTo
+    +ingredient(): BelongsTo
+  }
+  class Complaint <<entity>> {
+    +id: bigint
+    +customer_id: bigint
+    +handled_by: bigint
+    +title: string
+    +message: text
+    +status: string
+    +response: text
+    +customer(): BelongsTo
+    +handler(): BelongsTo
+    {static} +allowedStatusTransitions(): array
+    {static} +canTransition(fromStatus: string, nextStatus: string): bool
+    +canTransitionTo(nextStatus: string): bool
+    #booted(): void
+  }
+  class Staff <<entity>> {
+    +id: bigint
+    +name: string
+    +position: string
+    +phone: string
+    +is_active: bool
+    +attendances(): HasMany
+  }
+  class Attendance <<entity>> {
+    +id: bigint
+    +staff_id: bigint
+    +date: date
+    +clock_in: datetime
+    +clock_out: datetime
+    +status: string
+    +staff(): BelongsTo
+  }
+  class Cashflow <<entity>> {
+    +id: bigint
+    +date: date
+    +type: string
+    +category: string
+    +amount: int
+    +source: string
+    +notes: text
+  }
+  class AuditLog <<entity>> {
+    +id: bigint
+    +user_id: bigint
+    +subject_type: string
+    +subject_id: bigint
+    +action: string
+    +metadata: array
+    +user(): BelongsTo
+    +subject(): MorphTo
+  }
+}
+
+User "1" -- "0..1" Customer : memiliki
+User "1" -- "0..*" Transaction : memproses sebagai kasir
+User "1" -- "0..*" Complaint : menangani
+User "1" -- "0..*" AuditLog : membuat
+Customer "1" -- "0..*" Transaction : melakukan
+Customer "1" -- "0..*" Complaint : mengajukan
+Category "1" -- "0..*" Product : mengelompokkan
+Product "0..*" -- "0..*" Ingredient : resep {qty}
+Transaction "1" *-- "1..*" TransactionItem : terdiri dari
+Product "1" -- "0..*" TransactionItem : dipesan pada
+Supplier "1" -- "0..*" Purchase : memasok
+Purchase "1" *-- "1..*" PurchaseItem : terdiri dari
+Ingredient "1" -- "0..*" PurchaseItem : dibeli pada
+Transaction "1" -- "0..*" SalesReturn : diretur melalui
+Customer "1" -- "0..*" SalesReturn : pemilik
+SalesReturn "1" *-- "1..*" SalesReturnItem : terdiri dari
+Product "1" -- "0..*" SalesReturnItem : dikembalikan
+Purchase "1" -- "0..*" PurchaseReturn : diretur melalui
+Supplier "1" -- "0..*" PurchaseReturn : tujuan retur
+PurchaseReturn "1" *-- "1..*" PurchaseReturnItem : terdiri dari
+Ingredient "1" -- "0..*" PurchaseReturnItem : dikembalikan
+Staff "1" *-- "0..*" Attendance : memiliki
+AuditLog "0..*" --> "0..1" Transaction : subject polymorphic
+AuditLog "0..*" --> "0..1" Purchase : subject polymorphic
+AuditLog "0..*" --> "0..1" Complaint : subject polymorphic
+
+CheckoutController ..> Transaction
+CheckoutController ..> TransactionItem
+CheckoutController ..> MidtransService
+CartController ..> Product
+OrderController ..> Transaction
+OrderController ..> MidtransService
+MidtransNotificationController ..> Transaction
+MidtransNotificationController ..> MidtransService
+OrderApprovalController ..> Transaction
+OrderBoardController ..> Transaction
+AttendanceSelfController ..> Attendance
+AttendanceSelfController ..> Staff
+MemberController ..> Customer
+MemberController ..> Complaint
+MemberController ..> MemberStats
+MemberStats ..> Transaction
+AuditLogger ..> AuditLog
+BestSellerUpdater ..> Product
+BestSellerUpdater ..> TransactionItem
+Transaction ..> AuditLogger
+Transaction ..> BestSellerUpdater
+Transaction ..> Cashflow : mencatat pemasukan
+Purchase ..> AuditLogger
+Purchase ..> Cashflow : mencatat pengeluaran
+SalesReturn ..> AuditLogger
+PurchaseReturn ..> AuditLogger
+Complaint ..> AuditLogger
+
+legend right
+  |= Notasi |= Arti |
+  | + | public |
+  | # | protected |
+  | - | private |
+  | *-- | composition |
+  | -- | association |
+  | ..> | dependency/pemanggilan |
+endlegend
+@enduml

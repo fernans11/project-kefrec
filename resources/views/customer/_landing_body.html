@@ -11,7 +11,8 @@
           <section class="card menu-section">
             <div class="card-header">
               <h3 class="card-title">
-                ☕ Menu Kami
+                <span data-lucide="coffee"></span>
+                Menu Kami
               </h3>
               <p class="card-subtitle">Pilih menu favorit Anda</p>
             </div>
@@ -39,7 +40,7 @@
         <div class="cart-card">
           <div class="cart-header">
             <div class="cart-title">
-              <span class="cart-icon">🛒</span>
+              <span class="cart-icon" data-lucide="shopping-cart"></span>
               <span>Keranjang</span>
             </div>
             <div class="cart-count" id="cart-count">0</div>
@@ -55,7 +56,8 @@
               <span class="cart-total-value" id="cart-total">Rp 0</span>
             </div>
             <button class="btn btn-red cart-checkout-btn" type="button" id="btn-checkout">
-              ☐ Checkout Sekarang
+              <span data-lucide="check-square"></span>
+              Checkout Sekarang
             </button>
           </div>
         </div>
@@ -67,7 +69,7 @@
 <!-- FLOATING CART BAR (MOBILE) -->
 <div class="mobile-cart-bar" id="mobile-cart-bar">
   <div class="mobile-cart-left">
-    <div class="mobile-cart-icon">🛒</div>
+    <div class="mobile-cart-icon" data-lucide="shopping-cart"></div>
     <div class="mobile-cart-info">
       <span class="mobile-cart-items" id="mobile-cart-items">0 Item</span>
       <span class="mobile-cart-price" id="mobile-cart-price">Rp 0</span>
@@ -81,7 +83,9 @@
 <!-- MODAL CHECKOUT -->
 <div class="modal-backdrop" id="checkout-overlay" aria-hidden="true">
   <div class="modal-card" id="checkout-modal-card">
-    <button class="modal-close" type="button" id="btn-close-checkout">✕</button>
+    <button class="modal-close" type="button" id="btn-close-checkout" aria-label="Tutup">
+      <span data-lucide="x"></span>
+    </button>
 
     <div class="modal-header">
       <div class="modal-title">Checkout</div>
@@ -90,6 +94,7 @@
       </p>
     </div>
 
+    <div class="checkout-scroll">
     <div class="checkout-section">
       <div class="section-title">Item Pesanan:</div>
       <div class="checkout-items" id="checkout-items">
@@ -119,7 +124,7 @@
       <div class="payment-method-group">
         <button class="payment-method-btn" type="button" data-method="cash">
           <div class="payment-method-top">
-            <div class="payment-method-icon">💵</div>
+            <div class="payment-method-icon" data-lucide="banknote"></div>
             <div class="payment-method-label">Tunai</div>
           </div>
           <div class="payment-method-desc">Bayar langsung di kasir</div>
@@ -127,7 +132,7 @@
 
         <button class="payment-method-btn" type="button" data-method="qris">
           <div class="payment-method-top">
-            <div class="payment-method-icon">▢</div>
+            <div class="payment-method-icon" data-lucide="qrcode"></div>
             <div class="payment-method-label">QRIS</div>
           </div>
           <div class="payment-method-desc">Bayar melalui Midtrans Snap</div>
@@ -135,7 +140,7 @@
 
         <button class="payment-method-btn" type="button" data-method="transfer">
           <div class="payment-method-top">
-            <div class="payment-method-icon">🏦</div>
+            <div class="payment-method-icon" data-lucide="landmark"></div>
             <div class="payment-method-label">Transfer Bank</div>
           </div>
           <div class="payment-method-desc">BCA VA atau Mandiri Bill via Midtrans</div>
@@ -144,14 +149,16 @@
     </div>
 
     <div class="checkout-section">
-      <div class="checkout-form-group">
-        <label class="checkout-label" for="checkout-name">Nama Pelanggan (Opsional)</label>
+      <div class="checkout-form-group" id="checkout-name-group">
+        <label class="checkout-label" for="checkout-name">Nama Pelanggan</label>
         <input class="checkout-input" id="checkout-name" type="text" placeholder="Masukkan nama Anda">
       </div>
       <div class="checkout-form-group">
-        <label class="checkout-label" for="checkout-phone">Nomor Telepon (Opsional)</label>
-        <input class="checkout-input" id="checkout-phone" type="text" placeholder="Untuk notifikasi pesanan">
+        <label class="checkout-label" for="checkout-table">Nomor Meja</label>
+        <input class="checkout-input" id="checkout-table" type="text" placeholder="Contoh: 5 atau A2">
       </div>
+    </div>
+
     </div>
 
     <div class="checkout-actions">
@@ -166,7 +173,9 @@
 <!-- MODAL QRIS -->
 <div class="modal-backdrop" id="qris-modal" aria-hidden="true">
   <div class="modal-card">
-    <button class="modal-close" type="button" id="btn-close-qris">✕</button>
+    <button class="modal-close" type="button" id="btn-close-qris" aria-label="Tutup">
+      <span data-lucide="x"></span>
+    </button>
 
     <div class="modal-header">
       <div class="modal-title">Pembayaran QRIS</div>
@@ -210,7 +219,9 @@
 <!-- MODAL TRANSFER BANK -->
 <div class="modal-backdrop" id="transfer-modal" aria-hidden="true">
   <div class="modal-card">
-    <button class="modal-close" type="button" id="btn-close-transfer">✕</button>
+    <button class="modal-close" type="button" id="btn-close-transfer" aria-label="Tutup">
+      <span data-lucide="x"></span>
+    </button>
 
     <div class="modal-header">
       <div class="modal-title">Transfer Bank</div>
@@ -259,9 +270,11 @@
 <!-- MODAL PEMBAYARAN BERHASIL -->
 <div class="modal-backdrop" id="payment-success-modal" aria-hidden="true">
   <div class="modal-card success-modal-card">
-    <button class="modal-close" type="button" id="btn-close-success">✕</button>
+    <button class="modal-close" type="button" id="btn-close-success" aria-label="Tutup">
+      <span data-lucide="x"></span>
+    </button>
 
-    <div class="success-icon-circle">✔</div>
+    <div class="success-icon-circle" data-lucide="check"></div>
     <div class="success-title">Pembayaran Berhasil!</div>
     <div class="success-subtitle">Pesanan Anda telah dikonfirmasi.</div>
 

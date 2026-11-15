@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe Dashboard Admin - KeFrec</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eeeeee;
+      color: #111111;
+    }
+
+    .canvas {
+      min-height: 100vh;
+      padding: 28px;
+      display: grid;
+      place-items: start center;
+      overflow-x: auto;
+    }
+
+    .artboard-title {
+      width: 1180px;
+      color: #b9b9b9;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .artboard {
+      width: 1180px;
+      min-height: 900px;
+      background: #ffffff;
+      border: 1px solid #e7e7e7;
+      display: grid;
+      grid-template-rows: 70px 1fr;
+    }
+
+    .topbar {
+      border-bottom: 1px solid #cfcfcf;
+      display: grid;
+      grid-template-columns: 260px 1fr 44px;
+      align-items: center;
+      padding: 0 18px;
+      gap: 18px;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border: 2px solid #111111;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .avatar::before {
+      content: "";
+      position: absolute;
+      top: 7px;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      background: #111111;
+      border-radius: 50%;
+      transform: translateX(-50%);
+    }
+
+    .avatar::after {
+      content: "";
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      width: 22px;
+      height: 13px;
+      background: #111111;
+      border-radius: 50% 50% 40% 40%;
+      transform: translateX(-50%);
+    }
+
+    .body {
+      display: grid;
+      grid-template-columns: 285px 1fr;
+      min-height: 830px;
+    }
+
+    .sidebar {
+      border-right: 1px solid #cfcfcf;
+      padding: 22px 16px;
+      display: grid;
+      align-content: start;
+      gap: 28px;
+    }
+
+    .nav-active {
+      height: 38px;
+      border: 1px solid #111111;
+      border-radius: 7px;
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 0 10px;
+    }
+
+    .nav-section {
+      display: grid;
+      gap: 13px;
+    }
+
+    .section-title {
+      display: grid;
+      grid-template-columns: 1fr 14px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .nav-item {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding-left: 4px;
+    }
+
+    .icon-box {
+      width: 16px;
+      height: 16px;
+      border: 1px solid #111111;
+      position: relative;
+    }
+
+    .icon-box::before,
+    .icon-box::after {
+      content: "";
+      position: absolute;
+      top: 7px;
+      left: 2px;
+      width: 10px;
+      height: 1px;
+      background: #777777;
+    }
+
+    .icon-box::before {
+      transform: rotate(45deg);
+    }
+
+    .icon-box::after {
+      transform: rotate(-45deg);
+    }
+
+    .chevron {
+      width: 9px;
+      height: 9px;
+      border-right: 1.5px solid #111111;
+      border-bottom: 1.5px solid #111111;
+      transform: rotate(-135deg);
+      justify-self: end;
+    }
+
+    .content-shell {
+      padding: 34px 34px 40px;
+    }
+
+    .content {
+      width: 760px;
+      margin: 0 auto;
+      display: grid;
+      gap: 22px;
+    }
+
+    .page-title {
+      font-size: 30px;
+      font-weight: 700;
+      margin: 0 0 10px;
+    }
+
+    .top-widgets {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    .wide-card,
+    .stat-card,
+    .panel {
+      border: 1px solid #9f9f9f;
+      background: #ffffff;
+    }
+
+    .wide-card {
+      min-height: 86px;
+      padding: 18px;
+      display: grid;
+      align-content: center;
+      gap: 8px;
+    }
+
+    .account-card {
+      display: grid;
+      grid-template-columns: 42px 1fr 92px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .mini-avatar {
+      width: 42px;
+      height: 42px;
+      border: 2px solid #111111;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .outline-button {
+      height: 38px;
+      border: 1px solid #111111;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .filament-card {
+      display: grid;
+      grid-template-columns: 1fr 130px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .stats-grid.two {
+      grid-template-columns: repeat(2, 1fr);
+      width: calc((100% - 22px) / 3 * 2 + 22px);
+    }
+
+    .stat-card {
+      min-height: 114px;
+      padding: 22px 18px;
+      display: grid;
+      gap: 15px;
+      align-content: center;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      min-height: 310px;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+    }
+
+    .panel-header {
+      padding: 16px 18px;
+      border-bottom: 1px solid #cfcfcf;
+      display: grid;
+      grid-template-columns: 1fr 96px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .panel-tools {
+      padding: 10px 18px;
+      border-bottom: 1px solid #cfcfcf;
+      display: grid;
+      grid-template-columns: 1fr 150px 26px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search {
+      height: 32px;
+      border: 1px solid #777777;
+      border-radius: 7px;
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 0 10px;
+    }
+
+    .search-icon {
+      width: 12px;
+      height: 12px;
+      border: 1.5px solid #111111;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .search-icon::after {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 1.5px;
+      background: #111111;
+      right: -5px;
+      bottom: -3px;
+      transform: rotate(45deg);
+    }
+
+    .table {
+      display: grid;
+      align-content: start;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr .8fr .8fr;
+      gap: 12px;
+      padding: 13px 18px;
+      border-bottom: 1px solid #cfcfcf;
+      align-items: center;
+    }
+
+    .row.stock {
+      grid-template-columns: 1.5fr .8fr .8fr;
+    }
+
+    .chart-area {
+      height: 230px;
+      margin: 28px 26px 18px 48px;
+      border-left: 1.5px solid #111111;
+      border-bottom: 1.5px solid #111111;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .grid-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #d2d2d2;
+    }
+
+    .g1 { top: 20%; }
+    .g2 { top: 40%; }
+    .g3 { top: 60%; }
+    .g4 { top: 80%; }
+
+    .chart-line {
+      position: absolute;
+      left: 18px;
+      right: 24px;
+      height: 5px;
+      border-radius: 999px;
+      background: #111111;
+      bottom: 62px;
+      transform: rotate(-17deg);
+      transform-origin: left center;
+    }
+
+    .chart-line.secondary {
+      background: #777777;
+      top: 70px;
+      transform: rotate(23deg);
+      opacity: .72;
+    }
+
+    .pie-area {
+      min-height: 460px;
+      display: grid;
+      place-items: center;
+      padding: 26px;
+    }
+
+    .pie {
+      width: 300px;
+      height: 300px;
+      border: 2px solid #111111;
+      border-radius: 50%;
+      position: relative;
+      background:
+        linear-gradient(35deg, transparent 49%, #111111 50%, transparent 51%),
+        linear-gradient(95deg, transparent 49%, #111111 50%, transparent 51%);
+    }
+
+    .pie::after {
+      content: "";
+      position: absolute;
+      inset: 122px;
+      border: 1.5px solid #111111;
+      border-radius: 50%;
+      background: #ffffff;
+    }
+
+    .low-stock {
+      grid-column: 1 / -1;
+      min-height: 270px;
+    }
+
+    .empty-state {
+      min-height: 150px;
+      display: grid;
+      place-items: center;
+      border-bottom: 1px solid #cfcfcf;
+    }
+
+    .empty-circle {
+      width: 42px;
+      height: 42px;
+      border: 1px solid #111111;
+      border-radius: 50%;
+      position: relative;
+      margin: 0 auto 12px;
+    }
+
+    .empty-circle::before,
+    .empty-circle::after {
+      content: "";
+      position: absolute;
+      top: 19px;
+      left: 10px;
+      width: 20px;
+      height: 1.5px;
+      background: #111111;
+    }
+
+    .empty-circle::before {
+      transform: rotate(45deg);
+    }
+
+    .empty-circle::after {
+      transform: rotate(-45deg);
+    }
+
+    .footer-control {
+      height: 54px;
+      display: grid;
+      place-items: center;
+    }
+
+    .select-small {
+      width: 105px;
+      height: 32px;
+      border: 1px solid #111111;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .line {
+      height: 2px;
+      background: #111111;
+      border-radius: 999px;
+    }
+
+    .line.bold {
+      height: 5px;
+    }
+
+    .line.light {
+      height: 1px;
+      background: #b7b7b7;
+    }
+
+    .w-32 { width: 32px; }
+    .w-44 { width: 44px; }
+    .w-56 { width: 56px; }
+    .w-70 { width: 70px; }
+    .w-86 { width: 86px; }
+    .w-104 { width: 104px; }
+    .w-124 { width: 124px; }
+    .w-148 { width: 148px; }
+    .w-172 { width: 172px; }
+    .w-full { width: 100%; }
+
+    @media (max-width: 1240px) {
+      .canvas {
+        place-items: start;
+      }
+
+      .artboard-title,
+      .artboard {
+        min-width: 1180px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="canvas">
+    <section>
+      <div class="artboard-title">Desktop - Dashboard Admin Saat Ini</div>
+
+      <div class="artboard">
+        <header class="topbar">
+          <div class="brand-title">Laravel</div>
+          <div class="top-actions"></div>
+          <div class="avatar"></div>
+        </header>
+
+        <div class="body">
+          <aside class="sidebar">
+            <div class="nav-active">
+              <div class="icon-box"></div>
+              <div class="line bold w-86"></div>
+            </div>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-86"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-104"></div></div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-86"></div></div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-70"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-124"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-86"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-70"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-86"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-86"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-124"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-56"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-104"></div></div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-104"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-70"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-86"></div></div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-86"></div></div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-104"></div></div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-124"></div></div>
+            </section>
+          </aside>
+
+          <section class="content-shell">
+            <div class="content">
+              <h1 class="page-title">Dashboard</h1>
+
+              <section class="top-widgets">
+                <div class="wide-card account-card">
+                  <div class="mini-avatar">F</div>
+                  <div>
+                    <div class="line bold w-86"></div>
+                    <div style="height:9px"></div>
+                    <div class="line light w-70"></div>
+                  </div>
+                  <div class="outline-button">Sign out</div>
+                </div>
+
+                <div class="wide-card filament-card">
+                  <div>
+                    <div class="line bold w-104"></div>
+                    <div style="height:9px"></div>
+                    <div class="line light w-56"></div>
+                  </div>
+                  <div>
+                    <div class="line bold w-104"></div>
+                    <div style="height:9px"></div>
+                    <div class="line bold w-70"></div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="stats-grid">
+                <div class="stat-card">
+                  <div class="line light w-104"></div>
+                  <div class="line bold w-124"></div>
+                </div>
+                <div class="stat-card">
+                  <div class="line light w-104"></div>
+                  <div class="line bold w-124"></div>
+                </div>
+                <div class="stat-card">
+                  <div class="line light w-86"></div>
+                  <div class="line bold w-124"></div>
+                </div>
+              </section>
+
+              <section class="stats-grid">
+                <div class="stat-card">
+                  <div class="line light w-104"></div>
+                  <div class="line bold w-44"></div>
+                </div>
+                <div class="stat-card">
+                  <div class="line light w-124"></div>
+                  <div class="line bold w-124"></div>
+                </div>
+                <div class="stat-card">
+                  <div class="line light w-104"></div>
+                  <div class="line bold w-32"></div>
+                </div>
+              </section>
+
+              <section class="stats-grid two">
+                <div class="stat-card">
+                  <div class="line light w-104"></div>
+                  <div class="line bold w-32"></div>
+                </div>
+                <div class="stat-card">
+                  <div class="line light w-86"></div>
+                  <div class="line bold w-32"></div>
+                </div>
+              </section>
+
+              <section class="dashboard-grid">
+                <div class="panel">
+                  <div class="panel-header">
+                    <div class="line bold w-124"></div>
+                    <div></div>
+                  </div>
+                  <div class="panel-tools">
+                    <div></div>
+                    <div class="search">
+                      <div class="search-icon"></div>
+                      <div class="line light w-70"></div>
+                    </div>
+                    <div class="icon-box"></div>
+                  </div>
+                  <div class="table">
+                    <div class="row">
+                      <div class="line bold w-56"></div>
+                      <div class="line bold w-70"></div>
+                      <div class="line bold w-56"></div>
+                      <div class="line bold w-44"></div>
+                    </div>
+                    <div class="row">
+                      <div class="line light w-104"></div>
+                      <div class="line light w-86"></div>
+                      <div class="line light w-86"></div>
+                      <div class="line light w-70"></div>
+                    </div>
+                    <div class="row">
+                      <div class="line light w-104"></div>
+                      <div class="line light w-86"></div>
+                      <div class="line light w-56"></div>
+                      <div class="line light w-70"></div>
+                    </div>
+                    <div class="row">
+                      <div class="line light w-104"></div>
+                      <div class="line light w-86"></div>
+                      <div class="line light w-70"></div>
+                      <div class="line light w-70"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="panel">
+                  <div class="panel-header">
+                    <div class="line bold w-124"></div>
+                    <div class="outline-button">7 Hari</div>
+                  </div>
+                  <div></div>
+                  <div class="chart-area">
+                    <div class="grid-line g1"></div>
+                    <div class="grid-line g2"></div>
+                    <div class="grid-line g3"></div>
+                    <div class="grid-line g4"></div>
+                    <div class="chart-line"></div>
+                    <div class="chart-line secondary"></div>
+                  </div>
+                </div>
+
+                <div class="panel">
+                  <div class="panel-header">
+                    <div class="line bold w-148"></div>
+                    <div class="outline-button">7 Hari</div>
+                  </div>
+                  <div></div>
+                  <div class="pie-area">
+                    <div class="pie"></div>
+                  </div>
+                </div>
+
+                <div class="panel low-stock">
+                  <div class="panel-header">
+                    <div class="line bold w-148"></div>
+                    <div></div>
+                  </div>
+                  <div class="panel-tools">
+                    <div></div>
+                    <div class="search">
+                      <div class="search-icon"></div>
+                      <div class="line light w-70"></div>
+                    </div>
+                    <div></div>
+                  </div>
+                  <div class="empty-state">
+                    <div>
+                      <div class="empty-circle"></div>
+                      <div class="line bold w-86"></div>
+                    </div>
+                  </div>
+                  <div class="footer-control">
+                    <div class="select-small">Per page 5</div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

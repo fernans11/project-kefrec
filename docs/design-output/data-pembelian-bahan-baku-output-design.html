@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Output Data Pembelian Bahan Baku</title>
+    <style>
+        :root {
+            --bg: #09090b;
+            --panel: #18181b;
+            --panel-soft: #1f1f23;
+            --border: #2f2f35;
+            --text: #f8fafc;
+            --muted: #a1a1aa;
+            --line: #3f3f46;
+            --yellow: #f5b400;
+            --green: #22c55e;
+            --red: #ef4444;
+            --blue: #38bdf8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f3f4f6;
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .figure {
+            width: 1200px;
+            min-height: 760px;
+            margin: 24px auto;
+            background: var(--bg);
+            border: 1px solid #d4d4d8;
+            overflow: hidden;
+        }
+
+        .topbar {
+            height: 64px;
+            background: #18181b;
+            border-bottom: 1px solid #2b2b31;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 22px;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #020204;
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            font-size: 13px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 272px 1fr;
+            min-height: 696px;
+        }
+
+        .sidebar {
+            background: #09090b;
+            border-right: 1px solid #2b2b31;
+            padding: 22px 14px;
+        }
+
+        .group {
+            margin-bottom: 24px;
+        }
+
+        .group-title {
+            color: #b8b8c2;
+            font-size: 14px;
+            margin: 0 6px 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .nav-item {
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 10px;
+            margin-bottom: 4px;
+            border-radius: 7px;
+            color: #f4f4f5;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .nav-item.active {
+            background: #18181b;
+            color: var(--yellow);
+        }
+
+        .icon {
+            width: 18px;
+            height: 18px;
+            border: 1.7px solid currentColor;
+            border-radius: 3px;
+        }
+
+        .main {
+            padding: 32px 44px 40px;
+        }
+
+        .breadcrumb {
+            color: #cbd5e1;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 26px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: -0.02em;
+        }
+
+        .btn-create {
+            background: var(--yellow);
+            color: #111;
+            border: 0;
+            border-radius: 8px;
+            padding: 11px 16px;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .summary-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 17px 18px;
+        }
+
+        .summary-card p {
+            margin: 0 0 10px;
+            color: #bfc5d4;
+            font-size: 13px;
+        }
+
+        .summary-card strong {
+            font-size: 23px;
+            line-height: 1;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .panel-head {
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 10px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .control {
+            height: 36px;
+            border: 1px solid #4b4b54;
+            background: #242428;
+            color: #a1a1aa;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 12px;
+            font-size: 14px;
+        }
+
+        .search {
+            width: 220px;
+        }
+
+        .columns {
+            width: 36px;
+            justify-content: center;
+            padding: 0;
+            color: #9ca3af;
+            font-weight: 900;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 16px 22px;
+            border-bottom: 1px solid #2b2b31;
+            text-align: left;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #26262a;
+            color: #f8fafc;
+            font-size: 13px;
+        }
+
+        td {
+            font-weight: 650;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .checkbox {
+            width: 17px;
+            height: 17px;
+            border: 1px solid #555762;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 7px;
+            padding: 5px 9px;
+            font-size: 12px;
+            font-weight: 800;
+            border: 1px solid;
+        }
+
+        .badge.green {
+            color: #86efac;
+            background: rgba(34, 197, 94, 0.14);
+            border-color: rgba(34, 197, 94, 0.35);
+        }
+
+        .badge.yellow {
+            color: #facc15;
+            background: rgba(250, 204, 21, 0.13);
+            border-color: rgba(250, 204, 21, 0.34);
+        }
+
+        .badge.red {
+            color: #fca5a5;
+            background: rgba(239, 68, 68, 0.13);
+            border-color: rgba(239, 68, 68, 0.34);
+        }
+
+        .actions {
+            color: var(--yellow);
+            display: flex;
+            gap: 12px;
+            font-weight: 800;
+        }
+
+        .actions .disabled {
+            color: #52525b;
+        }
+
+        .panel-foot {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            min-height: 56px;
+            padding: 10px 22px;
+            color: #f8fafc;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .per-page {
+            border: 1px solid #474751;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            color: #bfc5d4;
+            background: #242428;
+        }
+
+        .per-page span {
+            padding: 9px 13px;
+            border-right: 1px solid #474751;
+        }
+
+        .per-page strong {
+            padding: 9px 14px;
+            color: #f8fafc;
+        }
+
+        .note {
+            margin-top: 18px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 20px;
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+        .caption {
+            text-align: center;
+            color: #111827;
+            font-weight: 700;
+            font-size: 15px;
+            margin-top: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="figure">
+        <header class="topbar">
+            <div class="brand">Laravel</div>
+            <div class="avatar">F</div>
+        </header>
+
+        <div class="layout">
+            <aside class="sidebar">
+                <section class="group">
+                    <div class="group-title">Dashboard <span>^</span></div>
+                    <div class="nav-item"><span class="icon"></span> Dashboard</div>
+                </section>
+
+                <section class="group">
+                    <div class="group-title">Master Data <span>^</span></div>
+                    <div class="nav-item"><span class="icon"></span> Produk / Menu</div>
+                    <div class="nav-item"><span class="icon"></span> Bahan Baku</div>
+                    <div class="nav-item"><span class="icon"></span> Supplier</div>
+                </section>
+
+                <section class="group">
+                    <div class="group-title">Manajemen Transaksi <span>^</span></div>
+                    <div class="nav-item"><span class="icon"></span> Transaksi</div>
+                </section>
+
+                <section class="group">
+                    <div class="group-title">Keuangan <span>^</span></div>
+                    <div class="nav-item"><span class="icon"></span> Keuangan</div>
+                </section>
+
+                <section class="group">
+                    <div class="group-title">Pembelian <span>^</span></div>
+                    <div class="nav-item active"><span class="icon"></span> Pembelian Bahan Baku</div>
+                </section>
+
+                <section class="group">
+                    <div class="group-title">Retur <span>^</span></div>
+                    <div class="nav-item"><span class="icon"></span> Retur Penjualan</div>
+                    <div class="nav-item"><span class="icon"></span> Retur Pembelian</div>
+                </section>
+            </aside>
+
+            <main class="main">
+                <div class="breadcrumb">Pembelian &nbsp; &gt; &nbsp; List</div>
+                <div class="title-row">
+                    <h1>Pembelian Bahan Baku</h1>
+                    <button class="btn-create">+ Create</button>
+                </div>
+
+                <section class="summary">
+                    <div class="summary-card">
+                        <p>Total Pembelian</p>
+                        <strong>4</strong>
+                    </div>
+                    <div class="summary-card">
+                        <p>Draf</p>
+                        <strong>1</strong>
+                    </div>
+                    <div class="summary-card">
+                        <p>Diterima</p>
+                        <strong>2</strong>
+                    </div>
+                    <div class="summary-card">
+                        <p>Total Nilai</p>
+                        <strong>IDR 376,528,000</strong>
+                    </div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-head">
+                        <div class="control search">Search</div>
+                        <div class="control">Status: Semua</div>
+                        <div class="control columns">|||</div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 54px;"><span class="checkbox"></span></th>
+                                <th>Nomor PO</th>
+                                <th>Supplier</th>
+                                <th>Status</th>
+                                <th>Total</th>
+                                <th>Tanggal</th>
+                                <th style="width: 150px;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="checkbox"></span></td>
+                                <td>PO-260710-A8K2LM</td>
+                                <td>CV Sumber Kopi Nusantara</td>
+                                <td><span class="badge green">Diterima</span></td>
+                                <td>IDR 375,432,000.00</td>
+                                <td>10 Jul 2026</td>
+                                <td><div class="actions"><span>Ubah</span><span class="disabled">Hapus</span></div></td>
+                            </tr>
+                            <tr>
+                                <td><span class="checkbox"></span></td>
+                                <td>PO-260709-B4K2QP</td>
+                                <td>PT Fresh Milk Bandung</td>
+                                <td><span class="badge yellow">Draf</span></td>
+                                <td>IDR 432,000.00</td>
+                                <td>09 Jul 2026</td>
+                                <td><div class="actions"><span>Ubah</span><span>Hapus</span></div></td>
+                            </tr>
+                            <tr>
+                                <td><span class="checkbox"></span></td>
+                                <td>PO-260708-M8PQ2L</td>
+                                <td>UD Kemasan Jaya</td>
+                                <td><span class="badge red">Dibatalkan</span></td>
+                                <td>IDR 120,000.00</td>
+                                <td>08 Jul 2026</td>
+                                <td><div class="actions"><span>Ubah</span><span>Hapus</span></div></td>
+                            </tr>
+                            <tr>
+                                <td><span class="checkbox"></span></td>
+                                <td>PO-260707-QP82MN</td>
+                                <td>CV Gula Aren Mandiri</td>
+                                <td><span class="badge green">Diterima</span></td>
+                                <td>IDR 544,000.00</td>
+                                <td>07 Jul 2026</td>
+                                <td><div class="actions"><span>Ubah</span><span class="disabled">Hapus</span></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="panel-foot">
+                        <div>Showing 1 to 4 of 4 results</div>
+                        <div class="per-page"><span>Per page</span><strong>10</strong></div>
+                        <div></div>
+                    </div>
+                </section>
+
+                <section class="note">
+                    Halaman output data pembelian bahan baku menampilkan daftar transaksi pembelian dari supplier.
+                    Informasi utama yang ditampilkan meliputi nomor PO, nama supplier, status pembelian, total biaya,
+                    tanggal pembelian, serta aksi untuk mengubah atau menghapus data sesuai kondisi transaksi.
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <div class="caption">Gambar 5.35 Halaman Output Data Pembelian Bahan Baku</div>
+</body>
+</html>

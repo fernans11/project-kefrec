@@ -10,8 +10,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class IngredientResource extends Resource
 {
@@ -79,10 +77,10 @@ class IngredientResource extends Resource
                     ->label('Min Stok')
                     ->sortable()
                     ->formatStateUsing(fn ($state, $record) => rtrim(rtrim(number_format((float) $state, 2, ',', '.'), '0'), ',') . ' ' . $record->unit),
-                Tables\Columns\IconColumn::make('low_stock')
+                Tables\Columns\IconColumn::make('is_low_stock')
                     ->label('Menipis')
                     ->boolean()
-                    ->getStateUsing(fn ($record) => (float) $record->stock <= (float) $record->min_stock),
+                    ->getStateUsing(fn (Ingredient $record): bool => (float) $record->stock <= (float) $record->min_stock),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Update')
                     ->dateTime('d M Y H:i')

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Data Pelanggan - Laravel</title>
+  <style>
+    :root {
+      --page: #09090b;
+      --topbar: #18181b;
+      --sidebar: #09090b;
+      --panel: #18181b;
+      --panel-2: #242427;
+      --border: #2e2e33;
+      --border-2: #3f3f46;
+      --text: #ffffff;
+      --muted: #a1a1aa;
+      --yellow: #f5b800;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #eeeeee;
+      font-family: Arial, "Segoe UI", sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .figure {
+      width: 1180px;
+      background: #ffffff;
+      padding: 18px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, .16);
+    }
+
+    .caption {
+      color: #111111;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .app {
+      min-height: 760px;
+      color: var(--text);
+      background: var(--page);
+      border: 1px solid #d7d7d7;
+      overflow: visible;
+      display: grid;
+      grid-template-rows: 64px 1fr;
+    }
+
+    .topbar {
+      background: var(--topbar);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+
+    .brand { font-size: 20px; font-weight: 800; }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #050506;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 275px 1fr;
+      min-height: 0;
+    }
+
+    .sidebar {
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      padding: 22px 14px;
+      overflow: visible;
+    }
+
+    .nav-group { margin-bottom: 24px; }
+
+    .nav-head {
+      height: 28px;
+      padding: 0 8px;
+      color: var(--muted);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-head::after {
+      content: "^";
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .nav-item {
+      height: 40px;
+      border-radius: 8px;
+      padding: 0 10px;
+      color: #f4f4f5;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    .nav-item.active {
+      background: var(--panel);
+      color: var(--yellow);
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      border: 1.7px solid currentColor;
+      border-radius: 4px;
+      flex: 0 0 auto;
+      opacity: .95;
+    }
+
+    .content {
+      padding: 32px 0 60px;
+      overflow: visible;
+    }
+
+    .content-inner {
+      width: 760px;
+      max-width: calc(100% - 92px);
+      margin: 0 auto;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #b9c7e7;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .breadcrumb span:last-child { color: #d4d4d8; }
+
+    h1 {
+      font-size: 30px;
+      line-height: 1;
+      margin-bottom: 30px;
+      font-weight: 800;
+    }
+
+    .form-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 26px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      color: #e4e4e7;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .required {
+      color: var(--yellow);
+      margin-left: 2px;
+    }
+
+    input {
+      width: 100%;
+      background: var(--panel-2);
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      padding: 11px 12px;
+      height: 42px;
+    }
+
+    input[disabled] {
+      color: #d4d4d8;
+      opacity: 1;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .info-box {
+      grid-column: 1 / -1;
+      border: 1px solid rgba(245, 184, 0, .35);
+      background: rgba(245, 184, 0, .08);
+      color: #fde68a;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .actions {
+      margin-top: 28px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn {
+      height: 40px;
+      min-width: 92px;
+      border-radius: 8px;
+      border: 1px solid var(--border-2);
+      background: var(--panel);
+      color: #f4f4f5;
+      font-weight: 800;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .btn.primary {
+      min-width: 132px;
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: #151515;
+    }
+
+    .note {
+      color: #222222;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <section class="figure">
+    <div class="caption">Gambar 5.x Halaman Input Data Pelanggan</div>
+
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">Laravel</div>
+        <div class="avatar">F</div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <div class="nav-item"><span class="nav-icon"></span>Dashboard</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Master Data</div>
+            <div class="nav-item"><span class="nav-icon"></span>Produk / Menu</div>
+            <div class="nav-item"><span class="nav-icon"></span>Bahan Baku</div>
+            <div class="nav-item"><span class="nav-icon"></span>Supplier</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Pengguna</div>
+            <div class="nav-item"><span class="nav-icon"></span>Data Admin</div>
+            <div class="nav-item"><span class="nav-icon"></span>Data Owner</div>
+            <div class="nav-item"><span class="nav-icon"></span>Data Karyawan</div>
+            <div class="nav-item active"><span class="nav-icon"></span>Data Pelanggan</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Layanan</div>
+            <div class="nav-item"><span class="nav-icon"></span>Komplain</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Manajemen Pengguna</div>
+            <div class="nav-item"><span class="nav-icon"></span>Staff</div>
+            <div class="nav-item"><span class="nav-icon"></span>Absensi</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Sistem</div>
+            <div class="nav-item"><span class="nav-icon"></span>Audit Log</div>
+          </div>
+        </aside>
+
+        <main class="content">
+          <div class="content-inner">
+            <div class="breadcrumb">
+              <span>Pelanggan</span>
+              <span>&gt;</span>
+              <span>Edit</span>
+            </div>
+
+            <h1>Edit Pelanggan</h1>
+
+            <section class="form-card">
+              <div class="form-grid">
+                <div class="field">
+                  <label>Name<span class="required">*</span></label>
+                  <input type="text" value="Fadli Avianto">
+                  <div class="hint">Nama pelanggan.</div>
+                </div>
+
+                <div class="field">
+                  <label>Email</label>
+                  <input type="text" value="palimali@gmail.com">
+                  <div class="hint">Email pelanggan.</div>
+                </div>
+
+                <div class="field">
+                  <label>Phone</label>
+                  <input type="text" value="0812345676532">
+                  <div class="hint">Nomor telepon pelanggan.</div>
+                </div>
+
+                <div class="field">
+                  <label>Username</label>
+                  <input type="text" value="palimali" disabled>
+                  <div class="hint">Ditampilkan pada tabel pelanggan.</div>
+                </div>
+
+                <div class="info-box">
+                  Pada project, menu Data Pelanggan menggunakan resource pengguna pelanggan. Form admin mengelola nama, email, dan nomor telepon pelanggan.
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="btn">Cancel</button>
+                <button class="btn primary">Save changes</button>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <p class="note">
+      <strong>Keterangan:</strong> Halaman input data pelanggan digunakan untuk mengubah data pelanggan yang terdaftar.
+      Field yang tersedia sesuai sistem admin, yaitu name, email, dan phone.
+    </p>
+  </section>
+</body>
+</html>

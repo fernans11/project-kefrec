@@ -9,10 +9,12 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class OverviewStats extends BaseWidget
 {
+    protected static ?string $pollingInterval = '5s';
+
     protected function getStats(): array
     {
         $totalOrders = Transaction::count();
-        $totalRevenue = Transaction::sum('total');
+        $totalRevenue = Transaction::where('status', 'completed')->sum('total');
         $pendingCashier = Transaction::where('status', 'pending_cashier')->count();
         $processing = Transaction::where('status', 'processing')->count();
         $lowStock = Ingredient::whereColumn('stock', '<=', 'min_stock')->count();

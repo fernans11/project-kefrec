@@ -92,6 +92,12 @@ class CashflowResource extends Resource
                         'sales' => 'Penjualan',
                         default => $state,
                     }),
+                Tables\Columns\TextColumn::make('notes')
+                    ->label('Catatan')
+                    ->limit(80)
+                    ->tooltip(fn (?string $state): ?string => $state)
+                    ->wrap()
+                    ->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')->options([

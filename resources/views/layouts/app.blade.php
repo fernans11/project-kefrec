@@ -7,6 +7,15 @@
 
     <title>{{ config('app.name', 'KeFrec CoffeeShop') }}</title>
 
+    <script>
+        (function () {
+            try {
+                document.documentElement.dataset.theme = localStorage.getItem('kefrec-theme') || 'dark';
+            } catch (_) {
+                document.documentElement.dataset.theme = 'dark';
+            }
+        })();
+    </script>
     {{-- Reuse theme KeFrec --}}
     <link rel="stylesheet" href="{{ asset('css/customer-landing.css') }}">
 
@@ -29,7 +38,7 @@
         /* Make Jetstream content feel like KeFrec cards */
         .kefrec-auth .kefrec-card {
             background: var(--bg-card);
-            border: 1px solid #333;
+            border: 1px solid var(--border-dark);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-soft);
             overflow: hidden;
@@ -65,21 +74,41 @@
         .kefrec-auth input[type="tel"],
         .kefrec-auth select,
         .kefrec-auth textarea {
-            background: #2a2222 !important;
-            color: #fff !important;
+            background: var(--bg-input) !important;
+            color: var(--text-main) !important;
             border: 1px solid var(--border-dark) !important;
             border-radius: 10px !important;
         }
 
         .kefrec-auth label,
         .kefrec-auth .text-gray-700,
+        .kefrec-auth .text-gray-800,
         .kefrec-auth .text-gray-600,
         .kefrec-auth .text-gray-500 {
-            color: rgba(255,255,255,.85) !important;
+            color: var(--text-muted) !important;
+        }
+
+        .kefrec-auth h1,
+        .kefrec-auth h2,
+        .kefrec-auth h3,
+        .kefrec-auth table,
+        .kefrec-auth .text-gray-900 {
+            color: var(--text-main) !important;
+        }
+
+        .kefrec-auth .text-amber-600 {
+            color: var(--red-main) !important;
+        }
+
+        .kefrec-auth .border,
+        .kefrec-auth .border-b,
+        .kefrec-auth .border-t {
+            border-color: var(--border-dark) !important;
         }
 
         /* Primary buttons */
         .kefrec-auth button.bg-gray-800,
+        .kefrec-auth a.bg-gray-900,
         .kefrec-auth button.bg-indigo-600,
         .kefrec-auth a.bg-indigo-600 {
             background: var(--red-main) !important;
@@ -88,6 +117,7 @@
         }
 
         .kefrec-auth button.bg-gray-800:hover,
+        .kefrec-auth a.bg-gray-900:hover,
         .kefrec-auth button.bg-indigo-600:hover,
         .kefrec-auth a.bg-indigo-600:hover {
             background: var(--red-hover) !important;
@@ -104,7 +134,7 @@
 
         .kefrec-auth button.bg-white:hover,
         .kefrec-auth a.bg-white:hover {
-            background: #3a3a3a !important;
+            background: var(--bg-hover) !important;
         }
 
         /* Remove white panels feel */
@@ -137,6 +167,8 @@
     </div>
 
     @stack('modals')
+    <script src="{{ asset('js/lucide-icons.js') }}"></script>
+    <script src="{{ asset('js/theme-toggle.js') }}"></script>
     @livewireScripts
 </body>
 </html>

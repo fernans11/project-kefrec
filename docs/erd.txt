@@ -1,0 +1,24 @@
+Project Kefrec - Entity Relationship Diagram
+
+File PlantUML utama:
+docs/erd.puml
+
+Kalau file .puml tidak bisa dibuka langsung, buka dengan editor teks seperti VS Code, Notepad++, atau Notepad.
+Untuk preview visual, gunakan extension PlantUML di VS Code atau tempel isi docs/erd.puml ke online renderer PlantUML.
+
+Path absolut di mesin ini:
+C:\xampp\htdocs\project\project-kefrec\docs\erd.puml
+
+Ringkasan domain ERD:
+- Auth & Access Control: users, roles, permissions, model_has_roles, model_has_permissions, role_has_permissions, personal_access_tokens.
+- Customer & Menu: customers, categories, products, ingredients, ingredient_product.
+- Sales: transactions, transaction_items, sales_returns, sales_return_items.
+- Purchasing: suppliers, purchases, purchase_items, purchase_returns, purchase_return_items.
+- Operations: cashflows, complaints, audit_logs, staff, attendances.
+- Laravel System Tables: sessions, password_reset_tokens, cache, cache_locks, jobs, job_batches, failed_jobs.
+
+Catatan:
+- products.category_id hanya indexed di migration, belum punya constraint foreign key.
+- audit_logs.subject_type + subject_id adalah polymorphic reference.
+- personal_access_tokens.tokenable_type + tokenable_id adalah polymorphic reference.
+- cashflows.source dan notes menghubungkan event bisnis secara konvensi, bukan FK database.

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe Halaman Laporan - KeFrec</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eeeeee;
+      color: #111111;
+    }
+
+    .canvas {
+      min-height: 100vh;
+      padding: 28px;
+      display: grid;
+      place-items: start center;
+      overflow-x: auto;
+    }
+
+    .artboard-title {
+      width: 1180px;
+      color: #b9b9b9;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .artboard {
+      width: 1180px;
+      min-height: 900px;
+      background: #ffffff;
+      border: 1px solid #e7e7e7;
+      display: grid;
+      grid-template-rows: 70px 1fr;
+    }
+
+    .topbar {
+      border-bottom: 1px solid #cfcfcf;
+      display: grid;
+      grid-template-columns: 260px 1fr 44px;
+      align-items: center;
+      padding: 0 18px;
+      gap: 18px;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border: 2px solid #111111;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .avatar::before {
+      content: "";
+      position: absolute;
+      top: 7px;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      background: #111111;
+      border-radius: 50%;
+      transform: translateX(-50%);
+    }
+
+    .avatar::after {
+      content: "";
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      width: 22px;
+      height: 13px;
+      background: #111111;
+      border-radius: 50% 50% 40% 40%;
+      transform: translateX(-50%);
+    }
+
+    .body {
+      display: grid;
+      grid-template-columns: 285px 1fr;
+      min-height: 830px;
+    }
+
+    .sidebar {
+      border-right: 1px solid #cfcfcf;
+      padding: 22px 16px;
+      display: grid;
+      align-content: start;
+      gap: 28px;
+    }
+
+    .nav-active {
+      height: 38px;
+      border: 1px solid #111111;
+      border-radius: 7px;
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 0 10px;
+    }
+
+    .nav-section {
+      display: grid;
+      gap: 13px;
+    }
+
+    .section-title {
+      display: grid;
+      grid-template-columns: 1fr 14px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .nav-item {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding-left: 4px;
+    }
+
+    .icon-box {
+      width: 16px;
+      height: 16px;
+      border: 1px solid #111111;
+      position: relative;
+    }
+
+    .icon-box::before,
+    .icon-box::after {
+      content: "";
+      position: absolute;
+      top: 7px;
+      left: 2px;
+      width: 10px;
+      height: 1px;
+      background: #777777;
+    }
+
+    .icon-box::before {
+      transform: rotate(45deg);
+    }
+
+    .icon-box::after {
+      transform: rotate(-45deg);
+    }
+
+    .chevron {
+      width: 9px;
+      height: 9px;
+      border-right: 1.5px solid #111111;
+      border-bottom: 1.5px solid #111111;
+      transform: rotate(-135deg);
+      justify-self: end;
+    }
+
+    .content-shell {
+      padding: 34px 34px 40px;
+    }
+
+    .content {
+      width: 820px;
+      margin: 0 auto;
+      display: grid;
+      gap: 22px;
+    }
+
+    .page-head {
+      display: grid;
+      grid-template-columns: 1fr 150px;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .page-title {
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .button {
+      height: 38px;
+      border: 1px solid #111111;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      background: #ffffff;
+    }
+
+    .button.dark {
+      background: #111111;
+      color: #ffffff;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .tab {
+      height: 44px;
+      border: 1px solid #111111;
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 0 14px;
+    }
+
+    .tab.active {
+      background: #111111;
+    }
+
+    .tab.active .line,
+    .tab.active .icon-box {
+      background: #ffffff;
+      border-color: #ffffff;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .summary-card {
+      border: 1px solid #9f9f9f;
+      min-height: 90px;
+      padding: 14px 12px;
+      display: grid;
+      gap: 10px;
+      align-content: center;
+    }
+
+    .report-layout {
+      display: grid;
+      grid-template-columns: 1fr 250px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid #9f9f9f;
+      background: #ffffff;
+      min-height: 520px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+    }
+
+    .panel-header {
+      padding: 16px 18px;
+      border-bottom: 1px solid #cfcfcf;
+      display: grid;
+      grid-template-columns: 1fr 150px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .filters {
+      padding: 12px 18px;
+      border-bottom: 1px solid #cfcfcf;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 98px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .filter-box {
+      height: 34px;
+      border: 1px solid #777777;
+      display: grid;
+      align-items: center;
+      padding: 0 10px;
+    }
+
+    .table {
+      display: grid;
+      align-content: start;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: .95fr .82fr .9fr .8fr .8fr .9fr;
+      gap: 12px;
+      padding: 13px 18px;
+      border-bottom: 1px solid #cfcfcf;
+      align-items: center;
+    }
+
+    .row.attendance {
+      grid-template-columns: 1.35fr .7fr .7fr .7fr .7fr;
+    }
+
+    .footer-control {
+      height: 58px;
+      border-top: 1px solid #cfcfcf;
+      display: grid;
+      grid-template-columns: 150px 1fr 110px;
+      gap: 12px;
+      align-items: center;
+      padding: 0 18px;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .page-dot {
+      width: 26px;
+      height: 26px;
+      border: 1px solid #111111;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .side-panel {
+      border: 1px solid #9f9f9f;
+      padding: 14px;
+      display: grid;
+      gap: 18px;
+      align-content: start;
+      min-height: 520px;
+    }
+
+    .mini-chart {
+      height: 150px;
+      border-left: 1.5px solid #111111;
+      border-bottom: 1.5px solid #111111;
+      position: relative;
+      margin: 6px 8px 0 12px;
+    }
+
+    .bar-group {
+      position: absolute;
+      bottom: 0;
+      left: 18px;
+      right: 18px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      height: 130px;
+    }
+
+    .bar {
+      width: 24px;
+      border: 1px solid #111111;
+      background:
+        linear-gradient(to bottom right, transparent 47%, #999999 50%, transparent 53%),
+        linear-gradient(to top right, transparent 47%, #999999 50%, transparent 53%);
+    }
+
+    .b1 { height: 62px; }
+    .b2 { height: 118px; }
+    .b3 { height: 86px; }
+    .b4 { height: 104px; }
+
+    .legend {
+      display: grid;
+      gap: 10px;
+    }
+
+    .legend-row {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .box {
+      width: 16px;
+      height: 16px;
+      border: 1px solid #111111;
+    }
+
+    .attendance-preview {
+      border: 1px solid #9f9f9f;
+      display: grid;
+      grid-template-rows: auto auto;
+    }
+
+    .attendance-preview .panel-header {
+      grid-template-columns: 1fr 150px;
+    }
+
+    .line {
+      height: 2px;
+      background: #111111;
+      border-radius: 999px;
+    }
+
+    .line.bold {
+      height: 5px;
+    }
+
+    .line.light {
+      height: 1px;
+      background: #b7b7b7;
+    }
+
+    .w-32 { width: 32px; }
+    .w-44 { width: 44px; }
+    .w-56 { width: 56px; }
+    .w-70 { width: 70px; }
+    .w-86 { width: 86px; }
+    .w-104 { width: 104px; }
+    .w-124 { width: 124px; }
+    .w-148 { width: 148px; }
+    .w-172 { width: 172px; }
+    .w-full { width: 100%; }
+
+    @media (max-width: 1240px) {
+      .canvas {
+        place-items: start;
+      }
+
+      .artboard-title,
+      .artboard {
+        min-width: 1180px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="canvas">
+    <section>
+      <div class="artboard-title">Desktop - Halaman Laporan Admin</div>
+
+      <div class="artboard">
+        <header class="topbar">
+          <div class="brand-title">Laravel</div>
+          <div></div>
+          <div class="avatar"></div>
+        </header>
+
+        <div class="body">
+          <aside class="sidebar">
+            <div class="nav-item"><div class="icon-box"></div><div class="line bold w-86"></div></div>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-86"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-104"></div></div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-86"></div></div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-70"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-124"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-86"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-70"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-86"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-86"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-124"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-56"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-104"></div></div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-104"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-70"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-active">
+                <div class="icon-box"></div>
+                <div class="line bold w-124"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-104"></div></div>
+            </section>
+          </aside>
+
+          <section class="content-shell">
+            <div class="content">
+              <header class="page-head">
+                <div class="page-title">Laporan Periodik</div>
+                <div class="button dark">Export CSV</div>
+              </header>
+
+              <section class="tabs">
+                <div class="tab active">
+                  <div class="icon-box"></div>
+                  <div class="line bold w-124"></div>
+                </div>
+                <div class="tab">
+                  <div class="icon-box"></div>
+                  <div class="line bold w-104"></div>
+                </div>
+              </section>
+
+              <section class="summary-grid">
+                <div class="summary-card">
+                  <div class="line light w-86"></div>
+                  <div class="line bold w-70"></div>
+                </div>
+                <div class="summary-card">
+                  <div class="line light w-104"></div>
+                  <div class="line bold w-86"></div>
+                </div>
+                <div class="summary-card">
+                  <div class="line light w-86"></div>
+                  <div class="line bold w-70"></div>
+                </div>
+                <div class="summary-card">
+                  <div class="line light w-104"></div>
+                  <div class="line bold w-86"></div>
+                </div>
+              </section>
+
+              <section class="report-layout">
+                <div class="panel">
+                  <div class="panel-header">
+                    <div>
+                      <div class="line bold w-148"></div>
+                      <div style="height:8px"></div>
+                      <div class="line light w-172"></div>
+                    </div>
+                    <div class="button">Columns</div>
+                  </div>
+
+                  <div class="filters">
+                    <div class="filter-box"><div class="line light w-70"></div></div>
+                    <div class="filter-box"><div class="line light w-70"></div></div>
+                    <div class="filter-box"><div class="line light w-86"></div></div>
+                    <div class="button">Filter</div>
+                  </div>
+
+                  <div class="table">
+                    <div class="row">
+                      <div class="line bold w-56"></div>
+                      <div class="line bold w-86"></div>
+                      <div class="line bold w-70"></div>
+                      <div class="line bold w-56"></div>
+                      <div class="line bold w-56"></div>
+                      <div class="line bold w-56"></div>
+                    </div>
+                    <div class="row">
+                      <div class="line light w-86"></div>
+                      <div class="line light w-44"></div>
+                      <div class="line light w-70"></div>
+                      <div class="line light w-56"></div>
+                      <div class="line light w-56"></div>
+                      <div class="line light w-70"></div>
+                    </div>
+                    <div class="row">
+                      <div class="line light w-86"></div>
+                      <div class="line light w-44"></div>
+                      <div class="line light w-70"></div>
+                      <div class="line light w-56"></div>
+                      <div class="line light w-56"></div>
+                      <div class="line light w-70"></div>
+                    </div>
+                    <div class="row">
+                      <div class="line light w-86"></div>
+                      <div class="line light w-44"></div>
+                      <div class="line light w-70"></div>
+                      <div class="line light w-56"></div>
+                      <div class="line light w-56"></div>
+                      <div class="line light w-70"></div>
+                    </div>
+                    <div class="row">
+                      <div class="line light w-86"></div>
+                      <div class="line light w-44"></div>
+                      <div class="line light w-70"></div>
+                      <div class="line light w-56"></div>
+                      <div class="line light w-56"></div>
+                      <div class="line light w-70"></div>
+                    </div>
+                  </div>
+
+                  <div class="footer-control">
+                    <div class="button">Export CSV</div>
+                    <div class="pagination">
+                      <div class="page-dot">1</div>
+                      <div class="page-dot">2</div>
+                      <div class="page-dot">3</div>
+                    </div>
+                    <div class="button">Per page</div>
+                  </div>
+                </div>
+
+                <aside class="side-panel">
+                  <div>
+                    <div class="line bold w-124"></div>
+                    <div style="height:8px"></div>
+                    <div class="line light w-148"></div>
+                  </div>
+
+                  <div class="mini-chart">
+                    <div class="bar-group">
+                      <div class="bar b1"></div>
+                      <div class="bar b2"></div>
+                      <div class="bar b3"></div>
+                      <div class="bar b4"></div>
+                    </div>
+                  </div>
+
+                  <div class="legend">
+                    <div class="legend-row"><div class="box"></div><div class="line light w-124"></div></div>
+                    <div class="legend-row"><div class="box"></div><div class="line light w-104"></div></div>
+                    <div class="legend-row"><div class="box"></div><div class="line light w-86"></div></div>
+                  </div>
+
+                  <div>
+                    <div class="line bold w-104"></div>
+                    <div style="height:9px"></div>
+                    <div class="line light w-148"></div>
+                    <div style="height:7px"></div>
+                    <div class="line light w-124"></div>
+                  </div>
+                </aside>
+              </section>
+
+              <section class="attendance-preview">
+                <div class="panel-header">
+                  <div>
+                    <div class="line bold w-148"></div>
+                    <div style="height:8px"></div>
+                    <div class="line light w-172"></div>
+                  </div>
+                  <div class="button">Export CSV</div>
+                </div>
+
+                <div class="table">
+                  <div class="row attendance">
+                    <div class="line bold w-86"></div>
+                    <div class="line bold w-44"></div>
+                    <div class="line bold w-44"></div>
+                    <div class="line bold w-44"></div>
+                    <div class="line bold w-44"></div>
+                  </div>
+                  <div class="row attendance">
+                    <div class="line light w-124"></div>
+                    <div class="line light w-32"></div>
+                    <div class="line light w-32"></div>
+                    <div class="line light w-32"></div>
+                    <div class="line light w-32"></div>
+                  </div>
+                  <div class="row attendance">
+                    <div class="line light w-124"></div>
+                    <div class="line light w-32"></div>
+                    <div class="line light w-32"></div>
+                    <div class="line light w-32"></div>
+                    <div class="line light w-32"></div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

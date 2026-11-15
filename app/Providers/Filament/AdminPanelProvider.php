@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandName('Admin KeFrec')
 
             // PENTING: pisahkan guard admin dari customer
             ->authGuard('admin')

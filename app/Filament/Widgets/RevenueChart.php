@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 class RevenueChart extends LineChartWidget
 {
     protected static ?int $sort = 3;
+    protected static ?string $pollingInterval = '5s';
 
     public ?string $filter = '7';
 

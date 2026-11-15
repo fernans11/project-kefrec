@@ -16,15 +16,33 @@ use App\Filament\Resources\UserResource\Pages\CreateUser;
 class UserResource extends Resource
 {
 
-    protected static ?string $navigationGroup = 'Manajemen Pengguna';
+    protected static ?string $navigationGroup = 'Akun Internal';
     protected static ?int $navigationSort = 100;
 
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Pengguna';
-    protected static ?string $modelLabel = 'Pengguna';
-    protected static ?string $pluralModelLabel = 'Pengguna';
+    protected static ?string $navigationIcon = 'heroicon-o-user-circle';
+    protected static ?string $navigationLabel = 'Admin / Owner / Karyawan';
+    protected static ?string $modelLabel = 'Akun Internal';
+    protected static ?string $pluralModelLabel = 'Akun Internal';
+    protected static bool $shouldRegisterNavigation = false;
+
+    public static function getStaffUserTypes(): array
+    {
+        return ['admin', 'owner', 'kasir', 'dapur'];
+    }
+
+    public static function getRoleLabel(string $role): string
+    {
+        return match ($role) {
+            'admin' => 'Admin',
+            'owner' => 'Owner',
+            'kasir' => 'Karyawan',
+            'dapur' => 'Karyawan',
+            'user' => 'Pelanggan',
+            default => ucfirst((string) $role),
+        };
+    }
 
     public static function form(Form $form): Form
     {
@@ -46,13 +64,12 @@ class UserResource extends Resource
                     ->label('Role')
                     ->required()
                     ->options([
-                        'admin' => 'Admin',
-                        'owner' => 'Owner',
-                        'kasir' => 'Kasir',
-                        'dapur' => 'Dapur',
-                        'user' => 'Pelanggan',
+                        'admin' => self::getRoleLabel('admin'),
+                        'owner' => self::getRoleLabel('owner'),
+                        'kasir' => self::getRoleLabel('kasir'),
+                        'dapur' => self::getRoleLabel('dapur'),
                     ])
-                    ->default('user'),
+                    ->default('kasir'),
                 Forms\Components\TextInput::make('phone')
                     ->tel()
                     ->maxLength(255)
@@ -69,6 +86,7 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->whereIn('usertype', self::getStaffUserTypes()))
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
@@ -78,7 +96,8 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('usertype')
                     ->label('Role')
-                    ->searchable(),
+                    ->searchable()
+                    ->formatStateUsing(fn (?string $state): string => self::getRoleLabel($state ?? '')),
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -91,7 +110,15 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('usertype')
+                    ->label('Kategori Role')
+                    ->options([
+                        'admin' => self::getRoleLabel('admin'),
+                        'owner' => self::getRoleLabel('owner'),
+                        'kasir' => self::getRoleLabel('kasir'),
+                        'dapur' => self::getRoleLabel('dapur'),
+                    ])
+                    ->query(fn ($query, $state) => $query->where('usertype', $state)),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -122,29 +149,21 @@ class UserResource extends Resource
     
     public static function canViewAny(): bool
     {
-        $u = auth()->user();
-        if (!$u) return false;
-
-        // Hanya admin & owner yang boleh lihat menu Users
-        return in_array($u->usertype, ['admin', 'owner'], true);
+        return false;
     }
 
     public static function canCreate(): bool
     {
-        return auth()->user()?->usertype === 'admin';
+        return false;
     }
 
     public static function canEdit($record): bool
     {
-        $u = auth()->user();
-        if (!$u) return false;
-
-        // Admin boleh edit semua, Owner hanya view (opsional)
-        return $u->usertype === 'admin';
+        return false;
     }
 
     public static function canDeleteAny(): bool
     {
-        return auth()->user()?->usertype === 'admin';
+        return false;
     }
 }

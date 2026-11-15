@@ -33,7 +33,9 @@ class MidtransNotificationController extends Controller
             'midtrans_transaction_id' => $payload['transaction_id'] ?? $transaction->midtrans_transaction_id,
             'payment_status' => $transactionStatus,
             'payment_type' => $payload['payment_type'] ?? $transaction->payment_type,
-            'payment_payload' => $payload,
+            // Payload Midtrans tidak membawa nomor meja. Gabungkan dengan
+            // data checkout agar informasi meja tetap tersedia untuk kasir.
+            'payment_payload' => array_merge($transaction->payment_payload ?? [], $payload),
         ];
 
         if (

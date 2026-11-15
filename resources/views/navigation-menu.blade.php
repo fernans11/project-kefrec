@@ -5,7 +5,7 @@
             <div class="logo-box">
                 <img src="" alt="Logo KeFrec"
                      onerror="this.style.display='none'; this.parentElement.querySelector('.logo-fallback').style.display='block';">
-                <span class="logo-fallback" style="display:none;">☕</span>
+                <span class="logo-fallback" style="display:none;" data-lucide="coffee"></span>
             </div>
             <div class="brand-text">
                 <span class="brand-title">KeFrec CoffeeShop</span>
@@ -13,6 +13,11 @@
         </div>
 
         <div class="right-area">
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Ganti tema" aria-pressed="false">
+                <span class="theme-toggle-icon" data-theme-icon data-lucide="moon"></span>
+                <span class="theme-toggle-text" data-theme-text>Dark</span>
+            </button>
+
             {{-- Tombol kembali ke Home (landing member) --}}
             <a href="{{ route('home') }}" class="btn btn-outline-light btn-small" style="white-space:nowrap;">
                 Kembali
@@ -21,15 +26,23 @@
             {{-- Profile dropdown --}}
             @php
                 $name = Auth::user()->name ?? 'Member';
+                $profileLabel = Auth::user()->username ?: $name;
                 $email = Auth::user()->email ?? '';
-                $role = Auth::user()->usertype ?? 'member';
-                $initial = mb_strtoupper(mb_substr($name, 0, 1));
+                $role = match (Auth::user()->usertype ?? 'user') {
+                    'user', 'member' => 'Member',
+                    'admin' => 'Admin',
+                    'owner' => 'Owner',
+                    'cashier', 'kasir' => 'Kasir',
+                    'kitchen', 'dapur' => 'Dapur',
+                    default => ucfirst((string) Auth::user()->usertype),
+                };
+                $initial = mb_strtoupper(mb_substr($profileLabel, 0, 1));
             @endphp
 
             <div class="profile-wrap" x-data="{ open:false }" @click.outside="open=false" style="position:relative;">
                 <button class="profile-chip" type="button" @click="open=!open" :aria-expanded="open ? 'true':'false'">
                     <span class="profile-avatar">{{ $initial }}</span>
-                    <span class="profile-name">{{ $name }}</span>
+                    <span class="profile-name">{{ $profileLabel }}</span>
                     <span class="profile-caret">▾</span>
                 </button>
 
@@ -42,12 +55,8 @@
 
                     <div class="profile-divider"></div>
 
-                    <a class="profile-item" href="{{ route('home') }}" role="menuitem">
+                    <a class="profile-item" href="{{ route('member.show') }}" role="menuitem">
                         Member
-                    </a>
-
-                    <a class="profile-item" href="{{ route('orders.index') }}" role="menuitem">
-                        Pesanan Saya
                     </a>
 
                     <a class="profile-item" href="{{ url('/user/profile') }}" role="menuitem">

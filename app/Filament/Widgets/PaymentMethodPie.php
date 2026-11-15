@@ -9,6 +9,7 @@ use Filament\Widgets\PieChartWidget;
 
 class PaymentMethodPie extends PieChartWidget
 {
+    protected static ?string $pollingInterval = '5s';
     protected static ?int $sort = 4;
 
     public ?string $filter = '7';

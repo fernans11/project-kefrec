@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desain Input Bahan Baku - KeFrec</title>
+  <style>
+    :root {
+      --bg-page: #0b0b0d;
+      --bg-topbar: #18181b;
+      --bg-sidebar: #09090b;
+      --bg-card: #18181b;
+      --bg-card-soft: #202024;
+      --bg-input: #242428;
+      --border: #303036;
+      --border-soft: #3f3f46;
+      --text: #ffffff;
+      --muted: #a1a1aa;
+      --amber: #f5b800;
+      --green: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #eeeeee;
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 28px;
+    }
+
+    .report-frame {
+      width: 1080px;
+      min-height: 690px;
+      background: #ffffff;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
+      padding: 22px;
+    }
+
+    .frame-title {
+      color: #202020;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .app-frame {
+      min-height: 610px;
+      border: 1px solid #dddddd;
+      background: var(--bg-page);
+      display: grid;
+      grid-template-rows: 64px 1fr;
+    }
+
+    .topbar {
+      background: var(--bg-topbar);
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 250px 1fr 42px;
+      align-items: center;
+      padding: 0 22px;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #050505;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 275px 1fr;
+    }
+
+    .sidebar {
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      display: grid;
+      align-content: start;
+      gap: 28px;
+    }
+
+    .nav-group {
+      display: grid;
+      gap: 13px;
+    }
+
+    .nav-title {
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-inline: 5px;
+    }
+
+    .nav-item {
+      min-height: 38px;
+      border-radius: 8px;
+      color: #f4f4f5;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 10px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .nav-item.active {
+      background: #171717;
+      color: var(--amber);
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid currentColor;
+      border-radius: 4px;
+      flex: 0 0 auto;
+    }
+
+    .content-shell {
+      padding: 34px 42px 42px;
+    }
+
+    .content {
+      max-width: 780px;
+      margin: 0 auto;
+      display: grid;
+      gap: 22px;
+    }
+
+    .breadcrumb {
+      color: #cbd5e1;
+      font-size: 13px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: -8px;
+    }
+
+    .page-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .page-title {
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .page-actions,
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      min-height: 38px;
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      padding: 0 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      background: var(--bg-card-soft);
+    }
+
+    .btn-primary {
+      color: #111111;
+      border-color: var(--amber);
+      background: var(--amber);
+    }
+
+    .form-section,
+    .preview-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .section-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .section-body {
+      padding: 22px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .label {
+      color: #f4f4f5;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .input,
+    .select {
+      width: 100%;
+      border: 1px solid var(--border-soft);
+      border-radius: 9px;
+      background: var(--bg-input);
+      color: var(--text);
+      min-height: 42px;
+      padding: 0 13px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .select {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .helper {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .stock-card {
+      min-height: 112px;
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      background: #151518;
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+      align-content: center;
+    }
+
+    .stock-card.warning {
+      border-color: rgba(245, 158, 11, .7);
+      background: rgba(245, 158, 11, .08);
+    }
+
+    .stock-value {
+      font-size: 26px;
+      font-weight: 900;
+    }
+
+    .stock-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status-badge {
+      width: fit-content;
+      min-height: 26px;
+      border-radius: 999px;
+      padding: 0 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 800;
+      background: rgba(34, 197, 94, .14);
+      color: var(--green);
+      border: 1px solid rgba(34, 197, 94, .5);
+    }
+
+    .status-badge.warning {
+      background: rgba(245, 158, 11, .14);
+      color: var(--warning);
+      border-color: rgba(245, 158, 11, .55);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .usage-table {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .usage-row {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr .8fr .8fr;
+      gap: 12px;
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .usage-row:last-child {
+      border-bottom: 0;
+    }
+
+    .usage-row.header {
+      background: #222226;
+      font-weight: 800;
+    }
+
+    .badge {
+      width: fit-content;
+      min-height: 24px;
+      border: 1px solid var(--border-soft);
+      border-radius: 999px;
+      background: #27272a;
+      padding: 0 10px;
+      display: inline-flex;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .input-note {
+      margin-top: 18px;
+      color: #333333;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .input-note strong {
+      font-weight: 700;
+    }
+
+    @media (max-width: 1120px) {
+      .report-frame {
+        width: 100%;
+      }
+
+      .app-frame {
+        overflow-x: auto;
+      }
+
+      .layout {
+        min-width: 980px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="report-frame">
+    <div class="frame-title">Gambar 5.x Rancangan Input Bahan Baku</div>
+
+    <div class="app-frame">
+      <header class="topbar">
+        <div class="brand">Laravel</div>
+        <div></div>
+        <div class="user-avatar">F</div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <section class="nav-group">
+            <div class="nav-item">Dashboard</div>
+          </section>
+
+          <section class="nav-group">
+            <div class="nav-title">
+              <span>Master Data</span>
+              <span>⌃</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon"></span>
+              <span>Produk / Menu</span>
+            </div>
+            <div class="nav-item active">
+              <span class="nav-icon"></span>
+              <span>Bahan Baku</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon"></span>
+              <span>Supplier</span>
+            </div>
+          </section>
+
+          <section class="nav-group">
+            <div class="nav-title">
+              <span>Pembelian</span>
+              <span>⌃</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon"></span>
+              <span>Pembelian Bahan Baku</span>
+            </div>
+          </section>
+
+          <section class="nav-group">
+            <div class="nav-title">
+              <span>Laporan</span>
+              <span>⌃</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon"></span>
+              <span>Laporan Periodik</span>
+            </div>
+          </section>
+        </aside>
+
+        <main class="content-shell">
+          <div class="content">
+            <div class="breadcrumb">
+              <span>Bahan Baku</span>
+              <span>›</span>
+              <span>Create</span>
+            </div>
+
+            <header class="page-head">
+              <h1 class="page-title">Tambah Bahan Baku</h1>
+              <div class="page-actions">
+                <button class="btn">Batal</button>
+                <button class="btn btn-primary">Simpan</button>
+              </div>
+            </header>
+
+            <section class="form-section">
+              <div class="section-header">
+                <div class="section-title">Informasi Bahan Baku</div>
+                <div class="section-subtitle">Data bahan baku digunakan untuk stok dapur dan perhitungan kebutuhan resep produk.</div>
+              </div>
+
+              <div class="section-body">
+                <div class="grid-2">
+                  <div class="field">
+                    <label class="label">Nama Bahan</label>
+                    <input class="input" value="Biji Kopi Arabica">
+                    <div class="helper">Nama bahan baku yang digunakan pada produk/menu.</div>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Unit</label>
+                    <div class="select">
+                      <span>gram</span>
+                      <span>⌄</span>
+                    </div>
+                    <div class="helper">Contoh: gram, ml, pcs, pack.</div>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Stok Saat Ini</label>
+                    <input class="input" value="5000.00">
+                    <div class="helper">Jumlah stok bahan baku saat ini.</div>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Minimum Stok</label>
+                    <input class="input" value="1000.00">
+                    <div class="helper">Batas stok minimum untuk peringatan stok menipis.</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="preview-section">
+              <div class="section-header">
+                <div class="section-title">Pratinjau Stok</div>
+                <div class="section-subtitle">Ringkasan status stok berdasarkan input yang dimasukkan.</div>
+              </div>
+
+              <div class="section-body">
+                <div class="grid-3">
+                  <div class="stock-card">
+                    <div class="stock-label">Stok Saat Ini</div>
+                    <div class="stock-value">5.000 gram</div>
+                    <span class="status-badge"><span class="dot"></span>Aman</span>
+                  </div>
+
+                  <div class="stock-card warning">
+                    <div class="stock-label">Minimum Stok</div>
+                    <div class="stock-value">1.000 gram</div>
+                    <span class="status-badge warning"><span class="dot"></span>Batas Peringatan</span>
+                  </div>
+
+                  <div class="stock-card">
+                    <div class="stock-label">Selisih Aman</div>
+                    <div class="stock-value">4.000 gram</div>
+                    <span class="status-badge"><span class="dot"></span>Stok Cukup</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="preview-section">
+              <div class="section-header">
+                <div class="section-title">Penggunaan Pada Resep</div>
+                <div class="section-subtitle">Contoh produk/menu yang menggunakan bahan baku ini.</div>
+              </div>
+
+              <div class="section-body">
+                <div class="usage-table">
+                  <div class="usage-row header">
+                    <div>Produk</div>
+                    <div>Kategori</div>
+                    <div>Qty / Produk</div>
+                    <div>Stok Bahan</div>
+                  </div>
+                  <div class="usage-row">
+                    <div>Americano</div>
+                    <div><span class="badge">Minuman</span></div>
+                    <div>10 gram</div>
+                    <div>5.000 gram</div>
+                  </div>
+                  <div class="usage-row">
+                    <div>Kopi Susu</div>
+                    <div><span class="badge">Minuman</span></div>
+                    <div>12 gram</div>
+                    <div>5.000 gram</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div class="form-actions">
+              <button class="btn">Batal</button>
+              <button class="btn btn-primary">Simpan Bahan Baku</button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <p class="input-note">
+      <strong>Keterangan:</strong> Rancangan input bahan baku digunakan admin untuk menambahkan data persediaan.
+      Field utama terdiri dari nama bahan, unit, stok saat ini, dan minimum stok. Minimum stok digunakan sistem untuk menandai bahan baku yang mulai menipis.
+    </p>
+  </section>
+</body>
+</html>

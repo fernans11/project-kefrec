@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Supplier - Laravel</title>
+  <style>
+    :root {
+      --page: #09090b;
+      --topbar: #18181b;
+      --sidebar: #09090b;
+      --panel: #18181b;
+      --panel-2: #242427;
+      --border: #2e2e33;
+      --border-2: #3f3f46;
+      --text: #ffffff;
+      --muted: #a1a1aa;
+      --yellow: #f5b800;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #eeeeee;
+      font-family: Arial, "Segoe UI", sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .figure {
+      width: 1180px;
+      background: #ffffff;
+      padding: 18px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, .16);
+    }
+
+    .caption {
+      color: #111111;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .app {
+      height: 720px;
+      color: var(--text);
+      background: var(--page);
+      border: 1px solid #d7d7d7;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: 64px 1fr;
+    }
+
+    .topbar {
+      background: var(--topbar);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #050506;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 275px 1fr;
+      min-height: 0;
+    }
+
+    .sidebar {
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      padding: 22px 14px;
+      overflow: hidden;
+    }
+
+    .nav-group {
+      margin-bottom: 26px;
+    }
+
+    .nav-head {
+      height: 28px;
+      padding: 0 8px;
+      color: var(--muted);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-head::after {
+      content: "^";
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .nav-item {
+      height: 40px;
+      border-radius: 8px;
+      padding: 0 10px;
+      color: #f4f4f5;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    .nav-item.active {
+      background: var(--panel);
+      color: var(--yellow);
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      border: 1.7px solid currentColor;
+      border-radius: 4px;
+      flex: 0 0 auto;
+      opacity: .95;
+    }
+
+    .content {
+      padding: 32px 0 60px;
+      overflow: hidden;
+    }
+
+    .content-inner {
+      width: 1096px;
+      max-width: calc(100% - 92px);
+      margin: 0 auto;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #b9c7e7;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .breadcrumb span:last-child {
+      color: #d4d4d8;
+    }
+
+    h1 {
+      font-size: 30px;
+      line-height: 1;
+      margin-bottom: 30px;
+      font-weight: 800;
+    }
+
+    .form-card {
+      width: 760px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 26px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: #e4e4e7;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .required {
+      color: var(--yellow);
+      margin-left: 2px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      background: var(--panel-2);
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      padding: 11px 12px;
+    }
+
+    textarea {
+      height: 92px;
+      resize: none;
+      line-height: 1.45;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .actions {
+      margin-top: 28px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn {
+      height: 40px;
+      min-width: 92px;
+      border-radius: 8px;
+      border: 1px solid var(--border-2);
+      background: var(--panel);
+      color: #f4f4f5;
+      font-weight: 800;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .btn.primary {
+      min-width: 132px;
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: #151515;
+    }
+
+    .note {
+      color: #222222;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <section class="figure">
+    <div class="caption">Gambar 5.x Rancangan Input Supplier</div>
+
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">Laravel</div>
+        <div class="avatar">F</div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <div class="nav-head">Master Data</div>
+            <div class="nav-item"><span class="nav-icon"></span>Produk / Menu</div>
+            <div class="nav-item"><span class="nav-icon"></span>Bahan Baku</div>
+            <div class="nav-item active"><span class="nav-icon"></span>Supplier</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Manajemen Transaksi</div>
+            <div class="nav-item"><span class="nav-icon"></span>Transaksi</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Keuangan</div>
+            <div class="nav-item"><span class="nav-icon"></span>Keuangan</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Pembelian</div>
+            <div class="nav-item"><span class="nav-icon"></span>Pembelian Bahan Baku</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Pengguna</div>
+            <div class="nav-item"><span class="nav-icon"></span>Data Admin</div>
+            <div class="nav-item"><span class="nav-icon"></span>Data Owner</div>
+            <div class="nav-item"><span class="nav-icon"></span>Data Karyawan</div>
+            <div class="nav-item"><span class="nav-icon"></span>Data Pelanggan</div>
+          </div>
+        </aside>
+
+        <main class="content">
+          <div class="content-inner">
+            <div class="breadcrumb">
+              <span>Supplier</span>
+              <span>&gt;</span>
+              <span>Create</span>
+            </div>
+
+            <h1>Create Supplier</h1>
+
+            <section class="form-card">
+              <div class="form-grid">
+                <div class="field">
+                  <label>Nama Supplier<span class="required">*</span></label>
+                  <input type="text" value="CV Sumber Kopi Nusantara">
+                  <div class="hint">Wajib diisi.</div>
+                </div>
+
+                <div class="field">
+                  <label>Email</label>
+                  <input type="email" value="supplier@example.com">
+                  <div class="hint">Format email valid.</div>
+                </div>
+
+                <div class="field">
+                  <label>Telepon</label>
+                  <input type="text" value="081234567890">
+                  <div class="hint">Nomor telepon supplier.</div>
+                </div>
+
+                <div class="field">
+                  <label>&nbsp;</label>
+                  <input type="text" value="" aria-label="Ruang kosong mengikuti layout dua kolom" disabled>
+                  <div class="hint">&nbsp;</div>
+                </div>
+
+                <div class="field full">
+                  <label>Alamat</label>
+                  <textarea>Jl. Merdeka No. 18, Bandung</textarea>
+                  <div class="hint">Alamat lengkap supplier.</div>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="btn">Cancel</button>
+                <button class="btn primary">Create</button>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <p class="note">
+      <strong>Keterangan:</strong> Halaman input supplier digunakan untuk menambahkan data pemasok bahan baku.
+      Field yang tersedia sesuai dengan sistem, yaitu nama supplier, email, telepon, dan alamat.
+    </p>
+  </section>
+</body>
+</html>

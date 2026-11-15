@@ -1,0 +1,494 @@
+@startuml
+title Project Kefrec - Entity Relationship Diagram
+
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+package "Auth & Access Control" {
+  entity "users" as users {
+    * id : bigint <<PK>>
+    --
+    name : string
+    username : string <<nullable>>
+    email : string <<unique>>
+    email_verified_at : timestamp <<nullable>>
+    usertype : string
+    phone : string <<nullable>>
+    password : string
+    two_factor_secret : text <<nullable>>
+    two_factor_recovery_codes : text <<nullable>>
+    two_factor_confirmed_at : timestamp <<nullable>>
+    remember_token : string <<nullable>>
+    current_team_id : bigint <<nullable>>
+    profile_photo_path : string <<nullable>>
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "roles" as roles {
+    * id : bigint <<PK>>
+    --
+    name : string
+    guard_name : string
+    created_at : timestamp
+    updated_at : timestamp
+    --
+    UNIQUE(name, guard_name)
+  }
+
+  entity "permissions" as permissions {
+    * id : bigint <<PK>>
+    --
+    name : string
+    guard_name : string
+    created_at : timestamp
+    updated_at : timestamp
+    --
+    UNIQUE(name, guard_name)
+  }
+
+  entity "model_has_roles" as model_has_roles {
+    * role_id : bigint <<PK, FK>>
+    * model_id : bigint <<PK>>
+    * model_type : string <<PK>>
+  }
+
+  entity "model_has_permissions" as model_has_permissions {
+    * permission_id : bigint <<PK, FK>>
+    * model_id : bigint <<PK>>
+    * model_type : string <<PK>>
+  }
+
+  entity "role_has_permissions" as role_has_permissions {
+    * permission_id : bigint <<PK, FK>>
+    * role_id : bigint <<PK, FK>>
+  }
+
+  entity "personal_access_tokens" as personal_access_tokens {
+    * id : bigint <<PK>>
+    --
+    tokenable_type : string
+    tokenable_id : bigint
+    name : text
+    token : string <<unique>>
+    abilities : text <<nullable>>
+    last_used_at : timestamp <<nullable>>
+    expires_at : timestamp <<nullable>>
+    created_at : timestamp
+    updated_at : timestamp
+  }
+}
+
+package "Customer & Menu" {
+  entity "customers" as customers {
+    * id : bigint <<PK>>
+    --
+    user_id : bigint <<FK, unique, nullable>>
+    name : string
+    email : string <<nullable>>
+    phone : string <<nullable>>
+    address : text <<nullable>>
+    is_member : boolean
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "categories" as categories {
+    * id : bigint <<PK>>
+    --
+    name : string <<unique>>
+    slug : string <<unique>>
+    sort_order : unsigned int
+    is_active : boolean
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "products" as products {
+    * id : bigint <<PK>>
+    --
+    category_id : bigint <<indexed, nullable>>
+    category : string <<nullable>>
+    name : string
+    slug : string <<unique, nullable>>
+    description : text <<nullable>>
+    stock : int
+    track_stock : boolean
+    price : int
+    image_url : string <<nullable>>
+    is_active : boolean
+    is_popular : boolean
+    is_new : boolean
+    rating : decimal <<nullable>>
+    sort_order : int
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "ingredients" as ingredients {
+    * id : bigint <<PK>>
+    --
+    name : string
+    unit : string
+    stock : decimal(12,2)
+    min_stock : decimal(12,2)
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "ingredient_product" as ingredient_product {
+    * id : bigint <<PK>>
+    --
+    product_id : bigint <<FK>>
+    ingredient_id : bigint <<FK>>
+    qty : decimal(12,2)
+    created_at : timestamp
+    updated_at : timestamp
+    --
+    UNIQUE(product_id, ingredient_id)
+  }
+}
+
+package "Sales" {
+  entity "transactions" as transactions {
+    * id : bigint <<PK>>
+    --
+    invoice_no : string <<unique>>
+    midtrans_order_id : string <<unique, nullable>>
+    midtrans_transaction_id : string <<nullable>>
+    snap_token : string <<nullable>>
+    customer_id : bigint <<FK, nullable>>
+    cashier_id : bigint <<FK, nullable>>
+    subtotal : int
+    discount : int
+    tax : int
+    total : int
+    payment_method : string <<nullable>>
+    payment_status : string <<nullable>>
+    payment_type : string <<nullable>>
+    payment_payload : json <<nullable>>
+    paid_at : timestamp <<nullable>>
+    paid_amount : int
+    change_amount : int
+    status : string
+    stock_deducted_at : timestamp <<nullable>>
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "transaction_items" as transaction_items {
+    * id : bigint <<PK>>
+    --
+    transaction_id : bigint <<FK>>
+    product_id : bigint <<FK>>
+    qty : int
+    price : int
+    subtotal : int
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "sales_returns" as sales_returns {
+    * id : bigint <<PK>>
+    --
+    return_no : string <<unique>>
+    transaction_id : bigint <<FK, nullable>>
+    customer_id : bigint <<FK, nullable>>
+    status : string
+    subtotal : int
+    tax : int
+    total : int
+    processed_at : timestamp <<nullable>>
+    notes : text <<nullable>>
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "sales_return_items" as sales_return_items {
+    * id : bigint <<PK>>
+    --
+    sales_return_id : bigint <<FK>>
+    product_id : bigint <<FK>>
+    qty : decimal(12,2)
+    price : int
+    subtotal : int
+    created_at : timestamp
+    updated_at : timestamp
+  }
+}
+
+package "Purchasing" {
+  entity "suppliers" as suppliers {
+    * id : bigint <<PK>>
+    --
+    name : string
+    email : string <<nullable>>
+    phone : string <<nullable>>
+    address : text <<nullable>>
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "purchases" as purchases {
+    * id : bigint <<PK>>
+    --
+    invoice_no : string <<unique>>
+    supplier_id : bigint <<FK, nullable>>
+    purchased_at : date <<nullable>>
+    status : string
+    subtotal : int
+    tax : int
+    total : int
+    received_at : timestamp <<nullable>>
+    notes : text <<nullable>>
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "purchase_items" as purchase_items {
+    * id : bigint <<PK>>
+    --
+    purchase_id : bigint <<FK>>
+    ingredient_id : bigint <<FK>>
+    qty : decimal(12,2)
+    price : int
+    subtotal : int
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "purchase_returns" as purchase_returns {
+    * id : bigint <<PK>>
+    --
+    return_no : string <<unique>>
+    purchase_id : bigint <<FK, nullable>>
+    supplier_id : bigint <<FK, nullable>>
+    status : string
+    subtotal : int
+    tax : int
+    total : int
+    processed_at : timestamp <<nullable>>
+    notes : text <<nullable>>
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "purchase_return_items" as purchase_return_items {
+    * id : bigint <<PK>>
+    --
+    purchase_return_id : bigint <<FK>>
+    ingredient_id : bigint <<FK>>
+    qty : decimal(12,2)
+    price : int
+    subtotal : int
+    created_at : timestamp
+    updated_at : timestamp
+  }
+}
+
+package "Operations" {
+  entity "cashflows" as cashflows {
+    * id : bigint <<PK>>
+    --
+    date : date
+    type : string
+    category : string <<nullable>>
+    amount : int
+    source : string <<nullable>>
+    notes : text <<nullable>>
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "complaints" as complaints {
+    * id : bigint <<PK>>
+    --
+    customer_id : bigint <<FK, nullable>>
+    handled_by : bigint <<FK, nullable>>
+    name : string <<nullable>>
+    email : string <<nullable>>
+    phone : string <<nullable>>
+    title : string <<nullable>>
+    message : text
+    status : string
+    response : text <<nullable>>
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "audit_logs" as audit_logs {
+    * id : bigint <<PK>>
+    --
+    user_id : bigint <<FK, nullable>>
+    subject_type : string <<nullable>>
+    subject_id : bigint <<nullable>>
+    action : string
+    description : text <<nullable>>
+    metadata : json <<nullable>>
+    ip : string <<nullable>>
+    user_agent : text <<nullable>>
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "staff" as staff {
+    * id : bigint <<PK>>
+    --
+    name : string
+    position : string <<nullable>>
+    phone : string <<nullable>>
+    is_active : boolean
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "attendances" as attendances {
+    * id : bigint <<PK>>
+    --
+    staff_id : bigint <<FK>>
+    date : date
+    clock_in : time <<nullable>>
+    clock_out : time <<nullable>>
+    status : string
+    notes : text <<nullable>>
+    created_at : timestamp
+    updated_at : timestamp
+    --
+    UNIQUE(staff_id, date)
+  }
+}
+
+package "Laravel System Tables" {
+  entity "sessions" as sessions {
+    * id : string <<PK>>
+    --
+    user_id : bigint <<indexed, nullable>>
+    ip_address : string <<nullable>>
+    user_agent : text <<nullable>>
+    payload : longtext
+    last_activity : int
+  }
+
+  entity "password_reset_tokens" as password_reset_tokens {
+    * email : string <<PK>>
+    --
+    token : string
+    created_at : timestamp <<nullable>>
+  }
+
+  entity "cache" as cache {
+    * key : string <<PK>>
+    --
+    value : mediumtext
+    expiration : int
+  }
+
+  entity "cache_locks" as cache_locks {
+    * key : string <<PK>>
+    --
+    owner : string
+    expiration : int
+  }
+
+  entity "jobs" as jobs {
+    * id : bigint <<PK>>
+    --
+    queue : string
+    payload : longtext
+    attempts : tinyint
+    reserved_at : int <<nullable>>
+    available_at : int
+    created_at : int
+  }
+
+  entity "job_batches" as job_batches {
+    * id : string <<PK>>
+    --
+    name : string
+    total_jobs : int
+    pending_jobs : int
+    failed_jobs : int
+    failed_job_ids : longtext
+    options : mediumtext <<nullable>>
+    cancelled_at : int <<nullable>>
+    created_at : int
+    finished_at : int <<nullable>>
+  }
+
+  entity "failed_jobs" as failed_jobs {
+    * id : bigint <<PK>>
+    --
+    uuid : string <<unique>>
+    connection : text
+    queue : text
+    payload : longtext
+    exception : longtext
+    failed_at : timestamp
+  }
+}
+
+' Auth / access relationships
+roles ||--o{ model_has_roles : role_id
+permissions ||--o{ model_has_permissions : permission_id
+roles ||--o{ role_has_permissions : role_id
+permissions ||--o{ role_has_permissions : permission_id
+users ||..o{ model_has_roles : "model_id/model_type"
+users ||..o{ model_has_permissions : "model_id/model_type"
+users ||..o{ personal_access_tokens : "tokenable polymorphic"
+
+' Customer / catalog relationships
+users ||--o| customers : user_id
+categories ||..o{ products : "category_id (no DB FK)"
+products ||--o{ ingredient_product : product_id
+ingredients ||--o{ ingredient_product : ingredient_id
+
+' Sales relationships
+customers |o--o{ transactions : customer_id
+users |o--o{ transactions : cashier_id
+transactions ||--o{ transaction_items : transaction_id
+products ||--o{ transaction_items : product_id
+transactions |o--o{ sales_returns : transaction_id
+customers |o--o{ sales_returns : customer_id
+sales_returns ||--o{ sales_return_items : sales_return_id
+products ||--o{ sales_return_items : product_id
+
+' Purchasing relationships
+suppliers |o--o{ purchases : supplier_id
+purchases ||--o{ purchase_items : purchase_id
+ingredients ||--o{ purchase_items : ingredient_id
+purchases |o--o{ purchase_returns : purchase_id
+suppliers |o--o{ purchase_returns : supplier_id
+purchase_returns ||--o{ purchase_return_items : purchase_return_id
+ingredients ||--o{ purchase_return_items : ingredient_id
+
+' Operations relationships
+customers |o--o{ complaints : customer_id
+users |o--o{ complaints : handled_by
+users |o--o{ audit_logs : user_id
+staff ||--o{ attendances : staff_id
+users ||..o{ sessions : "user_id indexed"
+
+note right of products
+  products.category_id is indexed and used by the Category model,
+  but the migration does not declare a database foreign key.
+end note
+
+note right of audit_logs
+  subject_type + subject_id is a nullable polymorphic reference
+  to any auditable model.
+end note
+
+note right of cashflows
+  source and notes link business events such as sales or purchases
+  by convention, not by foreign key constraints.
+end note
+
+@enduml

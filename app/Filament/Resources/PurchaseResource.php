@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PurchaseResource\Pages;
 use App\Models\Ingredient;
 use App\Models\Purchase;
+use App\Models\Supplier;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -36,22 +37,28 @@ class PurchaseResource extends Resource
                         ->required(),
                     Forms\Components\Select::make('supplier_id')
                         ->label('Supplier')
-                        ->relationship('supplier', 'name')
+                        ->options(fn () => Supplier::query()
+                            ->orderBy('name')
+                            ->pluck('name', 'id')
+                            ->toArray()
+                        )
                         ->searchable()
                         ->preload()
-                        ->nullable(),
+                        ->required()
+                        ->helperText('Pilih pemasok tempat bahan baku dibeli. Data ini menjadi asal pembelian.'),
                     Forms\Components\DatePicker::make('purchased_at')
                         ->label('Tanggal Pembelian')
                         ->default(now()),
                     Forms\Components\Select::make('status')
                         ->label('Status')
                         ->options([
-                            'draft' => 'Draf',
-                            'received' => 'Diterima',
-                            'cancelled' => 'Dibatalkan',
+                            'draft' => 'Draf - belum menambah stok',
+                            'received' => 'Diterima - stok dan cashflow diproses',
+                            'cancelled' => 'Dibatalkan - tidak diproses',
                         ])
                         ->default('draft')
                         ->required()
+                        ->helperText('Gunakan Diterima hanya jika bahan baku sudah benar-benar diterima oleh cafe.')
                         ->disableOptionWhen(function (string $value, ?Purchase $record): bool {
                             if (! $record) {
                                 return false;
@@ -90,7 +97,7 @@ class PurchaseResource extends Resource
                                 ->minValue(0)
                                 ->default(0)
                                 ->required()
-                                ->reactive()
+                                ->live(onBlur: true)
                                 ->afterStateUpdated(function ($state, callable $get, callable $set) {
                                     $qty = (float) ($state ?? 0);
                                     $price = (int) ($get('price') ?? 0);
@@ -103,7 +110,8 @@ class PurchaseResource extends Resource
                                 ->minValue(0)
                                 ->default(0)
                                 ->required()
-                                ->reactive()
+                                ->live(onBlur: true)
+                                ->helperText('Isi harga per unit tanpa titik atau koma.')
                                 ->afterStateUpdated(function ($state, callable $get, callable $set) {
                                     $qty = (float) ($get('qty') ?? 0);
                                     $price = (int) ($state ?? 0);
@@ -117,6 +125,8 @@ class PurchaseResource extends Resource
                                 ->dehydrated()
                                 ->default(0),
                         ])
+                        ->mutateRelationshipDataBeforeCreateUsing(fn (array $data): array => self::normalizeItemData($data))
+                        ->mutateRelationshipDataBeforeSaveUsing(fn (array $data): array => self::normalizeItemData($data))
                         ->afterStateUpdated(function (callable $get, callable $set) {
                             self::recalcTotals($get, $set);
                         })
@@ -154,17 +164,46 @@ class PurchaseResource extends Resource
     protected static function recalcTotals(callable $get, callable $set): void
     {
         $items = $get('items') ?? [];
-        $subtotal = 0;
-
-        foreach ($items as $row) {
-            $subtotal += (int) ($row['subtotal'] ?? 0);
-        }
+        $subtotal = self::calculateItemsSubtotal($items);
 
         $tax = (int) ($get('tax') ?? 0);
         $total = max(0, $subtotal + $tax);
 
         $set('subtotal', $subtotal);
         $set('total', $total);
+    }
+
+    public static function normalizeItemData(array $data): array
+    {
+        $qty = (float) ($data['qty'] ?? 0);
+        $price = (int) ($data['price'] ?? 0);
+
+        $data['qty'] = max(0, $qty);
+        $data['price'] = max(0, $price);
+        $data['subtotal'] = (int) round($data['qty'] * $data['price'], 0);
+
+        return $data;
+    }
+
+    public static function calculateItemsSubtotal(array $items): int
+    {
+        $subtotal = 0;
+
+        foreach ($items as $row) {
+            $normalized = self::normalizeItemData((array) $row);
+            $subtotal += $normalized['subtotal'];
+        }
+
+        return $subtotal;
+    }
+
+    public static function normalizePurchaseData(array $data): array
+    {
+        $data['subtotal'] = self::calculateItemsSubtotal($data['items'] ?? []);
+        $data['tax'] = max(0, (int) ($data['tax'] ?? 0));
+        $data['total'] = max(0, $data['subtotal'] + $data['tax']);
+
+        return $data;
     }
 
     public static function table(Table $table): Table
@@ -207,10 +246,11 @@ class PurchaseResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->label('Ubah'),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Hapus')
+                    ->visible(fn (Purchase $record): bool => $record->status !== 'received' && blank($record->received_at)),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()->label('Hapus'),
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getPages(): array

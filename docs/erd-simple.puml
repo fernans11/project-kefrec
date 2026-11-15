@@ -1,0 +1,272 @@
+@startuml
+title Project Kefrec - ERD Simple
+
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+entity users {
+  * id : bigint <<PK>>
+  --
+  name : string
+  email : string <<unique>>
+  usertype : string
+}
+
+entity customers {
+  * id : bigint <<PK>>
+  --
+  user_id : bigint <<FK, unique, nullable>>
+  name : string
+  email : string
+  phone : string
+  is_member : boolean
+}
+
+entity categories {
+  * id : bigint <<PK>>
+  --
+  name : string <<unique>>
+  slug : string <<unique>>
+}
+
+entity products {
+  * id : bigint <<PK>>
+  --
+  category_id : bigint <<indexed, nullable>>
+  name : string
+  slug : string <<unique>>
+  price : int
+  stock : int
+  track_stock : boolean
+}
+
+entity ingredients {
+  * id : bigint <<PK>>
+  --
+  name : string
+  unit : string
+  stock : decimal
+  min_stock : decimal
+}
+
+entity ingredient_product {
+  * id : bigint <<PK>>
+  --
+  product_id : bigint <<FK>>
+  ingredient_id : bigint <<FK>>
+  qty : decimal
+}
+
+entity transactions {
+  * id : bigint <<PK>>
+  --
+  invoice_no : string <<unique>>
+  customer_id : bigint <<FK, nullable>>
+  cashier_id : bigint <<FK, nullable>>
+  total : int
+  payment_method : string
+  status : string
+}
+
+entity transaction_items {
+  * id : bigint <<PK>>
+  --
+  transaction_id : bigint <<FK>>
+  product_id : bigint <<FK>>
+  qty : int
+  price : int
+  subtotal : int
+}
+
+entity sales_returns {
+  * id : bigint <<PK>>
+  --
+  return_no : string <<unique>>
+  transaction_id : bigint <<FK, nullable>>
+  customer_id : bigint <<FK, nullable>>
+  status : string
+  total : int
+}
+
+entity sales_return_items {
+  * id : bigint <<PK>>
+  --
+  sales_return_id : bigint <<FK>>
+  product_id : bigint <<FK>>
+  qty : decimal
+  subtotal : int
+}
+
+entity suppliers {
+  * id : bigint <<PK>>
+  --
+  name : string
+  email : string
+  phone : string
+}
+
+entity purchases {
+  * id : bigint <<PK>>
+  --
+  invoice_no : string <<unique>>
+  supplier_id : bigint <<FK, nullable>>
+  purchased_at : date
+  status : string
+  total : int
+}
+
+entity purchase_items {
+  * id : bigint <<PK>>
+  --
+  purchase_id : bigint <<FK>>
+  ingredient_id : bigint <<FK>>
+  qty : decimal
+  subtotal : int
+}
+
+entity purchase_returns {
+  * id : bigint <<PK>>
+  --
+  return_no : string <<unique>>
+  purchase_id : bigint <<FK, nullable>>
+  supplier_id : bigint <<FK, nullable>>
+  status : string
+  total : int
+}
+
+entity purchase_return_items {
+  * id : bigint <<PK>>
+  --
+  purchase_return_id : bigint <<FK>>
+  ingredient_id : bigint <<FK>>
+  qty : decimal
+  subtotal : int
+}
+
+entity complaints {
+  * id : bigint <<PK>>
+  --
+  customer_id : bigint <<FK, nullable>>
+  handled_by : bigint <<FK, nullable>>
+  title : string
+  message : text
+  status : string
+}
+
+entity audit_logs {
+  * id : bigint <<PK>>
+  --
+  user_id : bigint <<FK, nullable>>
+  subject_type : string
+  subject_id : bigint
+  action : string
+}
+
+entity cashflows {
+  * id : bigint <<PK>>
+  --
+  date : date
+  type : string
+  category : string
+  amount : int
+  source : string
+}
+
+entity staff {
+  * id : bigint <<PK>>
+  --
+  name : string
+  position : string
+  is_active : boolean
+}
+
+entity attendances {
+  * id : bigint <<PK>>
+  --
+  staff_id : bigint <<FK>>
+  date : date
+  clock_in : time
+  clock_out : time
+  status : string
+}
+
+entity roles {
+  * id : bigint <<PK>>
+  --
+  name : string
+  guard_name : string
+}
+
+entity permissions {
+  * id : bigint <<PK>>
+  --
+  name : string
+  guard_name : string
+}
+
+entity model_has_roles {
+  * role_id : bigint <<PK, FK>>
+  * model_id : bigint <<PK>>
+  * model_type : string <<PK>>
+}
+
+entity model_has_permissions {
+  * permission_id : bigint <<PK, FK>>
+  * model_id : bigint <<PK>>
+  * model_type : string <<PK>>
+}
+
+entity role_has_permissions {
+  * permission_id : bigint <<PK, FK>>
+  * role_id : bigint <<PK, FK>>
+}
+
+users "1" -- "0..1" customers : owns
+categories "1" .. "0..*" products : category_id
+products "1" -- "0..*" ingredient_product
+ingredients "1" -- "0..*" ingredient_product
+
+customers "0..1" -- "0..*" transactions
+users "0..1" -- "0..*" transactions : cashier
+transactions "1" -- "1..*" transaction_items
+products "1" -- "0..*" transaction_items
+
+transactions "0..1" -- "0..*" sales_returns
+customers "0..1" -- "0..*" sales_returns
+sales_returns "1" -- "1..*" sales_return_items
+products "1" -- "0..*" sales_return_items
+
+suppliers "0..1" -- "0..*" purchases
+purchases "1" -- "1..*" purchase_items
+ingredients "1" -- "0..*" purchase_items
+purchases "0..1" -- "0..*" purchase_returns
+suppliers "0..1" -- "0..*" purchase_returns
+purchase_returns "1" -- "1..*" purchase_return_items
+ingredients "1" -- "0..*" purchase_return_items
+
+customers "0..1" -- "0..*" complaints
+users "0..1" -- "0..*" complaints : handled_by
+users "0..1" -- "0..*" audit_logs
+staff "1" -- "0..*" attendances
+
+roles "1" -- "0..*" model_has_roles
+permissions "1" -- "0..*" model_has_permissions
+roles "1" -- "0..*" role_has_permissions
+permissions "1" -- "0..*" role_has_permissions
+
+note right of products
+  category_id belum punya constraint FK di migration,
+  jadi relasi categories-products bersifat konseptual.
+end note
+
+note right of audit_logs
+  subject_type + subject_id adalah polymorphic reference.
+end note
+
+@enduml

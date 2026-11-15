@@ -1,0 +1,369 @@
+@startuml
+title Entity Relationship Diagram Sistem KEFREC
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam entity {
+  BackgroundColor #FFFFFF
+  BorderColor #334155
+  ArrowColor #334155
+}
+
+package "Pengguna dan Pelanggan" #E8F1FB {
+  entity users {
+    * id : BIGINT <<PK>>
+    --
+    name : VARCHAR
+    username : VARCHAR <<NULL>>
+    email : VARCHAR <<UQ>>
+    email_verified_at : TIMESTAMP <<NULL>>
+    usertype : VARCHAR
+    phone : VARCHAR <<NULL>>
+    password : VARCHAR
+    remember_token : VARCHAR <<NULL>>
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  entity customers {
+    * id : BIGINT <<PK>>
+    --
+    user_id : BIGINT <<FK, UQ, NULL>>
+    name : VARCHAR
+    email : VARCHAR <<NULL>>
+    phone : VARCHAR <<NULL>>
+    address : TEXT <<NULL>>
+    is_member : BOOLEAN
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+}
+
+package "Katalog dan Persediaan" #EAF7EA {
+  entity categories {
+    * id : BIGINT <<PK>>
+    --
+    name : VARCHAR <<UQ>>
+    slug : VARCHAR <<UQ>>
+    sort_order : UNSIGNED_INT
+    is_active : BOOLEAN
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  entity products {
+    * id : BIGINT <<PK>>
+    --
+    category_id : BIGINT <<INDEX, NULL>>
+    category : VARCHAR <<NULL>>
+    name : VARCHAR
+    slug : VARCHAR <<UQ, NULL>>
+    description : TEXT <<NULL>>
+    stock : INT
+    track_stock : BOOLEAN
+    price : INT
+    image_url : VARCHAR <<NULL>>
+    is_active : BOOLEAN
+    is_popular : BOOLEAN
+    is_new : BOOLEAN
+    rating : DECIMAL(3,2) <<NULL>>
+    sort_order : INT
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  entity ingredients {
+    * id : BIGINT <<PK>>
+    --
+    name : VARCHAR
+    unit : VARCHAR
+    stock : DECIMAL(12,2)
+    min_stock : DECIMAL(12,2)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  entity ingredient_product {
+    * id : BIGINT <<PK>>
+    --
+    product_id : BIGINT <<FK>>
+    ingredient_id : BIGINT <<FK>>
+    qty : DECIMAL(12,2)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+    --
+    UNIQUE(product_id, ingredient_id)
+  }
+}
+
+package "Penjualan" #FFF3D8 {
+  entity transactions {
+    * id : BIGINT <<PK>>
+    --
+    invoice_no : VARCHAR <<UQ>>
+    midtrans_order_id : VARCHAR <<UQ, NULL>>
+    midtrans_transaction_id : VARCHAR <<NULL>>
+    snap_token : VARCHAR <<NULL>>
+    customer_id : BIGINT <<FK, NULL>>
+    cashier_id : BIGINT <<FK, NULL>>
+    subtotal : INT
+    discount : INT
+    tax : INT
+    total : INT
+    payment_method : VARCHAR <<NULL>>
+    payment_status : VARCHAR <<NULL>>
+    payment_type : VARCHAR <<NULL>>
+    payment_payload : JSON <<NULL>>
+    paid_at : TIMESTAMP <<NULL>>
+    paid_amount : INT
+    change_amount : INT
+    status : VARCHAR
+    stock_deducted_at : TIMESTAMP <<NULL>>
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  entity transaction_items {
+    * id : BIGINT <<PK>>
+    --
+    transaction_id : BIGINT <<FK>>
+    product_id : BIGINT <<FK>>
+    qty : INT
+    price : INT
+    subtotal : INT
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  entity sales_returns {
+    * id : BIGINT <<PK>>
+    --
+    return_no : VARCHAR <<UQ>>
+    transaction_id : BIGINT <<FK, NULL>>
+    customer_id : BIGINT <<FK, NULL>>
+    status : VARCHAR
+    subtotal : INT
+    tax : INT
+    total : INT
+    processed_at : TIMESTAMP <<NULL>>
+    notes : TEXT <<NULL>>
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  entity sales_return_items {
+    * id : BIGINT <<PK>>
+    --
+    sales_return_id : BIGINT <<FK>>
+    product_id : BIGINT <<FK>>
+    qty : DECIMAL(12,2)
+    price : INT
+    subtotal : INT
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+}
+
+package "Pembelian" #F4EAFE {
+  entity suppliers {
+    * id : BIGINT <<PK>>
+    --
+    name : VARCHAR
+    email : VARCHAR <<NULL>>
+    phone : VARCHAR <<NULL>>
+    address : TEXT <<NULL>>
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  entity purchases {
+    * id : BIGINT <<PK>>
+    --
+    invoice_no : VARCHAR <<UQ>>
+    supplier_id : BIGINT <<FK, NULL>>
+    purchased_at : DATE <<NULL>>
+    status : VARCHAR
+    subtotal : INT
+    tax : INT
+    total : INT
+    received_at : TIMESTAMP <<NULL>>
+    notes : TEXT <<NULL>>
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  entity purchase_items {
+    * id : BIGINT <<PK>>
+    --
+    purchase_id : BIGINT <<FK>>
+    ingredient_id : BIGINT <<FK>>
+    qty : DECIMAL(12,2)
+    price : INT
+    subtotal : INT
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  entity purchase_returns {
+    * id : BIGINT <<PK>>
+    --
+    return_no : VARCHAR <<UQ>>
+    purchase_id : BIGINT <<FK, NULL>>
+    supplier_id : BIGINT <<FK, NULL>>
+    status : VARCHAR
+    subtotal : INT
+    tax : INT
+    total : INT
+    processed_at : TIMESTAMP <<NULL>>
+    notes : TEXT <<NULL>>
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  entity purchase_return_items {
+    * id : BIGINT <<PK>>
+    --
+    purchase_return_id : BIGINT <<FK>>
+    ingredient_id : BIGINT <<FK>>
+    qty : DECIMAL(12,2)
+    price : INT
+    subtotal : INT
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+}
+
+package "Operasional dan Audit" #FDECEC {
+  entity staff {
+    * id : BIGINT <<PK>>
+    --
+    name : VARCHAR
+    position : VARCHAR <<NULL>>
+    phone : VARCHAR <<NULL>>
+    is_active : BOOLEAN
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  entity attendances {
+    * id : BIGINT <<PK>>
+    --
+    staff_id : BIGINT <<FK>>
+    date : DATE
+    clock_in : TIME <<NULL>>
+    clock_out : TIME <<NULL>>
+    status : VARCHAR
+    notes : TEXT <<NULL>>
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+    --
+    UNIQUE(staff_id, date)
+  }
+
+  entity complaints {
+    * id : BIGINT <<PK>>
+    --
+    customer_id : BIGINT <<FK, NULL>>
+    handled_by : BIGINT <<FK, NULL>>
+    name : VARCHAR <<NULL>>
+    email : VARCHAR <<NULL>>
+    phone : VARCHAR <<NULL>>
+    title : VARCHAR <<NULL>>
+    message : TEXT
+    status : VARCHAR
+    response : TEXT <<NULL>>
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  entity cashflows {
+    * id : BIGINT <<PK>>
+    --
+    date : DATE
+    type : VARCHAR
+    category : VARCHAR <<NULL>>
+    amount : INT
+    source : VARCHAR <<NULL>>
+    notes : TEXT <<NULL>>
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  entity audit_logs {
+    * id : BIGINT <<PK>>
+    --
+    user_id : BIGINT <<FK, NULL>>
+    subject_type : VARCHAR <<NULL>>
+    subject_id : BIGINT <<NULL>>
+    action : VARCHAR
+    description : TEXT <<NULL>>
+    metadata : JSON <<NULL>>
+    ip : VARCHAR(45) <<NULL>>
+    user_agent : TEXT <<NULL>>
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+}
+
+' Foreign-key relationships
+users |o--o| customers : user_id
+customers |o--o{ transactions : customer_id
+users |o--o{ transactions : cashier_id
+products ||--o{ ingredient_product : product_id
+ingredients ||--o{ ingredient_product : ingredient_id
+transactions ||--o{ transaction_items : transaction_id
+products ||--o{ transaction_items : product_id
+transactions |o--o{ sales_returns : transaction_id
+customers |o--o{ sales_returns : customer_id
+sales_returns ||--o{ sales_return_items : sales_return_id
+products ||--o{ sales_return_items : product_id
+suppliers |o--o{ purchases : supplier_id
+purchases ||--o{ purchase_items : purchase_id
+ingredients ||--o{ purchase_items : ingredient_id
+purchases |o--o{ purchase_returns : purchase_id
+suppliers |o--o{ purchase_returns : supplier_id
+purchase_returns ||--o{ purchase_return_items : purchase_return_id
+ingredients ||--o{ purchase_return_items : ingredient_id
+staff ||--o{ attendances : staff_id
+customers |o--o{ complaints : customer_id
+users |o--o{ complaints : handled_by
+users |o--o{ audit_logs : user_id
+
+' Conceptual / polymorphic relationships
+categories ||..o{ products : category_id (tanpa FK)
+transactions |o..o{ audit_logs : subject polymorphic
+purchases |o..o{ audit_logs : subject polymorphic
+sales_returns |o..o{ audit_logs : subject polymorphic
+purchase_returns |o..o{ audit_logs : subject polymorphic
+complaints |o..o{ audit_logs : subject polymorphic
+transactions |o..o{ cashflows : source = sales
+purchases |o..o{ cashflows : source = purchase
+sales_returns |o..o{ cashflows : source = sales_return
+purchase_returns |o..o{ cashflows : source = purchase_return
+
+legend right
+  |= Simbol |= Keterangan |
+  | PK | Primary Key |
+  | FK | Foreign Key |
+  | UQ | Unique Constraint |
+  | NULL | Nullable |
+  | Garis penuh | Relasi FK database |
+  | Garis putus-putus | Relasi konseptual/polymorphic |
+endlegend
+
+note bottom of products
+  category_id digunakan oleh aplikasi dan memiliki index,
+  tetapi migration belum mendefinisikan foreign key.
+end note
+
+note bottom of audit_logs
+  subject_type + subject_id dapat menunjuk berbagai model.
+end note
+
+note bottom of cashflows
+  Hubungan sumber arus kas disimpan melalui konvensi
+  nilai source dan notes, bukan foreign key.
+end note
+@enduml

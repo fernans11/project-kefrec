@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="4050" viewBox="0 0 1800 4050">
+<defs>
+<marker id="arrow" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="strokeWidth">
+<path d="M 0 0 L 14 7 L 0 14 z" fill="#000" />
+</marker>
+</defs>
+<rect x="0" y="0" width="100%" height="100%" fill="#fff" />
+<rect x="80" y="135" width="520" height="100" rx="24" ry="24" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="340" y="169" font-family="Times New Roman, Times, serif" font-size="27" font-weight="normal" text-anchor="middle" dominant-baseline="middle"><tspan x="340" dy="0">Sistem Penjualan KeFrec Coffee</tspan><tspan x="340" dy="32">Shop yang Sedang Berjalan</tspan></text>
+<rect x="1180" y="120" width="520" height="131" rx="24" ry="24" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="1440" y="153" font-family="Times New Roman, Times, serif" font-size="27" font-weight="normal" text-anchor="middle" dominant-baseline="middle"><tspan x="1440" dy="0">Proses Bisnis Berjalan</tspan><tspan x="1440" dy="32">Identifikasi Permasalahan</tspan><tspan x="1440" dy="32">Analisis Alur Transaksi</tspan></text>
+<ellipse cx="900" cy="185" rx="210" ry="56" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="900" y="185" font-family="Times New Roman, Times, serif" font-size="30" font-weight="bold" text-anchor="middle" dominant-baseline="middle"><tspan x="900" dy="0">Analisis Sistem</tspan></text>
+<line x1="600" y1="185" x2="690" y2="185" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<line x1="1110" y1="185" x2="1180" y2="185" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<line x1="900" y1="241" x2="900" y2="624" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<rect x="80" y="599" width="520" height="162" rx="24" ry="24" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="340" y="632" font-family="Times New Roman, Times, serif" font-size="27" font-weight="normal" text-anchor="middle" dominant-baseline="middle"><tspan x="340" dy="0">Hasil Observasi</tspan><tspan x="340" dy="32">Hasil Wawancara</tspan><tspan x="340" dy="32">Studi Literatur</tspan><tspan x="340" dy="32">Hasil Analisis Sistem</tspan></text>
+<rect x="1180" y="537" width="520" height="286" rx="24" ry="24" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="1440" y="568" font-family="Times New Roman, Times, serif" font-size="27" font-weight="normal" text-anchor="middle" dominant-baseline="middle"><tspan x="1440" dy="0">Kebutuhan Fungsional: menu produk,</tspan><tspan x="1440" dy="32">cart, checkout, pembayaran tunai dan</tspan><tspan x="1440" dy="32">Midtrans, approval kasir, dapur,</tspan><tspan x="1440" dy="32">stok, pengguna, transaksi, komplain,</tspan><tspan x="1440" dy="32">laporan</tspan><tspan x="1440" dy="32">Kebutuhan Non-Fungsional: keamanan</tspan><tspan x="1440" dy="32">akses, kemudahan penggunaan,</tspan><tspan x="1440" dy="32">performa, akses melalui web browser</tspan></text>
+<ellipse cx="900" cy="680" rx="210" ry="56" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="900" y="680" font-family="Times New Roman, Times, serif" font-size="30" font-weight="bold" text-anchor="middle" dominant-baseline="middle"><tspan x="900" dy="0">Analisis Kebutuhan</tspan></text>
+<line x1="600" y1="680" x2="690" y2="680" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<line x1="1110" y1="680" x2="1180" y2="680" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<line x1="900" y1="736" x2="900" y2="1139" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<rect x="80" y="1130" width="520" height="131" rx="24" ry="24" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="340" y="1163" font-family="Times New Roman, Times, serif" font-size="27" font-weight="normal" text-anchor="middle" dominant-baseline="middle"><tspan x="340" dy="0">Daftar Kebutuhan Sistem</tspan><tspan x="340" dy="32">Workflow Bisnis</tspan><tspan x="340" dy="32">Aturan Sistem</tspan></text>
+<rect x="1180" y="1068" width="520" height="255" rx="24" ry="24" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="1440" y="1099" font-family="Times New Roman, Times, serif" font-size="27" font-weight="normal" text-anchor="middle" dominant-baseline="middle"><tspan x="1440" dy="0">Konsep Arsitektur MVC</tspan><tspan x="1440" dy="32">Arsitektur Perangkat Lunak</tspan><tspan x="1440" dy="32">Diagram Konteks</tspan><tspan x="1440" dy="32">Data Flow Diagram</tspan><tspan x="1440" dy="32">Use Case Diagram</tspan><tspan x="1440" dy="32">Sequence Diagram</tspan><tspan x="1440" dy="32">Entity Relationship Diagram</tspan></text>
+<ellipse cx="900" cy="1195" rx="210" ry="56" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="900" y="1195" font-family="Times New Roman, Times, serif" font-size="30" font-weight="bold" text-anchor="middle" dominant-baseline="middle"><tspan x="900" dy="0">Perancangan Sistem</tspan></text>
+<line x1="600" y1="1195" x2="690" y2="1195" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<line x1="1110" y1="1195" x2="1180" y2="1195" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<line x1="900" y1="1251" x2="900" y2="1664" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<rect x="80" y="1639" width="520" height="162" rx="24" ry="24" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="340" y="1672" font-family="Times New Roman, Times, serif" font-size="27" font-weight="normal" text-anchor="middle" dominant-baseline="middle"><tspan x="340" dy="0">Hasil Perancangan Sistem</tspan><tspan x="340" dy="32">Perancangan Menu</tspan><tspan x="340" dy="32">Perancangan Input</tspan><tspan x="340" dy="32">Perancangan Output</tspan></text>
+<rect x="1180" y="1608" width="520" height="224" rx="24" ry="24" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="1440" y="1640" font-family="Times New Roman, Times, serif" font-size="27" font-weight="normal" text-anchor="middle" dominant-baseline="middle"><tspan x="1440" dy="0">Landing Page dan Menu Produk</tspan><tspan x="1440" dy="32">Keranjang dan Checkout</tspan><tspan x="1440" dy="32">Halaman Member</tspan><tspan x="1440" dy="32">Halaman Kasir</tspan><tspan x="1440" dy="32">Halaman Dapur</tspan><tspan x="1440" dy="32">Panel Admin dan Owner</tspan></text>
+<ellipse cx="900" cy="1720" rx="210" ry="56" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="900" y="1720" font-family="Times New Roman, Times, serif" font-size="30" font-weight="bold" text-anchor="middle" dominant-baseline="middle"><tspan x="900" dy="0">Pembuatan Interface</tspan></text>
+<line x1="600" y1="1720" x2="690" y2="1720" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<line x1="1110" y1="1720" x2="1180" y2="1720" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<line x1="900" y1="1776" x2="900" y2="2189" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<rect x="80" y="2118" width="520" height="255" rx="24" ry="24" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="340" y="2149" font-family="Times New Roman, Times, serif" font-size="27" font-weight="normal" text-anchor="middle" dominant-baseline="middle"><tspan x="340" dy="0">PHP 8.2</tspan><tspan x="340" dy="32">Laravel 12</tspan><tspan x="340" dy="32">Filament</tspan><tspan x="340" dy="32">MySQL</tspan><tspan x="340" dy="32">Composer</tspan><tspan x="340" dy="32">Apache/XAMPP</tspan><tspan x="340" dy="32">Midtrans</tspan></text>
+<rect x="1180" y="2195" width="520" height="100" rx="24" ry="24" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="1440" y="2229" font-family="Times New Roman, Times, serif" font-size="27" font-weight="normal" text-anchor="middle" dominant-baseline="middle"><tspan x="1440" dy="0">Sistem Informasi Penjualan Pada</tspan><tspan x="1440" dy="32">KeFrec Coffee Shop Berbasis Website</tspan></text>
+<ellipse cx="900" cy="2245" rx="210" ry="56" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="900" y="2245" font-family="Times New Roman, Times, serif" font-size="30" font-weight="bold" text-anchor="middle" dominant-baseline="middle"><tspan x="900" dy="0">Pembuatan Sistem</tspan></text>
+<line x1="600" y1="2245" x2="690" y2="2245" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<line x1="1110" y1="2245" x2="1180" y2="2245" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<line x1="900" y1="2301" x2="900" y2="2704" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<rect x="80" y="2633" width="520" height="255" rx="24" ry="24" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="340" y="2664" font-family="Times New Roman, Times, serif" font-size="27" font-weight="normal" text-anchor="middle" dominant-baseline="middle"><tspan x="340" dy="0">Konfigurasi Aplikasi</tspan><tspan x="340" dy="32">Konfigurasi Database</tspan><tspan x="340" dy="32">Migrasi Database</tspan><tspan x="340" dy="32">Integrasi Midtrans</tspan><tspan x="340" dy="32">Pengisian Data Awal</tspan><tspan x="340" dy="32">Black Box Testing</tspan><tspan x="340" dy="32">Evaluasi Sistem</tspan></text>
+<rect x="1180" y="2679" width="520" height="162" rx="24" ry="24" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="1440" y="2712" font-family="Times New Roman, Times, serif" font-size="27" font-weight="normal" text-anchor="middle" dominant-baseline="middle"><tspan x="1440" dy="0">Frontend dan Backend Terintegrasi</tspan><tspan x="1440" dy="32">Fungsi Sistem Berjalan Sesuai</tspan><tspan x="1440" dy="32">Kebutuhan</tspan><tspan x="1440" dy="32">Hasil Pengujian Black Box</tspan></text>
+<ellipse cx="900" cy="2760" rx="210" ry="56" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="900" y="2760" font-family="Times New Roman, Times, serif" font-size="30" font-weight="bold" text-anchor="middle" dominant-baseline="middle"><tspan x="900" dy="0">Implementasi Sistem</tspan></text>
+<line x1="600" y1="2760" x2="690" y2="2760" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<line x1="1110" y1="2760" x2="1180" y2="2760" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<line x1="900" y1="2816" x2="900" y2="3224" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<rect x="80" y="3137" width="520" height="286" rx="24" ry="24" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="340" y="3168" font-family="Times New Roman, Times, serif" font-size="27" font-weight="normal" text-anchor="middle" dominant-baseline="middle"><tspan x="340" dy="0">Data Kategori</tspan><tspan x="340" dy="32">Data Produk</tspan><tspan x="340" dy="32">Data Bahan Baku</tspan><tspan x="340" dy="32">Data Pengguna</tspan><tspan x="340" dy="32">Data Transaksi</tspan><tspan x="340" dy="32">Data Pembayaran</tspan><tspan x="340" dy="32">Data Komplain</tspan><tspan x="340" dy="32">Data Riwayat Stok</tspan></text>
+<rect x="1180" y="3153" width="520" height="255" rx="24" ry="24" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="1440" y="3184" font-family="Times New Roman, Times, serif" font-size="27" font-weight="normal" text-anchor="middle" dominant-baseline="middle"><tspan x="1440" dy="0">Informasi Produk</tspan><tspan x="1440" dy="32">Informasi Pesanan</tspan><tspan x="1440" dy="32">Informasi Transaksi</tspan><tspan x="1440" dy="32">Informasi Pembayaran</tspan><tspan x="1440" dy="32">Informasi Stok Bahan Baku</tspan><tspan x="1440" dy="32">Informasi Komplain</tspan><tspan x="1440" dy="32">Informasi Laporan Penjualan</tspan></text>
+<ellipse cx="900" cy="3280" rx="210" ry="56" fill="#fff" stroke="#000" stroke-width="3" />
+<text x="900" y="3280" font-family="Times New Roman, Times, serif" font-size="30" font-weight="bold" text-anchor="middle" dominant-baseline="middle"><tspan x="900" dy="0">Aplikasi/Sistem</tspan></text>
+<line x1="600" y1="3280" x2="690" y2="3280" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<line x1="1110" y1="3280" x2="1180" y2="3280" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+<text x="900" y="3960" font-family="Times New Roman, Times, serif" font-size="36" font-weight="bold" text-anchor="middle">Gambar 3.1 Tahapan Penelitian</text>
+</svg>

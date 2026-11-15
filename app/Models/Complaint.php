@@ -15,6 +15,7 @@ class Complaint extends Model
         'name',
         'email',
         'phone',
+        'title',
         'message',
         'status',
         'response',
@@ -85,7 +86,7 @@ class Complaint extends Model
         });
 
         static::updated(function (Complaint $complaint) {
-            if (! $complaint->wasChanged(['status', 'response', 'message', 'handled_by'])) {
+            if (! $complaint->wasChanged(['status', 'response', 'title', 'message', 'handled_by'])) {
                 return;
             }
 

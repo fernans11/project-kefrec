@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Output Laporan Penjualan - Laravel</title>
+  <style>
+    :root {
+      --page: #09090b;
+      --topbar: #18181b;
+      --sidebar: #09090b;
+      --panel: #18181b;
+      --panel-2: #242427;
+      --border: #2e2e33;
+      --border-2: #3f3f46;
+      --text: #ffffff;
+      --muted: #a1a1aa;
+      --yellow: #f5b800;
+      --green: #22c55e;
+      --blue: #3b82f6;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #eeeeee;
+      font-family: Arial, "Segoe UI", sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .figure {
+      width: 1320px;
+      background: #ffffff;
+      padding: 18px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, .16);
+    }
+
+    .caption {
+      color: #111111;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .app {
+      min-height: 850px;
+      color: var(--text);
+      background: var(--page);
+      border: 1px solid #d7d7d7;
+      display: grid;
+      grid-template-rows: 64px 1fr;
+      overflow: visible;
+    }
+
+    .topbar {
+      background: var(--topbar);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+
+    .brand { font-size: 20px; font-weight: 800; }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #050506;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 275px 1fr;
+    }
+
+    .sidebar {
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      padding: 22px 14px;
+    }
+
+    .nav-group { margin-bottom: 24px; }
+
+    .nav-head {
+      height: 28px;
+      padding: 0 8px;
+      color: var(--muted);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-head::after {
+      content: "^";
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .nav-item {
+      height: 40px;
+      border-radius: 8px;
+      padding: 0 10px;
+      color: #f4f4f5;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    .nav-item.active {
+      background: var(--panel);
+      color: var(--yellow);
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      border: 1.7px solid currentColor;
+      border-radius: 4px;
+      flex: 0 0 auto;
+      opacity: .95;
+    }
+
+    .content {
+      padding: 34px 44px 56px;
+    }
+
+    .content-inner {
+      max-width: 930px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 30px;
+      line-height: 1;
+      margin-bottom: 24px;
+      font-weight: 800;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .summary-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      min-height: 90px;
+      display: grid;
+      align-content: center;
+      gap: 10px;
+    }
+
+    .summary-label {
+      color: #b8c4df;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .summary-value {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      min-height: 64px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 20px;
+    }
+
+    .panel-title {
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter,
+    .button {
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      padding: 9px 12px;
+      color: #e4e4e7;
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--panel-2);
+      white-space: nowrap;
+    }
+
+    .button {
+      color: #151515;
+      background: var(--yellow);
+      border-color: var(--yellow);
+      font-weight: 900;
+    }
+
+    .toolbar {
+      min-height: 58px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: var(--panel);
+    }
+
+    .search {
+      width: 250px;
+      height: 38px;
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      background: var(--panel-2);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      padding: 0 13px;
+      font-size: 13px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 15px 18px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    th {
+      background: var(--panel-2);
+      color: #f4f4f5;
+      font-weight: 900;
+    }
+
+    td { color: #ffffff; }
+
+    td.money,
+    th.money {
+      text-align: right;
+    }
+
+    .status-row {
+      min-height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      color: #f4f4f5;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+    }
+
+    .page-box {
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #ffffff;
+      background: var(--panel-2);
+    }
+
+    .note {
+      color: #222222;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <section class="figure">
+    <div class="caption">Gambar 5.x Halaman Output Laporan Penjualan</div>
+
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">Laravel</div>
+        <div class="avatar">F</div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="nav-group">
+            <div class="nav-item"><span class="nav-icon"></span>Dashboard</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Master Data</div>
+            <div class="nav-item"><span class="nav-icon"></span>Produk / Menu</div>
+            <div class="nav-item"><span class="nav-icon"></span>Bahan Baku</div>
+            <div class="nav-item"><span class="nav-icon"></span>Supplier</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Manajemen Transaksi</div>
+            <div class="nav-item"><span class="nav-icon"></span>Transaksi</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Keuangan</div>
+            <div class="nav-item"><span class="nav-icon"></span>Keuangan</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Retur</div>
+            <div class="nav-item"><span class="nav-icon"></span>Retur Penjualan</div>
+            <div class="nav-item"><span class="nav-icon"></span>Retur Pembelian</div>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-head">Laporan</div>
+            <div class="nav-item active"><span class="nav-icon"></span>Laporan Periodik</div>
+            <div class="nav-item"><span class="nav-icon"></span>Laporan Absensi</div>
+          </div>
+        </aside>
+
+        <main class="content">
+          <div class="content-inner">
+            <h1>Laporan Periodik</h1>
+
+            <div class="summary">
+              <section class="summary-card">
+                <div class="summary-label">Jumlah Order</div>
+                <div class="summary-value">18</div>
+              </section>
+              <section class="summary-card">
+                <div class="summary-label">Subtotal</div>
+                <div class="summary-value">Rp 814.000</div>
+              </section>
+              <section class="summary-card">
+                <div class="summary-label">Diskon</div>
+                <div class="summary-value">Rp 0</div>
+              </section>
+              <section class="summary-card">
+                <div class="summary-label">Total Penjualan</div>
+                <div class="summary-value">Rp 814.000</div>
+              </section>
+            </div>
+
+            <section class="panel">
+              <div class="panel-head">
+                <div class="panel-title">Laporan Penjualan Periodik</div>
+                <div class="actions">
+                  <div class="filter">Status: Selesai</div>
+                  <div class="filter">Periode: 01 Jul 2026 - 10 Jul 2026</div>
+                  <div class="button">Export CSV (Ringkasan)</div>
+                </div>
+              </div>
+
+              <div class="toolbar">
+                <div class="search">Search</div>
+                <div class="filter">Columns</div>
+              </div>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Jumlah Order</th>
+                    <th class="money">Subtotal</th>
+                    <th class="money">Diskon</th>
+                    <th class="money">Pajak</th>
+                    <th class="money">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>10 Jul 2026</td>
+                    <td>4</td>
+                    <td class="money">IDR 210,000.00</td>
+                    <td class="money">IDR 0.00</td>
+                    <td class="money">IDR 0.00</td>
+                    <td class="money">IDR 210,000.00</td>
+                  </tr>
+                  <tr>
+                    <td>09 Jul 2026</td>
+                    <td>3</td>
+                    <td class="money">IDR 132,000.00</td>
+                    <td class="money">IDR 0.00</td>
+                    <td class="money">IDR 0.00</td>
+                    <td class="money">IDR 132,000.00</td>
+                  </tr>
+                  <tr>
+                    <td>08 Jul 2026</td>
+                    <td>5</td>
+                    <td class="money">IDR 228,000.00</td>
+                    <td class="money">IDR 0.00</td>
+                    <td class="money">IDR 0.00</td>
+                    <td class="money">IDR 228,000.00</td>
+                  </tr>
+                  <tr>
+                    <td>07 Jul 2026</td>
+                    <td>3</td>
+                    <td class="money">IDR 188,000.00</td>
+                    <td class="money">IDR 0.00</td>
+                    <td class="money">IDR 0.00</td>
+                    <td class="money">IDR 188,000.00</td>
+                  </tr>
+                  <tr>
+                    <td>06 Jul 2026</td>
+                    <td>3</td>
+                    <td class="money">IDR 56,000.00</td>
+                    <td class="money">IDR 0.00</td>
+                    <td class="money">IDR 0.00</td>
+                    <td class="money">IDR 56,000.00</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="status-row">
+                <div>Showing 1 to 5 of 5 results</div>
+                <div class="pagination">
+                  <span>Per page</span>
+                  <span class="page-box">10</span>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <p class="note">
+      <strong>Keterangan:</strong> Halaman output laporan penjualan menampilkan rekap transaksi secara periodik berdasarkan tanggal.
+      Informasi yang ditampilkan meliputi tanggal, jumlah order, subtotal, diskon, pajak, total, filter status, filter periode, dan fitur export CSV.
+    </p>
+  </section>
+</body>
+</html>

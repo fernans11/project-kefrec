@@ -17,7 +17,6 @@ class MenuSeeder extends Seeder
                 'price' => 25000,
                 'category' => 'Minuman',
                 'image_url' => 'https://images.unsplash.com/photo-1708430651927-20e2e1f1e8f7?auto=format&fit=crop&w=800&q=80',
-                'is_popular' => true,
                 'rating' => 4.8,
             ],
             [
@@ -34,7 +33,6 @@ class MenuSeeder extends Seeder
                 'price' => 28000,
                 'category' => 'Minuman',
                 'image_url' => 'https://images.unsplash.com/photo-1582152747136-af63c112fce5?auto=format&fit=crop&w=800&q=80',
-                'is_popular' => true,
                 'rating' => 4.7,
             ],
             [
@@ -51,7 +49,6 @@ class MenuSeeder extends Seeder
                 'price' => 26000,
                 'category' => 'Minuman',
                 'image_url' => 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?auto=format&fit=crop&w=800&q=80',
-                'is_new' => true,
                 'rating' => 4.5,
             ],
             [
@@ -68,7 +65,6 @@ class MenuSeeder extends Seeder
                 'price' => 20000,
                 'category' => 'Makanan',
                 'image_url' => 'https://images.unsplash.com/photo-1712723247648-64a03ba7c333?auto=format&fit=crop&w=800&q=80',
-                'is_popular' => true,
                 'rating' => 4.6,
             ],
             [
@@ -93,7 +89,6 @@ class MenuSeeder extends Seeder
                 'price' => 25000,
                 'category' => 'Makanan',
                 'image_url' => 'https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&w=800&q=80',
-                'is_new' => true,
                 'rating' => 4.5,
             ],
             [
@@ -102,7 +97,6 @@ class MenuSeeder extends Seeder
                 'price' => 50000,
                 'category' => 'Platters',
                 'image_url' => 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80',
-                'is_popular' => true,
                 'rating' => 4.8,
             ],
             [
@@ -135,8 +129,8 @@ class MenuSeeder extends Seeder
                     'price' => $item['price'] ?? 0,
                     'image_url' => $item['image_url'] ?? null,
                     'is_active' => true,
-                    'is_popular' => (bool)($item['is_popular'] ?? false),
-                    'is_new' => (bool)($item['is_new'] ?? false),
+                    'is_popular' => false,
+                    'is_new' => false,
                     'rating' => $item['rating'] ?? null,
                     'sort_order' => $i + 1,
                 ]

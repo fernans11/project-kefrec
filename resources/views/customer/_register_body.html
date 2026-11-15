@@ -2,7 +2,8 @@
   <div class="register-wrapper">
 
     <a href="#" id="btn-back" class="back-button">
-      <span class="icon">←</span> Kembali
+      <span class="icon" data-lucide="arrow-left"></span>
+      Kembali
     </a>
 
     <div class="register-header">
@@ -28,7 +29,7 @@
         <div class="form-group">
           <label class="form-label" for="full_name">Nama Lengkap</label>
           <div class="field-wrapper">
-            <span class="field-icon-left">👤</span>          
+            <span class="field-icon-left" data-lucide="user"></span>
 
             <!-- PENTING: name="name" untuk Fortify -->
             <input class="input-control" id="full_name" name="name" type="text" placeholder="Nama lengkap" required>
@@ -38,7 +39,7 @@
         <div class="form-group">
           <label class="form-label" for="username">Username</label>
           <div class="field-wrapper">
-            <span class="field-icon-left">👤</span>
+            <span class="field-icon-left" data-lucide="user"></span>
             <input class="input-control" id="username" name="username" type="text" placeholder="Username" required>
           </div>
         </div>
@@ -46,7 +47,7 @@
         <div class="form-group">
           <label class="form-label" for="email">Email</label>
           <div class="field-wrapper">
-            <span class="field-icon-left">✉</span>
+            <span class="field-icon-left" data-lucide="mail"></span>
             <input class="input-control" id="email" name="email" type="email" placeholder="email@domain.com" required>
           </div>
         </div>
@@ -54,7 +55,7 @@
         <div class="form-group">
           <label class="form-label" for="phone">Phone</label>
           <div class="field-wrapper">
-            <span class="field-icon-left">👤</span>
+            <span class="field-icon-left" data-lucide="user"></span>
             <input class="input-control" id="phone" name="phone" type="text" placeholder="Phone" required>
           </div>
         </div>
@@ -62,18 +63,22 @@
         <div class="form-group">
           <label class="form-label" for="password">Password</label>
           <div class="field-wrapper">
-            <span class="field-icon-left">🔒</span>
+            <span class="field-icon-left" data-lucide="lock"></span>
             <input class="input-control" id="password" name="password" type="password" placeholder="Minimal 6 karakter" required>
-            <button type="button" id="toggle-password" class="field-icon-right-btn">👁</button>
+            <button type="button" id="toggle-password" class="field-icon-right-btn" aria-label="Tampilkan password">
+              <span data-lucide="eye"></span>
+            </button>
           </div>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="password_confirmation">Konfirmasi Password</label>
           <div class="field-wrapper">
-            <span class="field-icon-left">🔒</span>
+            <span class="field-icon-left" data-lucide="lock"></span>
             <input class="input-control" id="password_confirmation" name="password_confirmation" type="password" placeholder="Ulangi password" required>
-            <button type="button" id="toggle-password-confirmation" class="field-icon-right-btn">👁</button>
+            <button type="button" id="toggle-password-confirmation" class="field-icon-right-btn" aria-label="Tampilkan konfirmasi password">
+              <span data-lucide="eye"></span>
+            </button>
           </div>
         </div>
 

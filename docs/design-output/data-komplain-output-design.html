@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Halaman Output Data Komplain</title>
+  <style>
+    :root {
+      --bg: #09090b;
+      --topbar: #18181b;
+      --panel: #18181b;
+      --head: #26262a;
+      --border: #2f2f35;
+      --field: #242428;
+      --text: #ffffff;
+      --muted: #a1a1aa;
+      --yellow: #f5b800;
+      --green: #22c55e;
+      --blue: #38bdf8;
+      --red: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #eeeeee;
+      font-family: Arial, "Segoe UI", sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+    }
+
+    .figure {
+      width: 1120px;
+      background: #ffffff;
+      padding: 16px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, .16);
+    }
+
+    .caption {
+      color: #111111;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .app {
+      min-height: 690px;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid #d7d7d7;
+      display: grid;
+      grid-template-rows: 64px 1fr;
+      overflow: hidden;
+    }
+
+    .topbar {
+      background: var(--topbar);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #050506;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      min-height: 626px;
+    }
+
+    .sidebar {
+      background: #09090b;
+      border-right: 1px solid var(--border);
+      padding: 20px 12px;
+    }
+
+    .nav-group {
+      margin-bottom: 24px;
+    }
+
+    .group-title {
+      color: #b8b8c2;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      margin: 0 8px 10px;
+    }
+
+    .nav-item {
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: 7px;
+      padding: 8px 9px;
+      color: #f4f4f5;
+      font-size: 12.5px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .nav-item.active {
+      background: #18181b;
+      color: var(--yellow);
+    }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      border: 1.7px solid currentColor;
+      border-radius: 4px;
+      flex: 0 0 auto;
+    }
+
+    .content {
+      padding: 26px 30px;
+      min-width: 0;
+    }
+
+    .breadcrumb {
+      color: #cbd5e1;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 32px;
+      letter-spacing: -0.02em;
+    }
+
+    .create {
+      background: var(--yellow);
+      color: #111111;
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 16px;
+      font-weight: 800;
+      font-size: 12.5px;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .table-card {
+      width: 100%;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .table-toolbar {
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .control {
+      height: 36px;
+      border: 1px solid #4b4b54;
+      background: var(--field);
+      color: var(--muted);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 14px;
+    }
+
+    .search {
+      width: 180px;
+      gap: 10px;
+    }
+
+    .filter {
+      width: 96px;
+    }
+
+    .columns {
+      width: 36px;
+      justify-content: center;
+      padding: 0;
+      color: #9ca3af;
+      font-weight: 900;
+    }
+
+    .magnifier {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #9ca3af;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .magnifier::after {
+      content: "";
+      width: 7px;
+      height: 2px;
+      background: #9ca3af;
+      position: absolute;
+      right: -6px;
+      bottom: -4px;
+      transform: rotate(45deg);
+      border-radius: 999px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th,
+    td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #2b2b31;
+      text-align: left;
+      font-size: 11px;
+      vertical-align: middle;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    th {
+      background: var(--head);
+      color: #f8fafc;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    td {
+      font-weight: 650;
+    }
+
+    .checkbox {
+      width: 17px;
+      height: 17px;
+      border: 1px solid #555762;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .complaint {
+      max-width: 160px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .badge {
+      display: inline-flex;
+      border-radius: 7px;
+      padding: 5px 9px;
+      font-size: 10.5px;
+      font-weight: 800;
+      border: 1px solid;
+    }
+
+    .open {
+      color: #fca5a5;
+      background: rgba(239, 68, 68, .14);
+      border-color: rgba(239, 68, 68, .35);
+    }
+
+    .progress {
+      color: #7dd3fc;
+      background: rgba(56, 189, 248, .14);
+      border-color: rgba(56, 189, 248, .35);
+    }
+
+    .closed {
+      color: #86efac;
+      background: rgba(34, 197, 94, .14);
+      border-color: rgba(34, 197, 94, .35);
+    }
+
+    .edit {
+      color: var(--yellow);
+      font-weight: 800;
+    }
+
+    .footer {
+      min-height: 56px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 10px 16px;
+      color: #f8fafc;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .per-page {
+      border: 1px solid #474751;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      color: #bfc5d4;
+      background: #242428;
+    }
+
+    .per-page span {
+      padding: 9px 13px;
+      border-right: 1px solid #474751;
+    }
+
+    .per-page strong {
+      padding: 9px 14px;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="figure">
+    <div class="caption">Gambar 5.39 Halaman Output Data Komplain</div>
+
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">Laravel</div>
+        <div class="avatar">F</div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <section class="nav-group">
+            <div class="group-title">Dashboard <span>^</span></div>
+            <div class="nav-item"><span class="icon"></span> Dashboard</div>
+          </section>
+
+          <section class="nav-group">
+            <div class="group-title">Master Data <span>^</span></div>
+            <div class="nav-item"><span class="icon"></span> Produk / Menu</div>
+            <div class="nav-item"><span class="icon"></span> Bahan Baku</div>
+            <div class="nav-item"><span class="icon"></span> Supplier</div>
+          </section>
+
+          <section class="nav-group">
+            <div class="group-title">Transaksi <span>^</span></div>
+            <div class="nav-item"><span class="icon"></span> Transaksi</div>
+          </section>
+
+          <section class="nav-group">
+            <div class="group-title">Retur <span>^</span></div>
+            <div class="nav-item"><span class="icon"></span> Retur Penjualan</div>
+            <div class="nav-item"><span class="icon"></span> Retur Pembelian</div>
+          </section>
+
+          <section class="nav-group">
+            <div class="group-title">Pengguna <span>^</span></div>
+            <div class="nav-item"><span class="icon"></span> Data Admin</div>
+            <div class="nav-item"><span class="icon"></span> Data Owner</div>
+            <div class="nav-item"><span class="icon"></span> Karyawan</div>
+            <div class="nav-item"><span class="icon"></span> Pelanggan</div>
+          </section>
+
+          <section class="nav-group">
+            <div class="group-title">Layanan <span>^</span></div>
+            <div class="nav-item active"><span class="icon"></span> Komplain</div>
+          </section>
+        </aside>
+
+        <main class="content">
+          <div class="breadcrumb">Komplain &nbsp; &gt; &nbsp; List</div>
+          <div class="title-row">
+            <h1>Komplain</h1>
+            <button class="create">Komplain Baru</button>
+          </div>
+
+          <section class="table-card">
+            <div class="table-toolbar">
+              <div class="control search"><span class="magnifier"></span><span>Search</span></div>
+              <div class="control filter">Status</div>
+              <div class="control columns">|||</div>
+            </div>
+
+            <table>
+              <colgroup>
+                <col style="width: 34px;">
+                <col style="width: 98px;">
+                <col style="width: 138px;">
+                <col style="width: 82px;">
+                <col style="width: 142px;">
+                <col style="width: 78px;">
+                <col style="width: 104px;">
+                <col style="width: 48px;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th><span class="checkbox"></span></th>
+                  <th>Nama Pelanggan</th>
+                  <th>Email</th>
+                  <th>Telepon</th>
+                  <th>Keluhan</th>
+                  <th>Status</th>
+                  <th>Tanggal</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="checkbox"></span></td>
+                  <td>Pelanggan 001</td>
+                  <td>pelanggan01@contoh.test</td>
+                  <td>08********01</td>
+                  <td class="complaint">Pesanan belum diterima</td>
+                  <td><span class="badge open">Terbuka</span></td>
+                  <td>10 Jul 2026 09:15</td>
+                  <td><span class="edit">Ubah</span></td>
+                </tr>
+                <tr>
+                  <td><span class="checkbox"></span></td>
+                  <td>Pelanggan 002</td>
+                  <td>pelanggan02@contoh.test</td>
+                  <td>08********02</td>
+                  <td class="complaint">Produk tidak sesuai</td>
+                  <td><span class="badge progress">Diproses</span></td>
+                  <td>09 Jul 2026 14:22</td>
+                  <td><span class="edit">Ubah</span></td>
+                </tr>
+                <tr>
+                  <td><span class="checkbox"></span></td>
+                  <td>Pelanggan 003</td>
+                  <td>pelanggan03@contoh.test</td>
+                  <td>08********03</td>
+                  <td class="complaint">Pembayaran belum berubah</td>
+                  <td><span class="badge closed">Selesai</span></td>
+                  <td>08 Jul 2026 18:05</td>
+                  <td><span class="edit">Ubah</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="footer">
+              <div>Showing 1 to 3 of 3 results</div>
+              <div class="per-page"><span>Per page</span><strong>10</strong></div>
+              <div></div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -41,7 +41,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!input || !btn) return;
     const isPassword = input.type === "password";
     input.type = isPassword ? "text" : "password";
-    btn.textContent = isPassword ? "🙈" : "👁";
+    btn.innerHTML = `<span data-lucide="${isPassword ? 'eye-off' : 'eye'}"></span>`;
+    btn.setAttribute('aria-label', isPassword ? 'Sembunyikan password' : 'Tampilkan password');
+    if (window.KefrecIcons) window.KefrecIcons.render(btn);
   }
 
   if (toggle1) toggle1.addEventListener("click", () => togglePassword("password", toggle1));

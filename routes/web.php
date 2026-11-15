@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Shop\CartController;
 use App\Http\Controllers\Shop\CheckoutController;
 use App\Http\Controllers\Shop\OrderController;
+use App\Http\Controllers\Customer\MemberController;
 use App\Http\Controllers\Cashier\OrderApprovalController;
 use App\Http\Controllers\Kitchen\OrderBoardController;
 use App\Http\Controllers\Kitchen\IngredientStockController;
@@ -16,20 +17,13 @@ use App\Http\Controllers\MidtransNotificationController;
 | Public (Guest Customer)
 |--------------------------------------------------------------------------
 */
-Route::get('/', fn () => view('customer.landing'))->name('landing');
+Route::get('/', [HomeController::class, 'landing'])->name('landing');
 
 // Opsional: tetap buka landing yang sama (SPA-like via JS)
-Route::get('/menu', fn () => view('customer.landing'))->name('menu.page');
-Route::get('/cart', fn () => view('customer.landing'))->name('cart.page');
+Route::get('/menu', [HomeController::class, 'landing'])->name('menu.page');
+Route::get('/cart', [HomeController::class, 'landing'])->name('cart.page');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
-/*
-|--------------------------------------------------------------------------
-| Staff Self Attendance (Public)
-|--------------------------------------------------------------------------
-*/
-Route::get('/attendance', [AttendanceSelfController::class, 'index'])->name('attendance.self');
-Route::post('/attendance/check-in', [AttendanceSelfController::class, 'checkIn'])->name('attendance.check-in');
-Route::post('/attendance/check-out', [AttendanceSelfController::class, 'checkOut'])->name('attendance.check-out');
 Route::post('/midtrans/notification', [MidtransNotificationController::class, 'handle'])->name('midtrans.notification');
 
 /*
@@ -48,6 +42,15 @@ Route::middleware([
 
     // Halaman member/customer setelah login
     Route::get('/home', [HomeController::class, 'userDashboard'])->name('home');
+    Route::get('/member', [MemberController::class, 'index'])->name('member.show');
+    Route::get('/member/orders/active', [MemberController::class, 'activeOrders'])->name('member.orders.active');
+    Route::post('/member/complaints', [MemberController::class, 'storeComplaint'])->name('member.complaints.store');
+
+    // Halaman absensi khusus karyawan kasir/dapur
+    Route::get('/attendance', [AttendanceSelfController::class, 'employee'])->name('attendance.self');
+    Route::get('/employee/attendance', [AttendanceSelfController::class, 'employee'])->name('employee.attendance');
+    Route::post('/attendance/check-in', [AttendanceSelfController::class, 'checkIn'])->name('attendance.check-in');
+    Route::post('/attendance/check-out', [AttendanceSelfController::class, 'checkOut'])->name('attendance.check-out');
 });
 
 /*
@@ -73,7 +76,6 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
     // orders biarkan dulu seperti punya Anda (tidak kita fokuskan)
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');

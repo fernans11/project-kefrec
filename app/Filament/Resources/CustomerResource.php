@@ -15,11 +15,12 @@ class CustomerResource extends Resource
     protected static ?string $model = Customer::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationGroup = 'Master Data';
-    protected static ?string $navigationLabel = 'Pelanggan';
+    protected static ?string $navigationGroup = 'Pelanggan';
+    protected static ?string $navigationLabel = 'Data Pelanggan';
     protected static ?string $modelLabel = 'Pelanggan';
     protected static ?string $pluralModelLabel = 'Pelanggan';
     protected static ?int $navigationSort = 30;
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Form $form): Form
     {
@@ -49,6 +50,12 @@ class CustomerResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query
+                ->where(function ($query) {
+                    $query->whereNull('user_id')
+                        ->orWhereDoesntHave('user')
+                        ->orWhereHas('user', fn ($userQuery) => $userQuery->whereNotIn('usertype', ['cashier', 'kasir', 'kitchen', 'dapur']));
+                }))
             ->columns([
                 Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('email')->searchable()->sortable(),
@@ -82,33 +89,22 @@ class CustomerResource extends Resource
 
     public static function canViewAny(): bool
     {
-        $u = auth()->user();
-        if (!$u) return false;
-
-        // Admin/Owner/Kasir boleh lihat customer
-        return in_array($u->usertype, ['admin', 'owner', 'kasir'], true);
+        return false;
     }
 
 
     public static function canCreate(): bool
     {
-        $u = auth()->user();
-        if (!$u) return false;
-
-        return in_array($u->usertype, ['admin', 'owner', 'kasir'], true);
+        return false;
     }
 
     public static function canEdit($record): bool
     {
-        $u = auth()->user();
-        if (!$u) return false;
-
-        return in_array($u->usertype, ['admin', 'owner', 'kasir'], true);
+        return false;
     }
 
     public static function canDeleteAny(): bool
     {
-        // biasanya hanya admin
-        return auth()->user()?->usertype === 'admin';
+        return false;
     }
 }

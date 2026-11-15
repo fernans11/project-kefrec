@@ -5,14 +5,17 @@ namespace App\Models;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Jetstream\HasProfilePhoto;
 
 class User extends Authenticatable implements FilamentUser
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, HasFactory, HasProfilePhoto, Notifiable, TwoFactorAuthenticatable;
 
     protected $fillable = [
         'name',
@@ -32,6 +35,10 @@ class User extends Authenticatable implements FilamentUser
         'email_verified_at' => 'datetime',
     ];
 
+    protected $appends = [
+        'profile_photo_url',
+    ];
+
     /**
      * INI KUNCI MASALAH 403
      * Tentukan siapa yang boleh masuk Filament
@@ -44,5 +51,19 @@ class User extends Authenticatable implements FilamentUser
     public function customer(): HasOne
     {
         return $this->hasOne(Customer::class, 'user_id');
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function (User $user): void {
+            if ($user->isEmployeeRole()) {
+                $user->customer()->delete();
+            }
+        });
+    }
+
+    public function isEmployeeRole(): bool
+    {
+        return in_array($this->usertype, ['cashier', 'kasir', 'kitchen', 'dapur'], true);
     }
 }

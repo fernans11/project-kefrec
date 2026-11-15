@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Kitchen;
 
 use App\Http\Controllers\Controller;
-use App\Models\Staff;
 use App\Models\Transaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,12 +20,7 @@ class OrderBoardController extends Controller
             ->latest()
             ->paginate(20);
 
-        $staffMembers = Staff::query()
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
-
-        return view('kitchen.orders', compact('orders', 'staffMembers'));
+        return view('kitchen.orders', compact('orders'));
     }
 
     public function markReady(Request $request, Transaction $transaction): RedirectResponse

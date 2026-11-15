@@ -3,63 +3,86 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Complaint;
+use App\Support\MemberStats;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\View\View;
 
 class MemberController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $user = Auth::user();
-
-        [$totalSpent, $points, $status] = $this->computeMemberStats($user->id);
+        $customer = $user->customer;
+        $stats = MemberStats::forCustomer($customer);
+        $recentTransactions = $customer
+            ? $customer->transactions()
+                ->latest()
+                ->limit(5)
+                ->get(['id', 'invoice_no', 'total', 'status', 'created_at'])
+            : collect();
+        $complaints = $customer
+            ? Complaint::query()
+                ->where('customer_id', $customer->id)
+                ->latest()
+                ->limit(5)
+                ->get(['id', 'title', 'message', 'status', 'response', 'created_at'])
+            : collect();
 
         return view('customer.member', [
             'user' => $user,
-            'totalSpent' => $totalSpent,
-            'points' => $points,
-            'status' => $status,
+            'customer' => $customer,
+            'stats' => $stats,
+            'recentTransactions' => $recentTransactions,
+            'complaints' => $complaints,
         ]);
     }
 
-    /**
-     * Aman untuk berbagai struktur DB: jika tabel/kolom belum ada -> fallback 0.
-     * Nanti jika struktur transaksi Anda sudah final, kita rapikan jadi akurat 100%.
-     */
-    private function computeMemberStats(int $userId): array
+    public function activeOrders(): View
     {
-        $totalSpent = 0;
+        $user = Auth::user();
+        $customer = $user->customer;
+        $activeOrders = $customer
+            ? $customer->transactions()
+                ->whereNotIn('status', ['completed', 'cancelled'])
+                ->latest()
+                ->get(['id', 'invoice_no', 'total', 'status', 'created_at'])
+            : collect();
 
-        // Coba ambil dari tabel transactions jika ada (karena route orders Anda pakai {transaction})
-        if (Schema::hasTable('transactions')) {
-            $q = DB::table('transactions')->where('user_id', $userId);
+        return view('customer.active-orders', [
+            'user' => $user,
+            'activeOrders' => $activeOrders,
+        ]);
+    }
 
-            // jika punya kolom status, ambil yang sukses/paid/done saja
-            if (Schema::hasColumn('transactions', 'status')) {
-                $q->whereIn('status', ['paid', 'success', 'done', 'completed', 'selesai']);
-            }
+    public function storeComplaint(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $customer = $user->customer;
 
-            // total kolom umum: total, total_amount, grand_total, amount
-            foreach (['total', 'total_amount', 'grand_total', 'amount'] as $col) {
-                if (Schema::hasColumn('transactions', $col)) {
-                    $totalSpent = (int) $q->sum($col);
-                    break;
-                }
-            }
-        }
+        $data = $request->validate([
+            'title' => ['required', 'string', 'max:150'],
+            'message' => ['required', 'string', 'min:10', 'max:2000'],
+        ], [
+            'title.required' => 'Judul keluhan wajib diisi.',
+            'title.max' => 'Judul keluhan maksimal 150 karakter.',
+            'message.required' => 'Keluhan wajib diisi.',
+            'message.min' => 'Keluhan minimal 10 karakter.',
+            'message.max' => 'Keluhan maksimal 2000 karakter.',
+        ]);
 
-        // Rules poin (bisa Anda ubah): 1 poin / 10.000
-        $points = (int) floor($totalSpent / 10000);
+        Complaint::create([
+            'customer_id' => $customer?->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'title' => $data['title'],
+            'message' => $data['message'],
+            'status' => 'open',
+        ]);
 
-        // Status member (bisa Anda ubah)
-        $status = match (true) {
-            $points >= 500 => 'Platinum',
-            $points >= 200 => 'Gold',
-            $points >= 50  => 'Silver',
-            default        => 'Bronze',
-        };
-
-        return [$totalSpent, $points, $status];
+        return back()->with('success', 'Keluhan berhasil dikirim dan akan ditinjau oleh admin.');
     }
 }

@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Support\AuditLogger;
+use App\Support\BestSellerUpdater;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class Transaction extends Model
@@ -102,6 +104,10 @@ class Transaction extends Model
                 'Transaksi dibuat',
                 ['status' => $transaction->status]
             );
+
+            if ($transaction->status === 'completed') {
+                BestSellerUpdater::sync();
+            }
         });
 
         static::updated(function (Transaction $transaction) {
@@ -118,6 +124,10 @@ class Transaction extends Model
                     'to' => $transaction->status,
                 ]
             );
+
+            if ($transaction->status === 'completed') {
+                BestSellerUpdater::sync();
+            }
         });
     }
 
@@ -134,6 +144,18 @@ class Transaction extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class, 'customer_id');
+    }
+
+    public static function generateInvoiceNo(): string
+    {
+        $date = now()->format('ymd');
+
+        do {
+            $rand = strtoupper(Str::random(6));
+            $invoice = "INV-{$date}-{$rand}";
+        } while (self::where('invoice_no', $invoice)->exists());
+
+        return $invoice;
     }
 
     public function deductStockIfNeeded(): void

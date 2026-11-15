@@ -58,6 +58,14 @@ class Purchase extends Model
 
     protected static function booted(): void
     {
+        static::deleting(function (Purchase $purchase) {
+            if ($purchase->status === 'received' || $purchase->received_at) {
+                throw ValidationException::withMessages([
+                    'status' => 'Pembelian yang sudah diterima tidak boleh dihapus karena stok dan cashflow sudah diproses. Gunakan Retur Pembelian untuk koreksi stok.',
+                ]);
+            }
+        });
+
         static::updating(function (Purchase $purchase) {
             if (! $purchase->isDirty('status')) {
                 return;
@@ -107,10 +115,11 @@ class Purchase extends Model
         }
 
         if ($this->received_at) {
+            $this->refresh()->load(['supplier', 'items.ingredient']);
+            $this->recordCashflowIfNeeded();
+
             return;
         }
-
-        $this->loadMissing('items.ingredient');
 
         DB::transaction(function () {
             $fresh = $this->newQuery()->lockForUpdate()->find($this->id);
@@ -118,7 +127,9 @@ class Purchase extends Model
                 return;
             }
 
-            foreach ($this->items as $item) {
+            $fresh->load('items.ingredient');
+
+            foreach ($fresh->items as $item) {
                 $ingredient = $item->ingredient;
                 if (!$ingredient) {
                     continue;
@@ -137,6 +148,7 @@ class Purchase extends Model
             $fresh->saveQuietly();
         });
 
+        $this->refresh()->load(['supplier', 'items.ingredient']);
         $this->recordCashflowIfNeeded();
 
         AuditLogger::log(
@@ -150,14 +162,48 @@ class Purchase extends Model
         );
     }
 
+    public function recalculateTotalsFromItems(): void
+    {
+        $this->loadMissing('items');
+
+        $subtotal = 0;
+
+        foreach ($this->items as $item) {
+            $itemSubtotal = (int) round((float) ($item->qty ?? 0) * (int) ($item->price ?? 0), 0);
+            $subtotal += $itemSubtotal;
+
+            if ((int) $item->subtotal !== $itemSubtotal) {
+                $item->subtotal = $itemSubtotal;
+                $item->saveQuietly();
+            }
+        }
+
+        $tax = max(0, (int) ($this->tax ?? 0));
+
+        $this->forceFill([
+            'subtotal' => $subtotal,
+            'tax' => $tax,
+            'total' => max(0, $subtotal + $tax),
+        ])->saveQuietly();
+
+        $this->refresh()->load(['supplier', 'items.ingredient']);
+    }
+
     private function recordCashflowIfNeeded(): void
     {
-        $note = 'Pembelian ' . $this->invoice_no;
-        $exists = Cashflow::where('source', 'purchase')
-            ->where('notes', $note)
-            ->exists();
+        $note = $this->cashflowNote();
+        $cashflow = Cashflow::where('source', 'purchase')
+            ->where('notes', 'like', 'Pembelian ' . $this->invoice_no . '%')
+            ->first();
 
-        if ($exists) {
+        if ($cashflow) {
+            $cashflow->update([
+                'type' => 'out',
+                'category' => 'Pembelian Bahan Baku',
+                'amount' => $this->total,
+                'notes' => $note,
+            ]);
+
             return;
         }
 
@@ -169,5 +215,27 @@ class Purchase extends Model
             'source' => 'purchase',
             'notes' => $note,
         ]);
+    }
+
+    private function cashflowNote(): string
+    {
+        $this->loadMissing(['supplier', 'items.ingredient']);
+
+        $supplierName = $this->supplier?->name ?? 'Tanpa supplier';
+        $items = $this->items
+            ->map(function ($item) {
+                $name = $item->ingredient?->name ?? 'Bahan baku tidak ditemukan';
+                $qty = rtrim(rtrim(number_format((float) $item->qty, 2, '.', ''), '0'), '.');
+                $subtotal = number_format((int) $item->subtotal, 0, ',', '.');
+
+                return "{$name} {$qty} x Rp {$subtotal}";
+            })
+            ->implode('; ');
+
+        if ($items === '') {
+            $items = 'Tidak ada item';
+        }
+
+        return "Pembelian {$this->invoice_no} dari {$supplierName}: {$items}";
     }
 }

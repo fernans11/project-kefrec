@@ -11,10 +11,15 @@ class AttendanceSeeder extends Seeder
 {
     public function run(): void
     {
+        // Bersihkan staff dummy versi lama agar laporan konsisten dengan dua akun karyawan demo.
+        Staff::query()->whereIn('name', [
+            'Andi Pratama', 'Siti Aulia', 'Budi Santoso', 'Maya Putri',
+            'Rizky Hidayat', 'Nina Amelia', 'Fajar Ramadhan', 'Lina Marlina',
+        ])->delete();
+
         $staffMembers = [
-            ['name' => 'Andi Pratama', 'position' => 'Barista', 'phone' => '081200000001', 'is_active' => true],
-            ['name' => 'Siti Aulia', 'position' => 'Kasir', 'phone' => '081200000002', 'is_active' => true],
-            ['name' => 'Budi Santoso', 'position' => 'Dapur', 'phone' => '081200000003', 'is_active' => true],
+            ['name' => 'Siti Kasir', 'position' => 'Kasir', 'phone' => '081290000003', 'is_active' => true],
+            ['name' => 'Budi Dapur', 'position' => 'Dapur', 'phone' => '081290000004', 'is_active' => true],
         ];
 
         foreach ($staffMembers as $data) {
@@ -24,7 +29,7 @@ class AttendanceSeeder extends Seeder
             );
         }
 
-        $staffIds = Staff::query()->pluck('id')->all();
+        $staffIds = Staff::query()->whereIn('name', ['Siti Kasir', 'Budi Dapur'])->pluck('id')->all();
         if (empty($staffIds)) {
             return;
         }

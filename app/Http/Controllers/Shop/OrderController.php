@@ -14,16 +14,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
-
-        $customer = $user?->customer;
-
-        $orders = Transaction::query()
-            ->when($customer, fn ($q) => $q->where('customer_id', $customer->id))
-            ->latest()
-            ->paginate(10);
-
-        return view('shop.orders', compact('orders'));
+        return redirect()->route('member.orders.active');
     }
 
     public function show(Transaction $transaction)
@@ -117,7 +108,9 @@ class OrderController extends Controller
             'midtrans_transaction_id' => $payload['transaction_id'] ?? $transaction->midtrans_transaction_id,
             'payment_status' => $transactionStatus ?: $transaction->payment_status,
             'payment_type' => $payload['payment_type'] ?? $transaction->payment_type,
-            'payment_payload' => $payload,
+            // Pertahankan data checkout (termasuk nomor meja) saat status
+            // pembayaran dari Midtrans disinkronkan.
+            'payment_payload' => array_merge($transaction->payment_payload ?? [], $payload),
         ];
 
         if (

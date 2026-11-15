@@ -47,6 +47,11 @@ class ComplaintResource extends Resource
             Forms\Components\Section::make('Detail Komplain')
                 ->columns(2)
                 ->schema([
+                    Forms\Components\TextInput::make('title')
+                        ->label('Judul Keluhan')
+                        ->required()
+                        ->maxLength(150)
+                        ->columnSpanFull(),
                     Forms\Components\Textarea::make('message')
                         ->label('Pesan Komplain')
                         ->required()
@@ -81,15 +86,22 @@ class ComplaintResource extends Resource
         return $table
             ->defaultSort('id', 'desc')
             ->columns([
-                Tables\Columns\TextColumn::make('customer.name')
-                    ->label('Pelanggan')
-                    ->toggleable(),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
+                    ->label('Nama Pelanggan')
+                    ->searchable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('email')
+                    ->label('Email')
                     ->searchable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->label('Telepon')
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('title')
+                    ->label('Keluhan')
+                    ->formatStateUsing(fn ($state, Complaint $record) => $state ?: str($record->message)->limit(60))
+                    ->limit(60)
+                    ->searchable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe Manajemen Pengguna - KeFrec</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eeeeee;
+      color: #111111;
+    }
+
+    .canvas {
+      min-height: 100vh;
+      padding: 28px;
+      display: grid;
+      place-items: start center;
+      overflow-x: auto;
+    }
+
+    .artboard-title {
+      width: 1180px;
+      color: #b9b9b9;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .artboard {
+      width: 1180px;
+      min-height: 760px;
+      background: #ffffff;
+      border: 1px solid #e7e7e7;
+      display: grid;
+      grid-template-rows: 70px 1fr;
+    }
+
+    .topbar {
+      border-bottom: 1px solid #cfcfcf;
+      display: grid;
+      grid-template-columns: 260px 1fr 44px;
+      align-items: center;
+      padding: 0 18px;
+      gap: 18px;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border: 2px solid #111111;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .avatar::before {
+      content: "";
+      position: absolute;
+      top: 7px;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      background: #111111;
+      border-radius: 50%;
+      transform: translateX(-50%);
+    }
+
+    .avatar::after {
+      content: "";
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      width: 22px;
+      height: 13px;
+      background: #111111;
+      border-radius: 50% 50% 40% 40%;
+      transform: translateX(-50%);
+    }
+
+    .body {
+      display: grid;
+      grid-template-columns: 285px 1fr;
+      min-height: 690px;
+    }
+
+    .sidebar {
+      border-right: 1px solid #cfcfcf;
+      padding: 22px 16px;
+      display: grid;
+      align-content: start;
+      gap: 28px;
+    }
+
+    .nav-active {
+      height: 38px;
+      border: 1px solid #111111;
+      border-radius: 7px;
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 0 10px;
+    }
+
+    .nav-section {
+      display: grid;
+      gap: 13px;
+    }
+
+    .section-title {
+      display: grid;
+      grid-template-columns: 1fr 14px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .nav-item {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding-left: 4px;
+    }
+
+    .icon-box {
+      width: 16px;
+      height: 16px;
+      border: 1px solid #111111;
+      position: relative;
+    }
+
+    .icon-box::before,
+    .icon-box::after {
+      content: "";
+      position: absolute;
+      top: 7px;
+      left: 2px;
+      width: 10px;
+      height: 1px;
+      background: #777777;
+    }
+
+    .icon-box::before { transform: rotate(45deg); }
+    .icon-box::after { transform: rotate(-45deg); }
+
+    .chevron {
+      width: 9px;
+      height: 9px;
+      border-right: 1.5px solid #111111;
+      border-bottom: 1.5px solid #111111;
+      transform: rotate(-135deg);
+      justify-self: end;
+    }
+
+    .content-shell {
+      padding: 32px 34px 40px;
+    }
+
+    .content {
+      width: 760px;
+      margin: 0 auto;
+      display: grid;
+      gap: 24px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: -12px;
+    }
+
+    .breadcrumb-separator {
+      width: 7px;
+      height: 7px;
+      border-right: 1.5px solid #111111;
+      border-bottom: 1.5px solid #111111;
+      transform: rotate(-45deg);
+    }
+
+    .page-title {
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .table-card {
+      border: 1px solid #9f9f9f;
+      min-height: 310px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      background: #ffffff;
+    }
+
+    .table-toolbar {
+      height: 56px;
+      display: grid;
+      grid-template-columns: 1fr 220px 28px;
+      align-items: center;
+      gap: 14px;
+      padding: 0 20px;
+      border-bottom: 1px solid #cfcfcf;
+    }
+
+    .search {
+      height: 34px;
+      border: 1px solid #777777;
+      border-radius: 7px;
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 0 10px;
+    }
+
+    .search-icon {
+      width: 12px;
+      height: 12px;
+      border: 1.5px solid #111111;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .search-icon::after {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 1.5px;
+      background: #111111;
+      right: -5px;
+      bottom: -3px;
+      transform: rotate(45deg);
+    }
+
+    .columns-icon {
+      width: 22px;
+      height: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+    }
+
+    .columns-icon span {
+      border: 1px solid #111111;
+      height: 18px;
+    }
+
+    .table {
+      display: grid;
+      align-content: start;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 24px 1.1fr .9fr 1.6fr .9fr .55fr;
+      gap: 18px;
+      padding: 14px 20px;
+      border-bottom: 1px solid #cfcfcf;
+      align-items: center;
+    }
+
+    .row.header {
+      min-height: 44px;
+      background: #fafafa;
+    }
+
+    .checkbox {
+      width: 17px;
+      height: 17px;
+      border: 1px solid #111111;
+      border-radius: 4px;
+    }
+
+    .edit-action {
+      display: grid;
+      grid-template-columns: 16px 1fr;
+      gap: 7px;
+      align-items: center;
+      justify-content: end;
+    }
+
+    .edit-icon {
+      width: 14px;
+      height: 14px;
+      border: 1px solid #111111;
+      position: relative;
+    }
+
+    .edit-icon::after {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 2px;
+      background: #111111;
+      transform: rotate(-35deg);
+      left: 2px;
+      top: 5px;
+    }
+
+    .table-footer {
+      height: 56px;
+      display: grid;
+      grid-template-columns: 1fr 140px 1fr;
+      align-items: center;
+      gap: 12px;
+      padding: 0 20px;
+    }
+
+    .per-page {
+      height: 34px;
+      border: 1px solid #111111;
+      display: grid;
+      grid-template-columns: 1fr 44px;
+      align-items: center;
+      justify-self: center;
+      min-width: 136px;
+    }
+
+    .per-page div {
+      display: grid;
+      place-items: center;
+      height: 100%;
+      border-right: 1px solid #cfcfcf;
+    }
+
+    .per-page div:last-child {
+      border-right: 0;
+    }
+
+    .variant-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .variant {
+      border: 1px solid #9f9f9f;
+      height: 74px;
+      padding: 12px;
+      display: grid;
+      gap: 9px;
+      align-content: center;
+    }
+
+    .line {
+      height: 2px;
+      background: #111111;
+      border-radius: 999px;
+    }
+
+    .line.bold { height: 5px; }
+    .line.light {
+      height: 1px;
+      background: #b7b7b7;
+    }
+
+    .w-32 { width: 32px; }
+    .w-44 { width: 44px; }
+    .w-56 { width: 56px; }
+    .w-70 { width: 70px; }
+    .w-86 { width: 86px; }
+    .w-104 { width: 104px; }
+    .w-124 { width: 124px; }
+    .w-148 { width: 148px; }
+    .w-full { width: 100%; }
+
+    @media (max-width: 1240px) {
+      .canvas { place-items: start; }
+      .artboard-title,
+      .artboard { min-width: 1180px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="canvas">
+    <section>
+      <div class="artboard-title">Desktop - Manajemen Pengguna Terpisah</div>
+
+      <div class="artboard">
+        <header class="topbar">
+          <div class="brand-title">Laravel</div>
+          <div></div>
+          <div class="avatar"></div>
+        </header>
+
+        <div class="body">
+          <aside class="sidebar">
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-86"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-124"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-56"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-104"></div></div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-104"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-70"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-86"></div></div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-86"></div></div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-104"></div></div>
+              <div class="nav-active"><div class="icon-box"></div><div class="line bold w-124"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-124"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-56"></div></div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-70"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-56"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-86"></div></div>
+            </section>
+
+            <section class="nav-section">
+              <div class="section-title">
+                <div class="line light w-70"></div>
+                <div class="chevron"></div>
+              </div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-124"></div></div>
+              <div class="nav-item"><div class="icon-box"></div><div class="line bold w-104"></div></div>
+            </section>
+          </aside>
+
+          <section class="content-shell">
+            <div class="content">
+              <div class="breadcrumb">
+                <div class="line light w-70"></div>
+                <div class="breadcrumb-separator"></div>
+                <div class="line light w-32"></div>
+              </div>
+
+              <div class="page-title">Pelanggan</div>
+
+              <section class="table-card">
+                <div class="table-toolbar">
+                  <div></div>
+                  <div class="search">
+                    <div class="search-icon"></div>
+                    <div class="line light w-70"></div>
+                  </div>
+                  <div class="columns-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+
+                <div class="table">
+                  <div class="row header">
+                    <div class="checkbox"></div>
+                    <div class="line bold w-44"></div>
+                    <div class="line bold w-70"></div>
+                    <div class="line bold w-44"></div>
+                    <div class="line bold w-44"></div>
+                    <div></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="checkbox"></div>
+                    <div class="line light w-86"></div>
+                    <div class="line light w-56"></div>
+                    <div class="line light w-124"></div>
+                    <div class="line light w-86"></div>
+                    <div class="edit-action">
+                      <div class="edit-icon"></div>
+                      <div class="line bold w-32"></div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="checkbox"></div>
+                    <div class="line light w-86"></div>
+                    <div class="line light w-56"></div>
+                    <div class="line light w-124"></div>
+                    <div class="line light w-86"></div>
+                    <div class="edit-action">
+                      <div class="edit-icon"></div>
+                      <div class="line bold w-32"></div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="checkbox"></div>
+                    <div class="line light w-86"></div>
+                    <div class="line light w-56"></div>
+                    <div class="line light w-124"></div>
+                    <div class="line light w-86"></div>
+                    <div class="edit-action">
+                      <div class="edit-icon"></div>
+                      <div class="line bold w-32"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="table-footer">
+                  <div class="line bold w-148"></div>
+                  <div class="per-page">
+                    <div><div class="line light w-56"></div></div>
+                    <div><div class="line bold w-32"></div></div>
+                  </div>
+                  <div></div>
+                </div>
+              </section>
+
+              <section class="variant-strip">
+                <div class="variant">
+                  <div class="line bold w-70"></div>
+                  <div class="line light w-104"></div>
+                </div>
+                <div class="variant">
+                  <div class="line bold w-70"></div>
+                  <div class="line light w-104"></div>
+                </div>
+                <div class="variant">
+                  <div class="line bold w-86"></div>
+                  <div class="line light w-104"></div>
+                </div>
+                <div class="variant">
+                  <div class="line bold w-104"></div>
+                  <div class="line light w-104"></div>
+                </div>
+              </section>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

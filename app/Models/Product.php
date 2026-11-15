@@ -21,6 +21,8 @@ class Product extends Model
         'is_new',
         'rating',
         'sort_order',
+        'stock',
+        'track_stock',
     ];
 
     protected $casts = [
@@ -34,6 +36,15 @@ class Product extends Model
         'track_stock' => 'boolean',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Product $product) {
+            if (! array_key_exists('is_new', $product->getAttributes())) {
+                $product->is_new = true;
+            }
+        });
+    }
+
     public function ingredients(): BelongsToMany
     {
         return $this->belongsToMany(\App\Models\Ingredient::class)
@@ -44,5 +55,11 @@ class Product extends Model
     public function transactionItems(): HasMany
     {
         return $this->hasMany(\App\Models\TransactionItem::class);
+    }
+
+    public function completedTransactionItems(): HasMany
+    {
+        return $this->hasMany(\App\Models\TransactionItem::class)
+            ->whereHas('transaction', fn ($query) => $query->where('status', 'completed'));
     }
 }

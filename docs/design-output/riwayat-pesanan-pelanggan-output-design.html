@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Output Riwayat Pesanan Pelanggan</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #eeeeee;
+      font-family: Arial, "Segoe UI", sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: #111827;
+    }
+
+    .figure {
+      width: 1120px;
+      background: #ffffff;
+      padding: 18px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, .16);
+    }
+
+    .caption {
+      color: #111111;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .app {
+      min-height: 670px;
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      overflow: hidden;
+    }
+
+    .topbar {
+      height: 64px;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 36px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: #111827;
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: #4b5563;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .page-header {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 22px 0;
+    }
+
+    .container {
+      width: 920px;
+      max-width: calc(100% - 72px);
+      margin: 0 auto;
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    h1 {
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 800;
+      color: #1f2937;
+    }
+
+    .button {
+      background: #111827;
+      color: #ffffff;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .content {
+      padding: 32px 0;
+    }
+
+    .table-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 15px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #ffffff;
+      color: #111827;
+      font-weight: 800;
+    }
+
+    td {
+      color: #374151;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .invoice {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .total {
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .status {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status.done {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status.process {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .status.cancel {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .detail {
+      color: #d97706;
+      font-weight: 800;
+    }
+
+    .pagination {
+      margin-top: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .pages {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .page-box {
+      min-width: 34px;
+      height: 34px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: #374151;
+      font-weight: 700;
+    }
+
+    .page-box.active {
+      background: #111827;
+      border-color: #111827;
+      color: #ffffff;
+    }
+
+    .note {
+      color: #222222;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <section class="figure">
+    <div class="caption">Gambar 5.x Halaman Output Riwayat Pesanan Pelanggan</div>
+
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo">KF</div>
+          <div>KeFrec Coffee Shop</div>
+        </div>
+        <nav class="nav">
+          <span>Dashboard</span>
+          <span>Menu</span>
+          <span>Pesanan</span>
+          <span>Profil</span>
+        </nav>
+      </header>
+
+      <section class="page-header">
+        <div class="container header-row">
+          <h1>Pesanan Saya</h1>
+          <div class="button">Pesan Lagi</div>
+        </div>
+      </section>
+
+      <main class="content">
+        <div class="container">
+          <section class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Invoice</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Tanggal</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="invoice">INV-260710-8KIVPP</td>
+                  <td class="total">Rp 66.000</td>
+                  <td><span class="status done">Selesai</span></td>
+                  <td>10 Jul 2026 13:25</td>
+                  <td><span class="detail">Detail</span></td>
+                </tr>
+                <tr>
+                  <td class="invoice">INV-260709-A2K9QP</td>
+                  <td class="total">Rp 41.800</td>
+                  <td><span class="status">Menunggu Pembayaran</span></td>
+                  <td>09 Jul 2026 18:12</td>
+                  <td><span class="detail">Detail</span></td>
+                </tr>
+                <tr>
+                  <td class="invoice">INV-260708-4IKVPP</td>
+                  <td class="total">Rp 123.200</td>
+                  <td><span class="status process">Diproses Dapur</span></td>
+                  <td>08 Jul 2026 10:44</td>
+                  <td><span class="detail">Detail</span></td>
+                </tr>
+                <tr>
+                  <td class="invoice">INV-260707-8BH0YD</td>
+                  <td class="total">Rp 86.000</td>
+                  <td><span class="status done">Selesai</span></td>
+                  <td>07 Jul 2026 15:08</td>
+                  <td><span class="detail">Detail</span></td>
+                </tr>
+                <tr>
+                  <td class="invoice">INV-260706-P1MA7C</td>
+                  <td class="total">Rp 18.000</td>
+                  <td><span class="status cancel">Dibatalkan</span></td>
+                  <td>06 Jul 2026 09:32</td>
+                  <td><span class="detail">Detail</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <div class="pagination">
+            <div>Showing 1 to 5 of 8 results</div>
+            <div class="pages">
+              <span class="page-box active">1</span>
+              <span class="page-box">2</span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <p class="note">
+      <strong>Keterangan:</strong> Halaman output riwayat pesanan pelanggan menampilkan daftar pesanan pelanggan dengan informasi invoice,
+      total pembayaran, status, tanggal transaksi, dan tombol detail pesanan. Rancangan ini mengikuti struktur halaman <em>Pesanan Saya</em> pada project.
+    </p>
+  </section>
+</body>
+</html>

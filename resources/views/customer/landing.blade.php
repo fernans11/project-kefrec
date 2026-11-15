@@ -6,6 +6,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>KeFrec Coffee Shop</title>
 
+    <script>
+        (function () {
+            try {
+                document.documentElement.dataset.theme = localStorage.getItem('kefrec-theme') || 'dark';
+            } catch (_) {
+                document.documentElement.dataset.theme = 'dark';
+            }
+        })();
+    </script>
     <link rel="stylesheet" href="{{ asset('css/customer-landing.css') }}">
 </head>
 <body>
@@ -15,12 +24,13 @@
         loginUrl: "{{ route('login') }}",
         registerUrl: "{{ route('register') }}",
         productsApiUrl: "{{ url('/api/products') }}",
-        ordersUrl: "{{ route('orders.index') }}",
+        ordersUrl: "{{ route('member.orders.active') }}",
         // Jetstream profile URL default biasanya /user/profile
         profileUrl: "{{ url('/user/profile') }}",
         homeUrl: "{{ route('home') }}",
         landingUrl: "{{ route('landing') }}",
         midtransClientKey: "{{ config('services.midtrans.client_key') }}",
+        isAuthenticated: @json(auth()->check()),
     };
 </script>
 @if (config('services.midtrans.client_key'))
@@ -39,7 +49,7 @@
                 <div class="logo-box">
                     <img src="" alt="Logo KeFrec"
                          onerror="this.style.display='none'; this.parentElement.querySelector('.logo-fallback').style.display='block';">
-                    <span class="logo-fallback" style="display:none;">☕</span>
+                    <span class="logo-fallback" style="display:none;" data-lucide="coffee"></span>
                 </div>
                 <div class="brand-text">
                     <span class="brand-title">KeFrec CoffeeShop</span>
@@ -47,18 +57,31 @@
             </div>
 
             <div class="right-area">
+                <button class="theme-toggle" type="button" data-theme-toggle aria-label="Ganti tema" aria-pressed="false">
+                    <span class="theme-toggle-icon" data-theme-icon data-lucide="moon"></span>
+                    <span class="theme-toggle-text" data-theme-text>Dark</span>
+                </button>
+
                 @auth
                     @php
                         $name = auth()->user()->name ?? 'Member';
+                        $profileLabel = auth()->user()->username ?: $name;
                         $email = auth()->user()->email ?? '';
-                        $role = auth()->user()->usertype ?? 'member';
-                        $initial = mb_strtoupper(mb_substr($name, 0, 1));
+                        $role = match (auth()->user()->usertype ?? 'user') {
+                            'user', 'member' => 'Member',
+                            'admin' => 'Admin',
+                            'owner' => 'Owner',
+                            'cashier', 'kasir' => 'Kasir',
+                            'kitchen', 'dapur' => 'Dapur',
+                            default => ucfirst((string) auth()->user()->usertype),
+                        };
+                        $initial = mb_strtoupper(mb_substr($profileLabel, 0, 1));
                     @endphp
 
                     <div class="profile-wrap" id="profileWrap">
                         <button class="profile-chip" type="button" id="profileToggle" aria-expanded="false">
                             <span class="profile-avatar">{{ $initial }}</span>
-                            <span class="profile-name">{{ $name }}</span>
+                            <span class="profile-name">{{ $profileLabel }}</span>
                             <span class="profile-caret">▾</span>
                         </button>
 
@@ -78,12 +101,8 @@
                             <div class="profile-divider"></div>
 
                             <!-- Member (sementara arahkan ke /home) -->
-                            <a class="profile-item" href="{{ route('home') }}" role="menuitem">
+                            <a class="profile-item" href="{{ route('member.show') }}" role="menuitem">
                                 Member
-                            </a>
-
-                            <a class="profile-item" href="{{ route('orders.index') }}" role="menuitem">
-                                Pesanan Saya
                             </a>
 
                             <!-- Pengaturan Jetstream -->
@@ -129,7 +148,8 @@
 
                     @guest
                         <a href="{{ route('register') }}" class="btn btn-red btn-small" id="btn-daftar-member">
-                            ★ Daftar Member
+                            <span data-lucide="star"></span>
+                            Daftar Member
                         </a>
                     @else
                         <a href="#menu-kami" class="btn btn-red btn-small" id="btn-lihat-menu">
@@ -142,43 +162,46 @@
 
         <!-- MEMBER BENEFITS (pixel-accurate style: 3 card + tombol Lihat Pesanan) -->
         @auth
+            @php
+                $stats = $memberStats ?? ['points' => 0, 'total_spent' => 0, 'status' => 'Bronze'];
+            @endphp
             <section class="card" style="margin-top: 16px; padding: 16px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
                     <div style="display:flex;align-items:center;gap:10px;">
-                        <span style="opacity:.9;">📍</span>
+                        <span style="opacity:.9;" data-lucide="map-pin"></span>
                         <div>
                             <div style="font-weight:700;">Member Benefits</div>
                             <div style="opacity:.8;font-size:.88rem;">Hai, {{ auth()->user()->name }}.</div>
                         </div>
                     </div>
 
-                    <a href="{{ route('orders.index') }}" class="btn btn-outline-light" style="white-space:nowrap;">
+                    <a href="{{ route('member.orders.active') }}" class="btn btn-outline-light" style="white-space:nowrap;">
                         Lihat Pesanan
                     </a>
                 </div>
 
                 <div class="benefit-grid" style="margin-top: 14px;">
                     <div class="benefit-card">
-                        <div class="benefit-icon">❤️</div>
+                        <div class="benefit-icon" data-lucide="heart"></div>
                         <div class="benefit-title">Poin Anda</div>
                         <div class="benefit-desc">
-                            <strong>120</strong> poin
+                            <strong>{{ number_format((int) $stats['points'], 0, ',', '.') }}</strong> poin
                         </div>
                     </div>
 
                     <div class="benefit-card">
-                        <div class="benefit-icon">📈</div>
+                        <div class="benefit-icon" data-lucide="trending-up"></div>
                         <div class="benefit-title">Total Belanja</div>
                         <div class="benefit-desc">
-                            <strong>Rp 850.000</strong>
+                            <strong>Rp {{ number_format((int) $stats['total_spent'], 0, ',', '.') }}</strong>
                         </div>
                     </div>
 
                     <div class="benefit-card">
-                        <div class="benefit-icon">⭐</div>
+                        <div class="benefit-icon" data-lucide="star"></div>
                         <div class="benefit-title">Status</div>
                         <div class="benefit-desc">
-                            <span class="member-badge">Gold</span>
+                            <span class="member-badge">{{ $stats['status'] }}</span>
                         </div>
                     </div>
                 </div>
@@ -191,6 +214,8 @@
     </main>
 </div>
 
+<script src="{{ asset('js/lucide-icons.js') }}"></script>
+<script src="{{ asset('js/theme-toggle.js') }}"></script>
 <script src="{{ asset('js/customer-landing.js') }}?v=midtrans-1"></script>
 </body>
 </html>

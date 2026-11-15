@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe Pop Up Pembayaran - KeFrec</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eeeeee;
+      color: #111111;
+    }
+
+    .canvas {
+      min-height: 100vh;
+      padding: 28px;
+      display: grid;
+      place-items: start center;
+      gap: 40px;
+      overflow-x: auto;
+    }
+
+    .artboard-title {
+      width: 1180px;
+      color: #b9b9b9;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .artboard {
+      width: 1180px;
+      min-height: 820px;
+      background: #ffffff;
+      border: 1px solid #e7e7e7;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-base {
+      height: 820px;
+      display: grid;
+      grid-template-rows: 70px 1fr;
+      opacity: 0.42;
+    }
+
+    .topbar {
+      border-bottom: 1px solid #cfcfcf;
+      display: grid;
+      grid-template-columns: 220px 1fr 245px;
+      gap: 18px;
+      align-items: center;
+      padding: 0 28px;
+    }
+
+    .brand {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #111111;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 34px;
+    }
+
+    .top-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .button {
+      height: 36px;
+      border: 1px solid #111111;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      background: #ffffff;
+    }
+
+    .button.dark {
+      background: #111111;
+      color: #ffffff;
+    }
+
+    .page-content {
+      padding: 28px;
+      display: grid;
+      grid-template-columns: 1fr 330px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .menu-panel,
+    .cart-panel {
+      border: 1px solid #9f9f9f;
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+      background: #ffffff;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .product-card {
+      border: 1px solid #9f9f9f;
+      height: 180px;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .product-image {
+      height: 74px;
+      border: 1px solid #999999;
+      background:
+        linear-gradient(to bottom right, transparent 48%, #999999 50%, transparent 52%),
+        linear-gradient(to top right, transparent 48%, #999999 50%, transparent 52%);
+    }
+
+    .cart-item-mini {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 10px;
+      align-items: center;
+      border-bottom: 1px solid #cfcfcf;
+      padding-bottom: 10px;
+    }
+
+    .mini-thumb {
+      width: 42px;
+      height: 38px;
+      border: 1px solid #999999;
+      background:
+        linear-gradient(to bottom right, transparent 48%, #999999 50%, transparent 52%),
+        linear-gradient(to top right, transparent 48%, #999999 50%, transparent 52%);
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.42);
+      display: grid;
+      place-items: center;
+      padding: 36px;
+    }
+
+    .modal {
+      width: 520px;
+      max-height: 735px;
+      background: #ffffff;
+      border: 2px solid #111111;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      position: relative;
+    }
+
+    .modal.wide {
+      width: 560px;
+    }
+
+    .modal-header {
+      padding: 24px 26px 14px;
+      border-bottom: 1px solid #cfcfcf;
+      display: grid;
+      gap: 9px;
+    }
+
+    .modal-scroll {
+      padding: 18px 26px;
+      display: grid;
+      gap: 16px;
+      overflow: hidden;
+    }
+
+    .modal-actions {
+      border-top: 1px solid #cfcfcf;
+      padding: 16px 26px;
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 12px;
+      background: #ffffff;
+    }
+
+    .close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      border: 1px solid #111111;
+      background: #ffffff;
+    }
+
+    .close::before,
+    .close::after {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 13px;
+      width: 13px;
+      height: 1.5px;
+      background: #111111;
+    }
+
+    .close::before {
+      transform: rotate(45deg);
+    }
+
+    .close::after {
+      transform: rotate(-45deg);
+    }
+
+    .section {
+      border-bottom: 1px solid #cfcfcf;
+      padding-bottom: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .section:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .checkout-item {
+      display: grid;
+      grid-template-columns: 1fr 120px;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid #cfcfcf;
+      padding: 12px;
+    }
+
+    .qty-control {
+      display: grid;
+      grid-template-columns: 26px 30px 26px;
+      gap: 6px;
+      align-items: center;
+      justify-content: end;
+    }
+
+    .qty-btn,
+    .qty-value {
+      height: 26px;
+      border: 1px solid #111111;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .summary {
+      border: 1px solid #111111;
+      padding: 13px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .summary-row {
+      display: grid;
+      grid-template-columns: 1fr 112px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .payment-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .payment-btn {
+      min-height: 94px;
+      border: 1px solid #777777;
+      padding: 12px;
+      display: grid;
+      gap: 9px;
+      align-content: start;
+    }
+
+    .payment-btn.active {
+      border: 2px solid #111111;
+    }
+
+    .payment-top {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .icon-box {
+      width: 22px;
+      height: 22px;
+      border: 1px solid #111111;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .icon-box.circle {
+      border-radius: 50%;
+    }
+
+    .icon-box.active::after {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      background: #111111;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .input {
+      height: 38px;
+      border: 1px solid #777777;
+      padding: 0 12px;
+      display: grid;
+      align-items: center;
+    }
+
+    .qris-box {
+      border: 1px solid #cfcfcf;
+      padding: 18px;
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+    }
+
+    .fake-qr {
+      width: 150px;
+      height: 150px;
+      border: 2px solid #111111;
+      background:
+        linear-gradient(90deg, #111111 12px, transparent 12px) 0 0 / 30px 30px,
+        linear-gradient(#111111 12px, transparent 12px) 0 0 / 30px 30px;
+    }
+
+    .detail-box,
+    .steps-box,
+    .warning-box,
+    .success-box {
+      border: 1px solid #cfcfcf;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      border: 3px solid #111111;
+      border-radius: 50%;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .success-icon::after {
+      content: "";
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      width: 24px;
+      height: 13px;
+      border-left: 4px solid #111111;
+      border-bottom: 4px solid #111111;
+      transform: rotate(-45deg);
+    }
+
+    .mobile-artboard-title {
+      width: 390px;
+      color: #b9b9b9;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .mobile-artboard {
+      width: 390px;
+      min-height: 820px;
+      background: #ffffff;
+      border: 1px solid #e7e7e7;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mobile-base {
+      min-height: 820px;
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+      opacity: 0.42;
+    }
+
+    .mobile-topbar {
+      display: grid;
+      grid-template-columns: 28px 1fr 34px;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid #cfcfcf;
+      padding-bottom: 14px;
+    }
+
+    .hamburger {
+      width: 20px;
+      height: 2px;
+      background: #111111;
+      box-shadow: 0 6px 0 #111111, 0 12px 0 #111111;
+    }
+
+    .cart-icon {
+      width: 30px;
+      height: 26px;
+      border: 1px solid #111111;
+    }
+
+    .mobile-product {
+      border: 1px solid #9f9f9f;
+      min-height: 110px;
+      padding: 11px;
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 12px;
+    }
+
+    .mobile-img {
+      border: 1px solid #999999;
+      background:
+        linear-gradient(to bottom right, transparent 48%, #999999 50%, transparent 52%),
+        linear-gradient(to top right, transparent 48%, #999999 50%, transparent 52%);
+    }
+
+    .mobile-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.42);
+      display: grid;
+      align-items: end;
+      padding: 16px;
+    }
+
+    .mobile-modal {
+      background: #ffffff;
+      border: 2px solid #111111;
+      max-height: 760px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      position: relative;
+    }
+
+    .mobile-modal .modal-header {
+      padding: 20px 18px 12px;
+    }
+
+    .mobile-modal .modal-scroll {
+      padding: 14px 18px;
+      gap: 14px;
+    }
+
+    .mobile-modal .modal-actions {
+      padding: 14px 18px;
+      grid-template-columns: 1fr;
+    }
+
+    .mobile-modal .payment-group {
+      grid-template-columns: 1fr;
+    }
+
+    .mobile-modal .payment-btn {
+      min-height: 66px;
+    }
+
+    .line {
+      height: 2px;
+      background: #111111;
+      border-radius: 999px;
+    }
+
+    .line.bold {
+      height: 5px;
+    }
+
+    .line.light {
+      height: 1px;
+      background: #b7b7b7;
+    }
+
+    .w-36 { width: 36px; }
+    .w-48 { width: 48px; }
+    .w-64 { width: 64px; }
+    .w-82 { width: 82px; }
+    .w-96 { width: 96px; }
+    .w-118 { width: 118px; }
+    .w-140 { width: 140px; }
+    .w-168 { width: 168px; }
+    .w-210 { width: 210px; }
+    .w-260 { width: 260px; }
+    .w-full { width: 100%; }
+
+    @media (max-width: 1240px) {
+      .canvas {
+        place-items: start;
+      }
+
+      .artboard-title,
+      .artboard {
+        min-width: 1180px;
+      }
+
+      .mobile-artboard-title,
+      .mobile-artboard {
+        min-width: 390px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="canvas">
+    <section>
+      <div class="artboard-title">Desktop - Pop Up Checkout / Pembayaran</div>
+
+      <div class="artboard">
+        <div class="page-base">
+          <header class="topbar">
+            <div class="brand">
+              <div class="logo">K</div>
+              <div>
+                <div class="line bold w-140"></div>
+                <div style="height:8px"></div>
+                <div class="line light w-96"></div>
+              </div>
+            </div>
+            <nav class="nav">
+              <div class="line light w-82"></div>
+              <div class="line light w-82"></div>
+              <div class="line bold w-96"></div>
+            </nav>
+            <div class="top-actions">
+              <div class="button">Menu</div>
+              <div class="button dark">Keranjang</div>
+            </div>
+          </header>
+
+          <section class="page-content">
+            <div class="menu-panel">
+              <div>
+                <div class="line bold w-168"></div>
+                <div style="height:8px"></div>
+                <div class="line light w-210"></div>
+              </div>
+              <div class="menu-grid">
+                <div class="product-card"><div class="product-image"></div><div class="line bold w-118"></div><div class="line light w-96"></div><div class="button dark">Tambah</div></div>
+                <div class="product-card"><div class="product-image"></div><div class="line bold w-118"></div><div class="line light w-96"></div><div class="button dark">Tambah</div></div>
+                <div class="product-card"><div class="product-image"></div><div class="line bold w-118"></div><div class="line light w-96"></div><div class="button dark">Tambah</div></div>
+                <div class="product-card"><div class="product-image"></div><div class="line bold w-118"></div><div class="line light w-96"></div><div class="button dark">Tambah</div></div>
+                <div class="product-card"><div class="product-image"></div><div class="line bold w-118"></div><div class="line light w-96"></div><div class="button dark">Tambah</div></div>
+                <div class="product-card"><div class="product-image"></div><div class="line bold w-118"></div><div class="line light w-96"></div><div class="button dark">Tambah</div></div>
+              </div>
+            </div>
+
+            <aside class="cart-panel">
+              <div class="line bold w-140"></div>
+              <div class="cart-item-mini"><div class="mini-thumb"></div><div><div class="line bold w-118"></div><div style="height:8px"></div><div class="line light w-82"></div></div></div>
+              <div class="cart-item-mini"><div class="mini-thumb"></div><div><div class="line bold w-118"></div><div style="height:8px"></div><div class="line light w-82"></div></div></div>
+              <div class="cart-item-mini"><div class="mini-thumb"></div><div><div class="line bold w-118"></div><div style="height:8px"></div><div class="line light w-82"></div></div></div>
+              <div class="button dark">Checkout Sekarang</div>
+            </aside>
+          </section>
+        </div>
+
+        <div class="overlay">
+          <section class="modal" aria-label="Pop Up Checkout">
+            <button class="close" type="button" aria-label="Tutup"></button>
+            <header class="modal-header">
+              <div class="line bold w-118"></div>
+              <div class="line light w-260"></div>
+            </header>
+
+            <div class="modal-scroll">
+              <section class="section">
+                <div class="line bold w-118"></div>
+                <div class="checkout-item">
+                  <div>
+                    <div class="line bold w-140"></div>
+                    <div style="height:8px"></div>
+                    <div class="line light w-118"></div>
+                  </div>
+                  <div class="qty-control">
+                    <div class="qty-btn">-</div>
+                    <div class="qty-value">1</div>
+                    <div class="qty-btn">+</div>
+                  </div>
+                </div>
+                <div class="checkout-item">
+                  <div>
+                    <div class="line bold w-140"></div>
+                    <div style="height:8px"></div>
+                    <div class="line light w-118"></div>
+                  </div>
+                  <div class="qty-control">
+                    <div class="qty-btn">-</div>
+                    <div class="qty-value">2</div>
+                    <div class="qty-btn">+</div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="section">
+                <div class="summary">
+                  <div class="summary-row"><div class="line light w-82"></div><div class="line bold w-82"></div></div>
+                  <div class="summary-row"><div class="line light w-96"></div><div class="line bold w-82"></div></div>
+                  <div class="summary-row"><div class="line bold w-64"></div><div class="line bold w-96"></div></div>
+                </div>
+              </section>
+
+              <section class="section">
+                <div class="line bold w-168"></div>
+                <div class="payment-group">
+                  <div class="payment-btn active">
+                    <div class="payment-top"><div class="icon-box circle active"></div><div class="line bold w-48"></div></div>
+                    <div class="line light w-96"></div>
+                    <div class="line light w-82"></div>
+                  </div>
+                  <div class="payment-btn">
+                    <div class="payment-top"><div class="icon-box circle"></div><div class="line bold w-48"></div></div>
+                    <div class="line light w-96"></div>
+                    <div class="line light w-82"></div>
+                  </div>
+                  <div class="payment-btn">
+                    <div class="payment-top"><div class="icon-box circle"></div><div class="line bold w-82"></div></div>
+                    <div class="line light w-96"></div>
+                    <div class="line light w-82"></div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="section">
+                <div class="form-group">
+                  <div class="line bold w-118"></div>
+                  <div class="input"><div class="line light w-168"></div></div>
+                </div>
+                <div class="form-group">
+                  <div class="line bold w-96"></div>
+                  <div class="input"><div class="line light w-82"></div></div>
+                </div>
+              </section>
+            </div>
+
+            <footer class="modal-actions">
+              <div class="button">Batal</div>
+              <div class="button dark">Lanjut ke Pembayaran</div>
+            </footer>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="artboard-title">Desktop - Pop Up QRIS, Transfer, dan Pembayaran Berhasil</div>
+      <div class="artboard" style="min-height: 720px;">
+        <div class="page-base" style="height: 720px;"></div>
+        <div class="overlay" style="grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: center;">
+          <section class="modal wide" aria-label="Pop Up QRIS" style="width: 350px; min-height: 560px;">
+            <button class="close" type="button" aria-label="Tutup"></button>
+            <header class="modal-header">
+              <div class="line bold w-140"></div>
+              <div class="line light w-210"></div>
+            </header>
+            <div class="modal-scroll">
+              <div class="qris-box">
+                <div class="fake-qr"></div>
+                <div class="line light w-168"></div>
+              </div>
+              <div class="detail-box">
+                <div class="summary-row"><div class="line light w-118"></div><div class="line bold w-96"></div></div>
+                <div class="summary-row"><div class="line light w-118"></div><div class="line bold w-96"></div></div>
+              </div>
+              <div class="steps-box">
+                <div class="line bold w-118"></div>
+                <div class="line light w-210"></div>
+                <div class="line light w-210"></div>
+                <div class="line light w-168"></div>
+              </div>
+            </div>
+            <footer class="modal-actions" style="grid-template-columns: 1fr;">
+              <div class="button dark">Saya Sudah Bayar</div>
+            </footer>
+          </section>
+
+          <section class="modal wide" aria-label="Pop Up Transfer Bank" style="width: 350px; min-height: 560px;">
+            <button class="close" type="button" aria-label="Tutup"></button>
+            <header class="modal-header">
+              <div class="line bold w-140"></div>
+              <div class="line light w-210"></div>
+            </header>
+            <div class="modal-scroll">
+              <div class="detail-box">
+                <div class="line light w-82"></div>
+                <div class="line bold w-118"></div>
+                <div class="line light w-118"></div>
+                <div class="line bold w-168"></div>
+                <div class="line light w-96"></div>
+                <div class="line bold w-140"></div>
+                <div class="line light w-118"></div>
+                <div class="line bold w-118"></div>
+              </div>
+              <div class="steps-box">
+                <div class="line bold w-118"></div>
+                <div class="line light w-210"></div>
+                <div class="line light w-210"></div>
+                <div class="line light w-168"></div>
+              </div>
+              <div class="warning-box">
+                <div class="line bold w-64"></div>
+                <div class="line light w-210"></div>
+              </div>
+            </div>
+            <footer class="modal-actions" style="grid-template-columns: 1fr;">
+              <div class="button dark">Saya Sudah Transfer</div>
+            </footer>
+          </section>
+
+          <section class="modal wide" aria-label="Pop Up Pembayaran Berhasil" style="width: 350px; min-height: 560px;">
+            <button class="close" type="button" aria-label="Tutup"></button>
+            <div class="modal-scroll" style="align-content: center;">
+              <div class="success-icon"></div>
+              <div style="display:grid; justify-items:center; gap:9px;">
+                <div class="line bold w-168"></div>
+                <div class="line light w-210"></div>
+              </div>
+              <div class="success-box">
+                <div class="summary-row"><div class="line light w-118"></div><div class="line bold w-82"></div></div>
+                <div class="summary-row"><div class="line light w-118"></div><div class="line bold w-82"></div></div>
+                <div class="summary-row"><div class="line light w-118"></div><div class="line bold w-82"></div></div>
+              </div>
+              <div class="detail-box">
+                <div class="line bold w-118"></div>
+                <div class="line light w-168"></div>
+                <div class="line bold w-118"></div>
+                <div class="line light w-210"></div>
+              </div>
+            </div>
+            <footer class="modal-actions" style="grid-template-columns: 1fr 1fr;">
+              <div class="button">Lihat Status</div>
+              <div class="button dark">Kembali</div>
+            </footer>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="mobile-artboard-title">Mobile - Bottom Sheet Checkout</div>
+      <div class="mobile-artboard">
+        <div class="mobile-base">
+          <header class="mobile-topbar">
+            <div class="hamburger"></div>
+            <div>
+              <div class="line bold w-140"></div>
+              <div style="height:8px"></div>
+              <div class="line light w-96"></div>
+            </div>
+            <div class="cart-icon"></div>
+          </header>
+          <div class="mobile-product"><div class="mobile-img"></div><div><div class="line bold w-118"></div><div style="height:8px"></div><div class="line light w-96"></div><div style="height:14px"></div><div class="button dark">Tambah</div></div></div>
+          <div class="mobile-product"><div class="mobile-img"></div><div><div class="line bold w-118"></div><div style="height:8px"></div><div class="line light w-96"></div><div style="height:14px"></div><div class="button dark">Tambah</div></div></div>
+          <div class="mobile-product"><div class="mobile-img"></div><div><div class="line bold w-118"></div><div style="height:8px"></div><div class="line light w-96"></div><div style="height:14px"></div><div class="button dark">Tambah</div></div></div>
+        </div>
+
+        <div class="mobile-overlay">
+          <section class="mobile-modal" aria-label="Mobile Pop Up Checkout">
+            <button class="close" type="button" aria-label="Tutup"></button>
+            <header class="modal-header">
+              <div class="line bold w-118"></div>
+              <div class="line light w-210"></div>
+            </header>
+            <div class="modal-scroll">
+              <section class="section">
+                <div class="line bold w-118"></div>
+                <div class="checkout-item" style="grid-template-columns: 1fr 86px;">
+                  <div><div class="line bold w-118"></div><div style="height:8px"></div><div class="line light w-96"></div></div>
+                  <div class="qty-control" style="grid-template-columns: 24px 24px 24px;"><div class="qty-btn">-</div><div class="qty-value">1</div><div class="qty-btn">+</div></div>
+                </div>
+              </section>
+              <section class="section">
+                <div class="summary">
+                  <div class="summary-row"><div class="line light w-82"></div><div class="line bold w-64"></div></div>
+                  <div class="summary-row"><div class="line light w-96"></div><div class="line bold w-64"></div></div>
+                  <div class="summary-row"><div class="line bold w-64"></div><div class="line bold w-82"></div></div>
+                </div>
+              </section>
+              <section class="section">
+                <div class="line bold w-168"></div>
+                <div class="payment-group">
+                  <div class="payment-btn active"><div class="payment-top"><div class="icon-box circle active"></div><div class="line bold w-48"></div></div><div class="line light w-140"></div></div>
+                  <div class="payment-btn"><div class="payment-top"><div class="icon-box circle"></div><div class="line bold w-48"></div></div><div class="line light w-140"></div></div>
+                  <div class="payment-btn"><div class="payment-top"><div class="icon-box circle"></div><div class="line bold w-82"></div></div><div class="line light w-140"></div></div>
+                </div>
+              </section>
+              <section class="section">
+                <div class="form-group"><div class="line bold w-118"></div><div class="input"><div class="line light w-140"></div></div></div>
+                <div class="form-group"><div class="line bold w-96"></div><div class="input"><div class="line light w-82"></div></div></div>
+              </section>
+            </div>
+            <footer class="modal-actions">
+              <div class="button">Batal</div>
+              <div class="button dark">Lanjut ke Pembayaran</div>
+            </footer>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

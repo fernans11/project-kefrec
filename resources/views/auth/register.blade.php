@@ -32,6 +32,7 @@
     };
   </script>
 
+  <script src="{{ asset('js/lucide-icons.js') }}"></script>
   <script src="{{ asset('js/register-page.js') }}"></script>
 </body>
 </html>

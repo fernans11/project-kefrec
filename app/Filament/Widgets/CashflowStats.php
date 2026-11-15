@@ -9,6 +9,8 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class CashflowStats extends BaseWidget
 {
+    protected static ?string $pollingInterval = '5s';
+
     public ?string $filter = '30';
 
     protected function getFilters(): ?array

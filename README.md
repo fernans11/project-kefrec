@@ -1,459 +1,760 @@
-﻿# Sistem Informasi Penjualan Pada Kefrec Coffeeshop
+# Sistem Informasi Penjualan Pada Kefrec Coffeeshop
 
 ## Tujuan Dokumen
-README ini dipakai sebagai dokumen kerja lanjutan untuk menyelesaikan project skripsi **"Sistem Informasi Penjualan Pada Kefrec Coffeeshop"** sampai tahap hosting sederhana.
 
-Posisi kerja saat dokumen ini disusun:
-- Deep work utama tanggal **Rabu, 10 Juni 2026** sudah selesai.
-- Flow inti customer, kasir, dan dapur sudah berjalan.
-- Integrasi Midtrans Sandbox untuk QRIS dan transfer bank sudah selesai.
-- Mulai dokumen ini, fokus kerja adalah sisa validasi operasional, dokumentasi skripsi, build, smoke test, dan persiapan hosting.
+README ini adalah dokumen kerja lanjutan untuk menyelesaikan project skripsi **Sistem Informasi Penjualan Pada Kefrec Coffeeshop** sampai siap hosting sederhana pada **Senin, 29 Juni 2026**.
 
-Target berikutnya:
-- Mulai workflow aktif berikutnya: **Kamis, 11 Juni 2026**
-- Mulai tahap hosting: **Senin, 29 Juni 2026**
-- Mode launching: hosting sederhana, cukup stabil untuk demo, pengujian, dan pengumpulan skripsi.
-- Catatan ritme kerja: **setiap hari Minggu adalah full rest**, tidak ada jadwal Deep Work Utama.
+Dokumen ini disesuaikan dengan posisi project per **Jumat, 19 Juni 2026**. Fokus utama mulai dari titik ini bukan lagi membuat fitur besar dari nol, tetapi menyelesaikan validasi, merapikan bug kecil, menyiapkan bukti implementasi, menyusun pengujian black-box, membuat user manual, melakukan build production, smoke test, lalu mulai hosting.
+
+Catatan ritme kerja:
+
+- Senin sampai Sabtu boleh dipakai untuk deep work.
+- Minggu adalah **full rest**.
+- Tidak ada target coding, QA, screenshot, build, dokumentasi berat, atau hosting pada hari Minggu.
+- Jadwal di bawah sengaja mengecualikan Minggu, 21 Juni 2026 dan Minggu, 28 Juni 2026.
 
 ---
 
 ## Ringkasan Project
-Project ini adalah aplikasi Laravel untuk operasional penjualan makanan dan minuman di Kefrec Coffeeshop. Sistem mencakup pendaftaran konsumen, pemesanan menu, checkout, payment gateway Midtrans, approval kasir, antrian dapur, stok, pembelian supplier, retur, komplain, cashflow, absensi staff, dashboard, dan laporan.
 
-Metode yang dipakai dalam skripsi:
+Project ini adalah aplikasi Laravel untuk operasional penjualan makanan dan minuman di Kefrec Coffeeshop. Sistem mencakup registrasi pelanggan, login multi-role, menu, cart, checkout, payment gateway Midtrans Sandbox, approval kasir, board dapur, stok bahan baku, recipe produk, pembelian supplier, retur, komplain, cashflow, absensi staff, dashboard, dan laporan.
+
+Metode skripsi:
+
 - Metode perancangan: **Waterfall**
 - Metode pengujian: **Black-box testing**
+
+Stack utama:
+
+- Laravel 12
+- PHP 8.2+
+- MySQL
+- Filament 3
+- Jetstream/Fortify
+- Sanctum
+- Midtrans PHP SDK
+- Spatie Permission
+- Vite dan Tailwind CSS
+
+---
+
+## Status Terkini Per 19 Juni 2026
+
+Secara umum, project sudah berada di fase **finishing dan validasi akhir**. Fitur inti sudah ada dan cukup kuat untuk skenario demo, tetapi belum boleh dianggap siap hosting sebelum checklist QA, build, dokumentasi, dan data demo selesai.
+
+### Sudah Berjalan di Kode
+
+- Landing/menu customer.
+- Register dan login customer.
+- Redirect role setelah login.
+- Panel admin/pemilik menggunakan Filament.
+- Flow customer melihat menu, menambah cart, checkout, dan melihat pesanan.
+- Pembayaran `cash`, `qris`, dan `transfer`.
+- Integrasi Midtrans Sandbox untuk QRIS dan transfer bank.
+- Webhook Midtrans di `/midtrans/notification`.
+- Sinkronisasi manual status Midtrans melalui tombol cek status pembayaran.
+- Pembatalan pesanan yang masih `pending_payment`.
+- Kasir melihat pesanan `pending_cashier` dan melakukan approval.
+- Dapur memproses pesanan dari `processing`, `ready`, sampai `completed`.
+- Stok keluar saat transaksi selesai.
+- Pembelian bahan baku sampai status `received`.
+- Stok bahan baku masuk dari pembelian supplier.
+- Cashflow masuk dari penjualan dan keluar dari pembelian.
+- Retur penjualan dan retur pembelian.
+- Komplain dari sisi admin.
+- Absensi staff mandiri.
+- Laporan absensi.
+- Laporan periodik.
+- Dashboard statistik, revenue chart, payment method pie, transaksi terbaru, cashflow, dan stok menipis.
+- Seeder menu, bahan baku, recipe, dan absensi demo.
+
+### Validasi Otomatis Yang Sudah Lolos
+
+Test spesifik yang sudah berhasil dijalankan:
+
+```bash
+php artisan test tests/Feature/OverviewStatsTest.php
+php artisan test tests/Feature/AdminIngredientPageTest.php
+php artisan test tests/Feature/UserResourceRoleSeparationTest.php
+```
+
+Hasil:
+
+- Overview stats hanya menghitung transaksi `completed`.
+- Admin bisa membuka halaman bahan baku.
+- Role internal dan pelanggan sudah mulai dipisahkan pada test resource user.
+- Full test suite sudah berjalan tanpa gagal: 29 passed, 7 skipped, 58 assertions.
+
+### Status Environment Lokal Terbaru
+
+Catatan verifikasi per **Jumat, 19 Juni 2026**:
+
+- MySQL lokal sudah aktif kembali setelah XAMPP dinyalakan.
+- `php artisan migrate:status` sudah berhasil dan semua migration utama berstatus `Ran`.
+- Data transaksi sudah terlihat di panel admin, sehingga koneksi aplikasi ke database lokal sudah pulih.
+- Masalah kemarin terjadi karena XAMPP/MySQL belum aktif, sehingga browser/local storage dan backend database tidak tersambung saat aplikasi dicoba.
+
+### Status Blocker Teknis
+
+Blocker teknis hari Jumat sudah dibereskan dan project siap lanjut ke QA operasional.
+
+Hasil verifikasi terbaru:
+
+- `php artisan route:list` berhasil dan menampilkan 118 routes.
+- `npm run build` berhasil dan menghasilkan asset di `public/build`.
+- `php artisan test` berhasil: 29 passed, 7 skipped, 58 assertions.
+- `AdminUserResource` dan `OwnerUserResource` sudah mengisi `usertype` otomatis saat create.
+- `Product` model sudah memuat `stock` dan `track_stock` di `$fillable`.
+- Komentar sisa `contentReference` di `CheckoutController` sudah dibersihkan.
+- File sementara `temp_midtrans_test.php` sudah dihapus karena berisi konfigurasi Midtrans hardcoded.
 
 ---
 
 ## Aktor Sistem
-| Aktor skripsi | Role aplikasi | Fungsi utama |
-|---|---|---|
-| Admin/Pemilik | `admin`, `owner` | Mengelola master data, produk, stok, transaksi, supplier, keuangan, laporan, dan monitoring. |
-| Konsumen/Pelanggan | `customer` | Registrasi, login, melihat menu, checkout, membayar, dan melihat status pesanan. |
-| Kasir | `cashier` | Memeriksa pesanan valid, approve pesanan, dan meneruskan ke dapur. |
-| Koki/Dapur | `kitchen` | Memproses pesanan, menandai siap, dan menyelesaikan pesanan. |
 
-Catatan:
-- Member adalah konsumen/pelanggan yang sudah login.
-- `owner` adalah representasi teknis untuk aktor Pemilik.
-- `kitchen` adalah representasi teknis untuk aktor Koki/Dapur.
+| Aktor Skripsi | Role Aplikasi | Akses Utama | Fungsi Utama |
+|---|---|---|---|
+| Admin | `admin` | `/admin` | Mengelola master data, user, produk, stok, transaksi, pembelian, retur, komplain, keuangan, laporan, dan konfigurasi demo. |
+| Pemilik | `owner` | `/admin` | Melihat dashboard, laporan, transaksi, cashflow, stok, dan aktivitas operasional. |
+| Pelanggan | `user` atau `customer` | `/home` | Register, login, melihat menu, checkout, membayar, dan melihat status pesanan. |
+| Kasir | `kasir` atau `cashier` | `/cashier/orders` | Memvalidasi pesanan dan meneruskan ke dapur. |
+| Koki/Dapur | `dapur` atau `kitchen` | `/kitchen/orders` | Memproses pesanan, menandai siap, dan menyelesaikan pesanan. |
 
----
+Catatan final role:
 
-## Baseline Setelah Deep Work 10 Juni 2026
-Bagian ini hanya mencatat posisi terakhir sebelum workflow aktif berikutnya dimulai. Detail pekerjaan selesai tidak dijadikan checklist harian.
-
-Kondisi yang sudah menjadi baseline:
-- Aplikasi berjalan lokal dengan Laravel 12 dan MySQL.
-- Akun demo untuk role utama tersedia.
-- Login dan redirect role sudah berjalan.
-- Halaman customer, kasir, dapur, dan admin bisa dibuka.
-- Customer bisa melihat menu, menambah cart, dan checkout.
-- Cash berjalan manual dan masuk approval kasir.
-- QRIS dan transfer bank berjalan melalui Midtrans Sandbox Snap.
-- Status Midtrans memakai alur `pending_payment` lalu `pending_cashier` setelah pembayaran valid.
-- Pesanan Midtrans tertunda bisa dicek ulang dan dibatalkan dari detail pesanan.
-- Kasir bisa approve pesanan.
-- Dapur bisa memproses sampai pesanan selesai.
-- Pembelian bahan baku manual sampai `received` sudah tersedia.
-- Absensi staff sudah tersedia.
-- Validasi ulang pembayaran cash dan Midtrans sudah dilakukan.
-- Skenario popup Snap ditutup, lanjut pembayaran, cek status pembayaran, dan pembatalan `pending_payment` sudah diuji.
-- Validasi ulang flow customer sampai kasir dan dapur sudah dilakukan.
-- Flow operasional penjualan sudah siap menjadi skenario demo utama.
-
-Keputusan scope pembayaran:
-- `cash`: manual, divalidasi kasir.
-- `qris`: Midtrans Sandbox.
-- `transfer`: Midtrans Sandbox, fokus BCA VA dan Mandiri Bill.
-- Webhook otomatis Midtrans membutuhkan URL publik/ngrok jika aplikasi masih lokal.
-- Saat lokal tanpa ngrok, gunakan tombol `Cek Status Pembayaran` pada detail pesanan.
+- Untuk demo, pilih satu penamaan role utama dan gunakan konsisten di data akun.
+- Jika kode masih menerima dua versi seperti `kasir/cashier` dan `dapur/kitchen`, dokumentasikan sebagai kompatibilitas sementara.
 
 ---
 
-## Fokus Kerja Berikutnya
-Urutan prioritas setelah 12 Juni 2026:
+## Scope Demo Utama
 
-1. Validasi stok keluar setelah transaksi selesai.
-2. Validasi pembelian supplier, stok masuk, dan cashflow keluar.
-3. Validasi retur penjualan dan retur pembelian.
-4. Validasi komplain dan tindak lanjut.
-5. Validasi dashboard, laporan, diagram pie metode pembayaran, cashflow, dan absensi.
-6. Rapikan data demo.
-7. Ambil screenshot BAB Implementasi.
-8. Susun tabel pengujian black-box.
-9. Susun user manual ringkas.
-10. Build production lokal.
-11. Smoke test final sebelum hosting.
-12. Mulai tahap hosting pada 29 Juni 2026.
+Skenario demo utama yang wajib stabil:
+
+1. Pelanggan membuka landing/menu.
+2. Pelanggan register atau login.
+3. Pelanggan menambahkan produk ke cart.
+4. Pelanggan checkout dengan `cash`.
+5. Kasir approve pesanan cash.
+6. Dapur memproses sampai `completed`.
+7. Stok bahan baku berkurang.
+8. Cashflow penjualan tercatat.
+9. Dashboard dan laporan menampilkan data transaksi.
+10. Pelanggan checkout dengan Midtrans Sandbox.
+11. Pelanggan melakukan pembayaran QRIS atau transfer.
+12. Status pembayaran disinkronkan.
+13. Pesanan masuk ke kasir setelah pembayaran valid.
+
+Skenario pendukung:
+
+- Pembelian bahan baku dari supplier sampai `received`.
+- Stok bahan baku bertambah setelah pembelian.
+- Retur penjualan.
+- Retur pembelian.
+- Komplain dan tindak lanjut.
+- Absensi masuk dan keluar.
+- Laporan absensi.
+- Laporan periodik dan cashflow.
 
 ---
 
-## Aturan Jadwal Deep Work
-- Senin sampai Sabtu dapat dipakai untuk Deep Work Utama.
-- Minggu adalah full rest.
-- Pada hari Minggu tidak ada target coding, QA, screenshot, build, atau dokumentasi berat.
-- Jika ada pekerjaan yang tertunda menjelang hari Minggu, pindahkan ke Senin berikutnya atau Sabtu sebelumnya.
+## Jadwal Pasti Sampai Hosting
+
+Jadwal ini dimulai dari **Jumat, 19 Juni 2026** dan berakhir pada **Senin, 29 Juni 2026**. Hari Minggu tidak dimasukkan sebagai hari kerja.
+
+### Jumat, 19 Juni 2026 - Stabilkan Environment dan Bug Kecil
+
+Target:
+
+- Environment lokal kembali sehat.
+- Bug kecil yang menghalangi QA dan build dibereskan.
+
+Tugas teknis:
+
+- [x] Nyalakan MySQL di XAMPP.
+- [x] Pastikan database `project_kefrec` tersedia.
+- [x] Jalankan `php artisan migrate:status`.
+- [x] Database sudah siap, sehingga `php artisan migrate --seed` tidak perlu dijalankan ulang.
+- [x] Jalankan `npm install` jika `vite` belum dikenali.
+- [x] Jalankan `npm run build`.
+- [x] Tambahkan `stock` dan `track_stock` ke `$fillable` model `Product`.
+- [x] Pastikan create Admin otomatis menyimpan `usertype = admin`.
+- [x] Pastikan create Owner otomatis menyimpan `usertype = owner`.
+- [x] Bersihkan komentar sisa `contentReference` di `CheckoutController`.
+- [x] Putuskan status `temp_midtrans_test.php`: dihapus sebelum hosting.
+- [x] Jalankan test spesifik yang sudah ada.
+
+Command acuan:
+
+```bash
+php artisan migrate:status
+npm install
+npm run build
+php artisan test tests/Feature/OverviewStatsTest.php
+php artisan test tests/Feature/AdminIngredientPageTest.php
+php artisan test tests/Feature/UserResourceRoleSeparationTest.php
+```
+
+Output wajib:
+
+- MySQL lokal bisa diakses. **Status: selesai, `migrate:status` berhasil pada 19 Juni 2026.**
+- Build Vite berhasil atau penyebab gagalnya jelas. **Status: selesai, `public/build` sudah terbentuk pada 19 Juni 2026.**
+- Bug role create dan product stock sudah dibereskan.
+- Catatan error tersisa ditulis di daftar bug. **Status: tidak ada blocker teknis tersisa dari checklist Jumat.**
 
 ---
 
-## Workflow Harian Lanjutan
-Workflow ini dimulai dari **Kamis, 11 Juni 2026** dan hanya berisi pekerjaan yang belum dilakukan setelah validasi Midtrans dan flow customer-kasir-dapur selesai.
+### Sabtu, 20 Juni 2026 - QA Operasional End-to-End
 
-### Hari 1 - Kamis, 11 Juni 2026
-Target: validasi stok keluar setelah transaksi selesai.
+Target:
 
-Tugas:
-- [ ] Pilih 1 produk olahan yang memakai bahan baku/recipe.
-- [ ] Catat stok bahan baku sebelum transaksi.
-- [ ] Lakukan order sampai status `completed`.
-- [ ] Catat stok bahan baku setelah transaksi.
-- [ ] Pastikan stok bahan baku berkurang sesuai recipe.
-- [ ] Pilih 1 produk non-olah jika tersedia.
-- [ ] Pastikan stok produk non-olah berkurang sesuai qty transaksi.
-- [ ] Catat batasan jika data demo tidak memakai produk non-olah.
+- Flow inti customer, kasir, dapur, stok, dan cashflow terbukti stabil.
 
-Output:
-- Bukti validasi stok keluar untuk bahan baku olahan dan produk non-olah.
+Tugas QA:
 
-### Hari 2 - Jumat, 12 Juni 2026
-Target: validasi pembelian supplier, stok masuk, dan cashflow keluar.
-
-Tugas:
-- [ ] Buat transaksi pembelian bahan baku.
-- [ ] Isi item pembelian, qty, harga, subtotal, dan total.
-- [ ] Ubah status pembelian menjadi `received`.
+- [x] Jalankan ulang flow customer dari menu sampai checkout cash.
+- [x] Login kasir dan approve pesanan.
+- [x] Login dapur dan proses sampai `completed`.
+- [x] Catat stok bahan baku sebelum dan sesudah transaksi.
+- [x] Pastikan stok bahan baku berkurang sesuai recipe.
+- [x] Pastikan cashflow penjualan tercatat.
+- [x] Jalankan checkout Midtrans QRIS.
+- [x] Jalankan checkout Midtrans transfer.
+- [x] Uji tombol `Cek Status Pembayaran`.
+- [x] Uji pembatalan pesanan `pending_payment`.
+- [ ] Jalankan pembelian bahan baku sampai `received`.
 - [ ] Pastikan stok bahan baku bertambah.
-- [ ] Pastikan cashflow pengeluaran tercatat.
-- [ ] Uji pembelian barang/menu non-olah jika dipakai dalam data demo.
-- [ ] Rapikan data supplier dan data bahan baku untuk demo.
+- [ ] Pastikan cashflow pembelian tercatat sebagai pengeluaran.
+- [ ] Uji retur penjualan.
+- [ ] Uji retur pembelian.
+- [ ] Uji komplain dan tindak lanjut.
+- [ ] Uji absensi check-in dan check-out.
+- [ ] Buka dashboard, laporan periodik, cashflow, dan laporan absensi.
 
-Output:
-- Alur pembelian supplier siap diuji black-box dan dijelaskan di skripsi.
+Output wajib:
 
-### Hari 3 - Sabtu, 13 Juni 2026
-Target: validasi retur penjualan.
+- Daftar hasil QA per fitur.
+- Daftar bug prioritas tinggi, sedang, rendah.
+- Batasan sistem yang perlu ditulis di skripsi.
 
-Tugas:
-- [ ] Ambil transaksi penjualan yang sudah selesai.
-- [ ] Buat retur penjualan.
-- [ ] Isi item retur dan nominal retur.
-- [ ] Proses retur sampai status final.
-- [ ] Periksa apakah retur mempengaruhi stok atau cashflow.
-- [ ] Catat batasan jika retur hanya berupa pencatatan dan tindak lanjut.
+Catatan hasil QA sementara:
 
-Output:
-- Status fitur retur penjualan jelas: otomatis penuh atau pencatatan.
+- Flow customer dari menu sampai checkout berhasil tanpa kendala.
+- Kasir berhasil login dan approve pesanan.
+- Dapur berhasil login dan memproses pesanan sampai selesai.
+- Customer dapat melihat perubahan status pesanan melalui fitur `Lihat Pesanan`.
+- Saat transaksi selesai, status di Admin Panel tercatat `Selesai`.
+- Pencatatan transaksi penjualan tampil di Admin Panel bagian transaksi dan di menu transaksi Midtrans.
+- Checkout Midtrans QRIS berhasil sampai Payment Simulator.
+- Checkout Midtrans Transfer berhasil sampai Payment Simulator.
+- Tombol `Cek Status Pembayaran` berhasil mengubah status setelah pembayaran diselesaikan di Midtrans Payment Simulator.
+- Tombol pembatalan pesanan berfungsi dan status pembatalan tercatat di Admin Panel serta Midtrans.
+- Stok bahan baku berkurang sesuai dengan produk yang dipesan customer setelah transaksi selesai.
+- Alur pembelian bahan baku dirapikan: supplier wajib dipilih agar setiap stok masuk punya asal pemasok yang jelas.
+- Status pembelian dipakai sebagai alur stok: `Draf` belum menambah stok, `Diterima` menambah stok dan mencatat cashflow keluar, `Dibatalkan` tidak diproses.
+- Catatan keuangan dari pembelian bahan baku dibuat lebih rinci: berisi nomor PO, supplier, dan daftar bahan baku yang dibeli.
+- Perhitungan pembelian dirapikan: subtotal item dan total pembelian dihitung ulang dari item yang benar-benar tersimpan saat create/edit, sehingga daftar pembelian tidak lagi menyimpan total `0`, nilai pajak saja, atau angka sementara dari form.
+- Jika pembelian berstatus `Diterima` diedit untuk memperbaiki total, catatan cashflow pembelian ikut disinkronkan ke total terbaru.
+- Validasi otomatis pembelian ditambahkan: pembelian `Diterima` terbukti menambah stok bahan baku dan mencatat cashflow keluar.
+- Validasi otomatis subtotal pembelian ditambahkan: contoh item Rp 50.000 + Rp 100.000 dengan pajak Rp 3 menghasilkan total Rp 150.003.
+- Pembelian yang sudah `Diterima` tidak boleh dihapus agar stok dan cashflow yang sudah diproses tetap konsisten. Koreksi stok dilakukan melalui Retur Pembelian.
 
-### Minggu, 14 Juni 2026 - Full Rest
-Tidak ada jadwal Deep Work Utama.
+Template catatan bug:
 
-Catatan:
-- Tidak ada target coding.
-- Tidak ada target QA.
-- Tidak ada target dokumentasi berat.
-- Lanjutkan pekerjaan pada Senin, 15 Juni 2026.
+```text
+Kode Bug:
+Fitur:
+Langkah:
+Hasil Aktual:
+Hasil Seharusnya:
+Prioritas: Tinggi/Sedang/Rendah
+Status: Open/Fixed/Deferred
+```
 
-### Hari 4 - Senin, 15 Juni 2026
-Target: validasi retur pembelian.
+---
 
-Tugas:
-- [ ] Ambil pembelian bahan baku/barang yang sudah `received`.
-- [ ] Buat retur pembelian.
-- [ ] Isi item retur dan nominal retur.
-- [ ] Proses retur sampai status final.
-- [ ] Periksa apakah retur mempengaruhi stok atau cashflow.
-- [ ] Catat batasan jika retur hanya berupa pencatatan dan tindak lanjut.
+### Senin, 22 Juni 2026 - Screenshot Implementasi Customer, Kasir, dan Dapur
 
-Output:
-- Status fitur retur pembelian jelas untuk dokumentasi dan pengujian.
+Target:
 
-### Hari 5 - Selasa, 16 Juni 2026
-Target: validasi komplain dan tindak lanjut.
-
-Tugas:
-- [ ] Buat data komplain dari pelanggan/transaksi jika relasi tersedia.
-- [ ] Isi isi komplain, status, dan tindak lanjut.
-- [ ] Ubah status komplain sesuai alur.
-- [ ] Pastikan Admin/Pemilik bisa melihat dan mengelola komplain.
-- [ ] Catat apakah komplain tersedia dari sisi pelanggan atau hanya admin-side.
-
-Output:
-- Flow komplain siap masuk batasan sistem atau pengujian final.
-
-### Hari 6 - Rabu, 17 Juni 2026
-Target: validasi dashboard dan diagram metode pembayaran.
+- Bukti visual BAB Implementasi untuk flow transaksi utama selesai.
 
 Tugas:
-- [ ] Buka dashboard Admin/Pemilik.
-- [ ] Pastikan statistik utama tampil.
-- [ ] Pastikan chart revenue tampil.
-- [ ] Pastikan diagram pie metode pembayaran tampil.
-- [ ] Pastikan data cash, QRIS, dan transfer terbaca di laporan.
-- [ ] Pastikan widget stok menipis tampil jika data tersedia.
 
-Output:
-- Dashboard siap untuk screenshot BAB Implementasi.
-
-### Hari 7 - Kamis, 18 Juni 2026
-Target: validasi laporan periodik dan cashflow.
-
-Tugas:
-- [ ] Uji filter laporan berdasarkan tanggal.
-- [ ] Uji filter laporan berdasarkan status transaksi.
-- [ ] Cocokkan pemasukan dengan transaksi `completed`.
-- [ ] Cocokkan pengeluaran dengan pembelian `received`.
-- [ ] Periksa kategori cashflow penjualan dan pembelian.
-- [ ] Catat batasan laporan jika ada selisih data.
-
-Output:
-- Laporan periodik dan cashflow siap dijelaskan di skripsi.
-
-### Hari 8 - Jumat, 19 Juni 2026
-Target: validasi absensi staff dan laporan absensi.
-
-Tugas:
-- [ ] Uji absensi masuk.
-- [ ] Uji absensi keluar.
-- [ ] Buka laporan absensi.
-- [ ] Pastikan data staff tampil.
-- [ ] Pastikan filter periode berjalan.
-- [ ] Catat hasil untuk black-box testing.
-
-Output:
-- Absensi dan laporan absensi siap screenshot.
-
-### Hari 9 - Sabtu, 20 Juni 2026
-Target: buffer QA operasional.
-
-Tugas:
-- [ ] Ulangi flow customer ke checkout ke kasir ke dapur.
-- [ ] Ulangi flow pembayaran Midtrans dengan `Cek Status Pembayaran`.
-- [ ] Ulangi flow pembelian bahan baku sampai `received`.
-- [ ] Ulangi absensi staff.
-- [ ] Buat daftar bug prioritas tinggi, sedang, rendah.
-- [ ] Tetapkan batasan sistem final untuk fitur yang tidak otomatis penuh.
-
-Output:
-- Daftar bug dan batasan sistem siap dijadikan acuan minggu dokumentasi.
-
-### Minggu, 21 Juni 2026 - Full Rest
-Tidak ada jadwal Deep Work Utama.
-
-Catatan:
-- Tidak ada target coding.
-- Tidak ada target QA.
-- Tidak ada target dokumentasi berat.
-- Lanjutkan pekerjaan pada Senin, 22 Juni 2026.
-
-### Hari 10 - Senin, 22 Juni 2026
-Target: screenshot BAB Implementasi bagian customer, kasir, dan dapur.
-
-Tugas:
-- [ ] Screenshot halaman menu pelanggan.
-- [ ] Screenshot cart dan checkout.
+- [ ] Screenshot landing/menu customer.
+- [ ] Screenshot register customer.
+- [ ] Screenshot login customer.
+- [ ] Screenshot cart.
+- [ ] Screenshot checkout.
+- [ ] Screenshot pilihan pembayaran cash.
 - [ ] Screenshot popup Midtrans Snap.
-- [ ] Screenshot detail status pesanan.
-- [ ] Screenshot halaman persetujuan kasir.
-- [ ] Screenshot board dapur.
-- [ ] Simpan nama file screenshot dengan urutan fitur.
+- [ ] Screenshot detail pesanan `pending_payment`.
+- [ ] Screenshot tombol cek status pembayaran.
+- [ ] Screenshot detail pesanan `pending_cashier`.
+- [ ] Screenshot halaman kasir.
+- [ ] Screenshot aksi approve kasir.
+- [ ] Screenshot halaman dapur.
+- [ ] Screenshot status `processing`.
+- [ ] Screenshot status `ready`.
+- [ ] Screenshot status `completed`.
 
-Output:
-- Screenshot flow transaksi lengkap.
+Format nama file:
 
-### Hari 11 - Selasa, 23 Juni 2026
-Target: screenshot BAB Implementasi bagian admin.
+```text
+01_customer_landing.png
+02_customer_register.png
+03_customer_login.png
+04_customer_cart.png
+05_customer_checkout.png
+06_midtrans_snap.png
+07_order_detail_pending_payment.png
+08_cashier_order_approval.png
+09_kitchen_processing.png
+10_kitchen_completed.png
+```
+
+Output wajib:
+
+- Screenshot customer, kasir, dan dapur tersimpan rapi.
+- Alur demo utama bisa dijelaskan dari screenshot tanpa membuka aplikasi.
+
+---
+
+### Selasa, 23 Juni 2026 - Screenshot Implementasi Admin dan Laporan
+
+Target:
+
+- Bukti visual BAB Implementasi untuk admin/pemilik selesai.
 
 Tugas:
-- [ ] Screenshot dashboard Admin/Pemilik.
-- [ ] Screenshot master produk/menu.
-- [ ] Screenshot bahan baku dan stok.
+
+- [ ] Screenshot dashboard admin.
+- [ ] Screenshot statistik utama.
+- [ ] Screenshot grafik pemasukan.
+- [ ] Screenshot diagram metode pembayaran.
+- [ ] Screenshot transaksi terbaru.
+- [ ] Screenshot stok menipis.
+- [ ] Screenshot produk/menu.
+- [ ] Screenshot recipe bahan baku pada produk.
+- [ ] Screenshot bahan baku.
 - [ ] Screenshot supplier.
 - [ ] Screenshot pembelian supplier.
 - [ ] Screenshot transaksi.
-- [ ] Screenshot cashflow.
+- [ ] Screenshot cashflow/keuangan.
+- [ ] Screenshot retur penjualan.
+- [ ] Screenshot retur pembelian.
+- [ ] Screenshot komplain.
+- [ ] Screenshot staff.
 - [ ] Screenshot absensi.
-- [ ] Screenshot retur dan komplain jika dipakai.
+- [ ] Screenshot laporan periodik.
+- [ ] Screenshot laporan absensi.
+- [ ] Screenshot manajemen akun admin, owner, karyawan, dan pelanggan jika dipakai di skripsi.
 
-Output:
-- Screenshot admin lengkap.
+Output wajib:
 
-### Hari 12 - Rabu, 24 Juni 2026
-Target: tabel pengujian black-box.
+- Screenshot admin dan laporan tersimpan rapi.
+- Fitur yang tidak ditampilkan di skripsi ditandai sebagai fitur pendukung atau batasan.
+
+---
+
+### Rabu, 24 Juni 2026 - Tabel Pengujian Black-Box
+
+Target:
+
+- Draft tabel pengujian black-box selesai dan sesuai fitur nyata di aplikasi.
 
 Tugas:
+
+- [ ] Buat tabel pengujian register pelanggan.
 - [ ] Buat tabel pengujian login role.
-- [ ] Buat tabel pengujian pendaftaran konsumen.
-- [ ] Buat tabel pengujian pemesanan pelanggan.
-- [ ] Buat tabel pengujian pembayaran cash.
-- [ ] Buat tabel pengujian pembayaran Midtrans.
-- [ ] Buat tabel pengujian kasir.
-- [ ] Buat tabel pengujian dapur.
-- [ ] Buat tabel pengujian stok.
+- [ ] Buat tabel pengujian redirect role.
+- [ ] Buat tabel pengujian menu customer.
+- [ ] Buat tabel pengujian cart.
+- [ ] Buat tabel pengujian checkout cash.
+- [ ] Buat tabel pengujian checkout QRIS Midtrans.
+- [ ] Buat tabel pengujian checkout transfer Midtrans.
+- [ ] Buat tabel pengujian cek status pembayaran.
+- [ ] Buat tabel pengujian pembatalan pesanan pending.
+- [ ] Buat tabel pengujian approval kasir.
+- [ ] Buat tabel pengujian proses dapur.
+- [ ] Buat tabel pengujian stok keluar.
 - [ ] Buat tabel pengujian pembelian supplier.
-- [ ] Buat tabel pengujian retur.
+- [ ] Buat tabel pengujian stok masuk.
+- [ ] Buat tabel pengujian cashflow masuk dan keluar.
+- [ ] Buat tabel pengujian retur penjualan.
+- [ ] Buat tabel pengujian retur pembelian.
 - [ ] Buat tabel pengujian komplain.
-- [ ] Buat tabel pengujian cashflow, absensi, dashboard, dan laporan.
-Output:
-- Draft tabel black-box testing selesai.
+- [ ] Buat tabel pengujian absensi.
+- [ ] Buat tabel pengujian laporan periodik.
+- [ ] Buat tabel pengujian laporan absensi.
+- [ ] Buat tabel pengujian dashboard.
 
-### Hari 13 - Kamis, 25 Juni 2026
-Target: user manual dan skenario demo.
+Format tabel:
+
+| No | Fitur | Skenario | Data Uji | Hasil Yang Diharapkan | Hasil Aktual | Status |
+|---|---|---|---|---|---|---|
+| 1 | Login | User memasukkan email dan password benar | admin@kefrec.test / password | Masuk ke dashboard sesuai role | Sesuai | Berhasil |
+
+Output wajib:
+
+- Draft tabel black-box siap masuk bab pengujian.
+- Setiap fitur penting minimal punya 1 skenario berhasil dan 1 skenario validasi/gagal jika relevan.
+
+---
+
+### Kamis, 25 Juni 2026 - User Manual dan Skenario Demo
+
+Target:
+
+- User manual ringkas dan alur demo presentasi selesai.
+
+Tugas user manual:
+
+- [ ] Tulis manual Admin.
+- [ ] Tulis manual Owner.
+- [ ] Tulis manual Customer.
+- [ ] Tulis manual Kasir.
+- [ ] Tulis manual Dapur.
+- [ ] Tulis manual absensi staff.
+
+Isi minimal setiap manual:
+
+- Tujuan role.
+- URL akses.
+- Data login demo.
+- Langkah utama.
+- Hasil yang diharapkan.
+- Catatan batasan.
+
+Tugas skenario demo:
+
+- [ ] Buat demo 10-15 menit.
+- [ ] Tentukan urutan login akun.
+- [ ] Tentukan produk yang dipakai untuk demo.
+- [ ] Tentukan metode pembayaran yang ditampilkan.
+- [ ] Tentukan data stok yang ditunjukkan.
+- [ ] Tentukan laporan yang akan dibuka.
+- [ ] Siapkan kalimat penjelasan singkat untuk Midtrans Sandbox dan webhook lokal.
+
+Output wajib:
+
+- User manual ringkas selesai.
+- Skenario demo siap dipraktikkan tanpa improvisasi besar.
+
+---
+
+### Jumat, 26 Juni 2026 - Polishing Data Demo dan Backup
+
+Target:
+
+- Data demo bersih, konsisten, dan aman untuk presentasi.
 
 Tugas:
-- [ ] Tulis user manual ringkas untuk Admin/Pemilik.
-- [ ] Tulis user manual ringkas untuk Customer.
-- [ ] Tulis user manual ringkas untuk Kasir.
-- [ ] Tulis user manual ringkas untuk Dapur.
-- [ ] Buat skenario demo 10-15 menit.
-- [ ] Tulis batasan sistem, termasuk kebutuhan ngrok untuk webhook Midtrans lokal.
 
-Output:
-- User manual dan skenario demo selesai.
-
-### Hari 14 - Jumat, 26 Juni 2026
-Target: polishing data demo.
-
-Tugas:
 - [ ] Rapikan akun demo.
+- [ ] Pastikan password akun demo seragam atau dicatat jelas.
+- [ ] Pastikan role akun demo sesuai akses.
 - [ ] Rapikan produk/menu.
-- [ ] Rapikan bahan baku dan recipe.
+- [ ] Rapikan kategori menu.
+- [ ] Rapikan harga menu.
+- [ ] Rapikan gambar menu.
+- [ ] Rapikan bahan baku.
+- [ ] Rapikan recipe produk.
 - [ ] Rapikan supplier.
-- [ ] Rapikan staff dan customer.
-- [ ] Bersihkan transaksi testing yang tidak perlu.
-- [ ] Siapkan backup database demo.
+- [ ] Rapikan staff.
+- [ ] Rapikan customer.
+- [ ] Bersihkan transaksi testing yang gagal atau tidak perlu.
+- [ ] Sisakan beberapa transaksi contoh untuk dashboard dan laporan.
+- [ ] Sisakan contoh pembelian supplier.
+- [ ] Sisakan contoh retur dan komplain jika akan ditampilkan.
+- [ ] Export/backup database demo.
+- [ ] Simpan file backup dengan tanggal.
 
-Output:
-- Data demo bersih dan siap presentasi.
+Nama backup:
 
-### Hari 15 - Sabtu, 27 Juni 2026
-Target: build production lokal dan smoke test final sebelum hosting.
+```text
+backup_project_kefrec_demo_2026_06_26.sql
+```
 
-Tugas:
+Output wajib:
+
+- Database demo rapi.
+- Akun demo jelas.
+- Backup database tersedia.
+
+---
+
+### Sabtu, 27 Juni 2026 - Build Production dan Smoke Test Final Lokal
+
+Target:
+
+- Project benar-benar siap dibawa ke hosting pada 29 Juni 2026.
+
+Tugas build:
+
+- [ ] Jalankan `composer install` jika vendor bermasalah.
+- [ ] Jalankan `npm install` jika `node_modules` belum siap.
 - [ ] Jalankan `npm run build`.
-- [ ] Jalankan `php artisan test` jika memungkinkan.
-- [ ] Jika test otomatis tidak relevan, catat sebagai risiko.
+- [ ] Pastikan folder `public/build` tersedia.
 - [ ] Jalankan `php artisan config:clear`.
-- [ ] Cek Laravel log.
-- [ ] Buka landing/menu pelanggan.
-- [ ] Login Admin/Pemilik.
-- [ ] Login Kasir.
-- [ ] Login Dapur.
-- [ ] Login Customer.
-- [ ] Uji checkout cash singkat.
-- [ ] Uji checkout Midtrans singkat.
-- [ ] Uji kasir approve.
-- [ ] Uji dapur selesai.
-- [ ] Uji dashboard dan laporan singkat.
-- [ ] Siapkan daftar konfigurasi hosting.
+- [ ] Jalankan `php artisan route:clear`.
+- [ ] Jalankan `php artisan view:clear`.
+- [ ] Jalankan `php artisan cache:clear`.
 
-Output:
-- Build lokal dan smoke test final siap sebelum hosting.
+Tugas test:
 
-### Minggu, 28 Juni 2026 - Full Rest
-Tidak ada jadwal Deep Work Utama.
+- [ ] Jalankan test spesifik yang sudah lolos.
+- [ ] Jalankan `php artisan test`.
+- [ ] Jika full test masih timeout, catat test terakhir yang berjalan dan penyebab sementara.
+- [ ] Jalankan `php artisan route:list` dan pastikan tidak timeout.
+- [ ] Cek `storage/logs/laravel.log`.
 
-Catatan:
-- Tidak ada target coding.
-- Tidak ada target QA.
-- Tidak ada target dokumentasi berat.
-- Hari ini dipakai untuk istirahat penuh sebelum mulai tahap hosting.
+Tugas smoke test manual:
 
-### Hari 16 - Senin, 29 Juni 2026
-Target: mulai tahap hosting.
+- [ ] Buka landing.
+- [ ] Login customer.
+- [ ] Checkout cash.
+- [ ] Login kasir.
+- [ ] Approve pesanan.
+- [ ] Login dapur.
+- [ ] Selesaikan pesanan.
+- [ ] Cek stok berkurang.
+- [ ] Cek cashflow masuk.
+- [ ] Login admin.
+- [ ] Buka dashboard.
+- [ ] Buka laporan periodik.
+- [ ] Buka laporan absensi.
+- [ ] Uji pembelian supplier singkat.
+- [ ] Uji Midtrans singkat atau minimal cek Snap token masih terbentuk.
 
-Tugas:
-- [ ] Lakukan review singkat data demo sebelum upload.
-- [ ] Tentukan media hosting: shared hosting, VPS, server kampus, atau lokal presentasi dengan tunnel.
-- [ ] Siapkan database hosting/demo.
-- [ ] Siapkan file `.env` hosting.
+Command acuan:
+
+```bash
+composer install
+npm install
+npm run build
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan cache:clear
+php artisan route:list
+php artisan test
+```
+
+Output wajib:
+
+- Build production lokal berhasil.
+- Smoke test final lokal berhasil.
+- Daftar konfigurasi hosting siap.
+- Bug tersisa sudah diberi keputusan: fix sebelum hosting atau dicatat sebagai batasan.
+
+---
+
+### Senin, 29 Juni 2026 - Mulai Hosting
+
+Target:
+
+- Aplikasi mulai tersedia di environment hosting/demo.
+
+Tugas persiapan hosting:
+
+- [ ] Tentukan media hosting: shared hosting, VPS, server kampus, atau lokal dengan tunnel.
+- [ ] Pastikan PHP hosting minimal 8.2.
+- [ ] Pastikan ekstensi PHP yang dibutuhkan aktif.
+- [ ] Siapkan database MySQL hosting.
+- [ ] Siapkan user dan password database hosting.
+- [ ] Siapkan file `.env` production.
 - [ ] Set `APP_ENV=production`.
 - [ ] Set `APP_DEBUG=false`.
-- [ ] Set konfigurasi database hosting.
-- [ ] Set konfigurasi Midtrans sesuai environment demo.
-- [ ] Jika memakai server publik, isi Payment Notification URL Midtrans ke `/midtrans/notification`.
-- [ ] Jalankan `npm run build` jika build belum tersedia.
+- [ ] Set `APP_URL` sesuai domain hosting.
+- [ ] Set database hosting.
+- [ ] Set konfigurasi Midtrans Sandbox atau production sesuai kebutuhan demo.
 - [ ] Upload source code atau pull repository di server.
-- [ ] Upload hasil build asset jika build dilakukan lokal.
-- [ ] Jalankan migration/seeder jika dibutuhkan.
-- [ ] Jalankan smoke test awal di hosting.
+- [ ] Upload `public/build` dari hasil `npm run build`.
+- [ ] Jalankan `composer install --no-dev --optimize-autoloader` jika server mendukung.
+- [ ] Jalankan `php artisan key:generate` jika belum ada `APP_KEY`.
+- [ ] Jalankan `php artisan migrate --force`.
+- [ ] Import database demo jika memakai backup.
+- [ ] Jalankan `php artisan storage:link` jika diperlukan.
+- [ ] Jalankan cache production jika server stabil.
+- [ ] Set document root hosting ke folder `public`.
+- [ ] Set permission folder `storage` dan `bootstrap/cache`.
+- [ ] Isi Payment Notification URL Midtrans jika memakai URL publik.
 
-Output:
-- Aplikasi mulai tersedia di environment hosting dan siap validasi lanjutan.
+Command production acuan:
+
+```bash
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan storage:link
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+Payment Notification URL Midtrans:
+
+```text
+https://domain-hosting/midtrans/notification
+```
+
+Smoke test hosting:
+
+- [ ] Buka halaman landing.
+- [ ] Login admin.
+- [ ] Login customer.
+- [ ] Checkout cash.
+- [ ] Login kasir.
+- [ ] Login dapur.
+- [ ] Buka dashboard.
+- [ ] Buka laporan.
+- [ ] Uji Midtrans jika domain publik sudah aktif.
+- [ ] Cek log hosting.
+
+Output wajib:
+
+- Aplikasi bisa dibuka dari URL hosting.
+- Login role utama berhasil.
+- Flow transaksi dasar berhasil.
+- Catatan konfigurasi hosting tersimpan.
 
 ---
 
 ## Definition of Done Sebelum Hosting
-Project dianggap siap masuk tahap hosting jika:
 
-1. Flow customer ke checkout ke kasir ke dapur stabil.
-2. Cash, QRIS Midtrans, dan transfer Midtrans sudah diuji.
-3. Stok keluar dan stok masuk sudah divalidasi atau batasannya dicatat.
-4. Retur dan komplain sudah diuji atau batasannya dicatat.
-5. Dashboard, cashflow, laporan, dan absensi sudah bisa ditampilkan.
-6. Screenshot implementasi sudah tersedia.
-7. Tabel black-box testing sudah disusun.
-8. User manual ringkas sudah dibuat.
-9. Data demo sudah dirapikan.
-10. Build production lokal berhasil.
-11. Smoke test final lokal berhasil.
+Project dianggap siap masuk hosting jika semua poin ini terpenuhi:
+
+- [ ] MySQL lokal berjalan dan migration status bisa dicek.
+- [ ] Data demo sudah rapi.
+- [ ] Akun demo tersedia dan bisa login.
+- [ ] Flow customer sampai checkout berjalan.
+- [ ] Flow kasir approve berjalan.
+- [ ] Flow dapur sampai completed berjalan.
+- [ ] Cash berhasil diuji.
+- [ ] QRIS Midtrans berhasil diuji atau batasannya dicatat.
+- [ ] Transfer Midtrans berhasil diuji atau batasannya dicatat.
+- [ ] Stok keluar berhasil divalidasi.
+- [ ] Pembelian supplier dan stok masuk berhasil divalidasi.
+- [ ] Cashflow masuk dan keluar berhasil divalidasi.
+- [ ] Retur penjualan dan retur pembelian jelas statusnya.
+- [ ] Komplain jelas statusnya.
+- [ ] Absensi dan laporan absensi berjalan.
+- [ ] Dashboard dan laporan periodik berjalan.
+- [ ] Screenshot BAB Implementasi tersedia.
+- [ ] Tabel black-box testing selesai.
+- [ ] User manual ringkas selesai.
+- [ ] `npm run build` berhasil.
+- [ ] Smoke test final lokal berhasil.
+- [ ] Backup database demo tersedia.
+
+---
+
+## Definition of Done Setelah Hosting
+
+Project dianggap siap demo/presentasi setelah hosting jika:
+
+- [ ] URL hosting bisa diakses.
+- [ ] Login semua role demo berhasil.
+- [ ] Asset CSS/JS tampil normal.
+- [ ] Dashboard admin tampil.
+- [ ] Flow transaksi cash berhasil di hosting.
+- [ ] Flow Midtrans berhasil atau batasan sandbox/webhook dicatat.
+- [ ] Database hosting berisi data demo rapi.
+- [ ] Error log hosting tidak menunjukkan error fatal.
+- [ ] Payment Notification URL Midtrans sudah diarahkan ke domain hosting jika memakai URL publik.
+- [ ] File `.env` production tidak ikut terekspos publik.
 
 ---
 
 ## File Penting
+
 ### Route dan Controller
-- Route utama: `routes/web.php`
-- Redirect role: `app/Http/Controllers/HomeController.php`
-- Checkout: `app/Http/Controllers/Shop/CheckoutController.php`
-- Riwayat order: `app/Http/Controllers/Shop/OrderController.php`
-- Webhook Midtrans: `app/Http/Controllers/MidtransNotificationController.php`
-- Kasir: `app/Http/Controllers/Cashier/OrderApprovalController.php`
-- Dapur: `app/Http/Controllers/Kitchen/OrderBoardController.php`
-- Absensi mandiri: `app/Http/Controllers/Attendance/AttendanceSelfController.php`
+
+- `routes/web.php`
+- `routes/api.php`
+- `app/Http/Controllers/HomeController.php`
+- `app/Http/Controllers/Shop/CheckoutController.php`
+- `app/Http/Controllers/Shop/OrderController.php`
+- `app/Http/Controllers/MidtransNotificationController.php`
+- `app/Http/Controllers/Cashier/OrderApprovalController.php`
+- `app/Http/Controllers/Kitchen/OrderBoardController.php`
+- `app/Http/Controllers/Attendance/AttendanceSelfController.php`
 
 ### Model Utama
-- User: `app/Models/User.php`
-- Customer: `app/Models/Customer.php`
-- Product: `app/Models/Product.php`
-- Transaction: `app/Models/Transaction.php`
-- TransactionItem: `app/Models/TransactionItem.php`
-- Ingredient: `app/Models/Ingredient.php`
-- Purchase: `app/Models/Purchase.php`
-- Cashflow: `app/Models/Cashflow.php`
-- Complaint: `app/Models/Complaint.php`
-- Staff: `app/Models/Staff.php`
-- Attendance: `app/Models/Attendance.php`
+
+- `app/Models/User.php`
+- `app/Models/Customer.php`
+- `app/Models/Product.php`
+- `app/Models/Transaction.php`
+- `app/Models/TransactionItem.php`
+- `app/Models/Ingredient.php`
+- `app/Models/Purchase.php`
+- `app/Models/PurchaseReturn.php`
+- `app/Models/SalesReturn.php`
+- `app/Models/Cashflow.php`
+- `app/Models/Complaint.php`
+- `app/Models/Staff.php`
+- `app/Models/Attendance.php`
+
+### Filament
+
+- `app/Providers/Filament/AdminPanelProvider.php`
+- `app/Filament/Pages/Dashboard.php`
+- `app/Filament/Pages/PeriodicReport.php`
+- `app/Filament/Pages/AttendanceReport.php`
+- `app/Filament/Resources/ProductResource.php`
+- `app/Filament/Resources/IngredientResource.php`
+- `app/Filament/Resources/TransactionResource.php`
+- `app/Filament/Resources/PurchaseResource.php`
+- `app/Filament/Resources/CashflowResource.php`
+- `app/Filament/Resources/AttendanceResource.php`
+- `app/Filament/Widgets/OverviewStats.php`
+- `app/Filament/Widgets/RevenueChart.php`
+- `app/Filament/Widgets/PaymentMethodPie.php`
+- `app/Filament/Widgets/LowStockIngredients.php`
 
 ### Payment Gateway
-- Service Midtrans: `app/Services/MidtransService.php`
-- Konfigurasi service: `config/services.php`
-- Env Midtrans:
-  - `MIDTRANS_SERVER_KEY`
-  - `MIDTRANS_CLIENT_KEY`
-  - `MIDTRANS_IS_PRODUCTION=false`
-  - `MIDTRANS_IS_SANITIZED=true`
-  - `MIDTRANS_IS_3DS=true`
+
+- `app/Services/MidtransService.php`
+- `config/services.php`
+- `.env`
+
+Env Midtrans:
+
+```text
+MIDTRANS_CLIENT_KEY=
+MIDTRANS_SERVER_KEY=
+MIDTRANS_IS_PRODUCTION=false
+MIDTRANS_IS_SANITIZED=true
+MIDTRANS_IS_3DS=true
+```
 
 ---
 
 ## Akun Demo
-Gunakan akun berikut untuk presentasi. Sesuaikan jika akun aktual berbeda.
 
-| Aktor | Role teknis | Email | Password | Akses |
+Gunakan akun berikut untuk presentasi. Sesuaikan jika data aktual berbeda.
+
+| Aktor | Role Teknis | Email | Password | Akses |
 |---|---|---|---|---|
-| Admin/Pemilik | Admin | admin@kefrec.test | password | `/admin` |
-| Admin/Pemilik | Owner | owner@kefrec.test | password | `/admin` |
-| Kasir | Cashier | cashier@kefrec.test | password | `/cashier/orders` |
-| Koki/Dapur | Kitchen | kitchen@kefrec.test | password | `/kitchen/orders` |
-| Konsumen/Pelanggan | Customer | customer@kefrec.test | password | `/home` |
+| Admin | `admin` | `admin@kefrec.test` | `password` | `/admin` |
+| Pemilik | `owner` | `owner@kefrec.test` | `password` | `/admin` |
+| Kasir | `kasir` | `cashier@kefrec.test` | `password` | `/cashier/orders` |
+| Dapur | `dapur` | `kitchen@kefrec.test` | `password` | `/kitchen/orders` |
+| Pelanggan | `user` | `customer@kefrec.test` | `password` | `/home` |
+
+Catatan:
+
+- Pastikan role di database sesuai dengan role yang dibaca kode.
+- Jika memakai `cashier/kitchen`, pastikan controller dan redirect tetap menerima role tersebut.
 
 ---
 
 ## Setup Lokal
+
 ```bash
 composer install
-cp .env.example .env
+copy .env.example .env
 php artisan key:generate
 php artisan migrate --seed
 npm install
@@ -461,57 +762,62 @@ npm run dev
 php artisan serve
 ```
 
-Untuk build production lokal:
+Untuk Windows PowerShell, jika `copy` tidak sesuai, gunakan:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Build production lokal:
 
 ```bash
 npm run build
 php artisan config:clear
 ```
 
-Untuk test:
+Test:
 
 ```bash
 php artisan test
 ```
 
+Test spesifik:
+
+```bash
+php artisan test tests/Feature/OverviewStatsTest.php
+php artisan test tests/Feature/AdminIngredientPageTest.php
+php artisan test tests/Feature/UserResourceRoleSeparationTest.php
+```
+
 ---
 
 ## Catatan Hosting
-Checklist minimal hosting:
 
-- Gunakan PHP 8.2 atau lebih baru.
-- Gunakan database MySQL.
-- Set `APP_ENV=production`.
-- Set `APP_DEBUG=false`.
-- Jalankan `composer install --no-dev --optimize-autoloader` jika server mendukung Composer.
-- Upload folder `public/build` dari hasil `npm run build`.
-- Set konfigurasi database di `.env`.
-- Set konfigurasi Midtrans di `.env`.
-- Jalankan `php artisan migrate --force`.
-- Jalankan `php artisan storage:link` jika upload file dipakai.
-- Isi Payment Notification URL Midtrans ke:
+Checklist hosting minimal:
 
-```text
-https://domain-hosting/midtrans/notification
-```
-
-Optimasi Laravel jika server mendukung:
-
-```bash
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-```
+- PHP 8.2 atau lebih baru.
+- MySQL.
+- Composer tersedia atau vendor diupload dari lokal.
+- Document root diarahkan ke folder `public`.
+- Folder `storage` writable.
+- Folder `bootstrap/cache` writable.
+- `.env` production tersedia.
+- `APP_DEBUG=false`.
+- `public/build` tersedia dari hasil Vite build.
+- Database sudah migrate/import.
+- Midtrans key sudah sesuai environment demo.
+- Payment Notification URL diarahkan ke `/midtrans/notification` jika memakai domain publik.
 
 ---
 
 ## Batasan Sistem
-- Sistem fokus pada pemesanan dan penjualan di coffee shop, bukan delivery.
-- Sistem hanya untuk satu outlet.
+
+- Sistem fokus pada pemesanan dan penjualan coffee shop satu outlet.
+- Sistem tidak mencakup delivery.
 - Cash diproses manual dan divalidasi kasir.
-- QRIS dan transfer bank memakai Midtrans Sandbox.
-- Saat lokal, webhook Midtrans membutuhkan ngrok agar otomatis masuk ke aplikasi.
-- Tanpa ngrok, status Midtrans bisa disinkronkan lewat tombol `Cek Status Pembayaran`.
-- E-wallet di luar channel Snap aktif tidak menjadi prioritas demo.
-- Retur dan komplain dapat diposisikan sebagai pencatatan dan tindak lanjut jika efek otomatis belum penuh.
+- QRIS dan transfer bank memakai Midtrans Sandbox untuk kebutuhan demo.
+- Saat lokal, webhook Midtrans membutuhkan URL publik seperti ngrok.
+- Tanpa ngrok, status Midtrans dapat disinkronkan dengan tombol `Cek Status Pembayaran`.
+- Retur dan komplain dapat diposisikan sebagai pencatatan dan tindak lanjut jika tidak semua proses dibuat otomatis penuh.
 - Stok produk non-olah dan stok bahan baku olahan harus dibedakan saat pengujian.
+- Hosting yang dituju adalah hosting sederhana untuk demo, pengujian, dan pengumpulan skripsi.

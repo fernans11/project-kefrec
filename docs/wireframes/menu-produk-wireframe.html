@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe Menu Produk - KeFrec</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #efefef;
+      color: #111;
+    }
+
+    .canvas {
+      min-height: 100vh;
+      padding: 28px;
+      display: grid;
+      place-items: start center;
+      gap: 40px;
+    }
+
+    .artboard-title {
+      width: 1040px;
+      max-width: 100%;
+      color: #b9b9b9;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .artboard {
+      width: 1040px;
+      min-height: 760px;
+      background: #fff;
+      border: 1px solid #ececec;
+      padding: 20px;
+    }
+
+    .page {
+      display: grid;
+      gap: 20px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 210px 1fr 260px;
+      gap: 18px;
+      align-items: center;
+      border-bottom: 1px solid #cfcfcf;
+      padding-bottom: 16px;
+    }
+
+    .brand {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .logo {
+      width: 38px;
+      height: 38px;
+      border: 2px solid #111;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .search {
+      height: 34px;
+      border: 1px solid #777;
+      border-radius: 999px;
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      align-items: center;
+      padding: 0 12px;
+      gap: 7px;
+    }
+
+    .search-icon {
+      width: 13px;
+      height: 13px;
+      border: 1.8px solid #111;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .search-icon::after {
+      content: "";
+      position: absolute;
+      width: 7px;
+      height: 2px;
+      background: #111;
+      right: -6px;
+      bottom: -4px;
+      transform: rotate(45deg);
+    }
+
+    .top-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .button {
+      height: 34px;
+      border: 1px solid #111;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      background: #fff;
+    }
+
+    .button.dark {
+      background: #111;
+      color: #fff;
+    }
+
+    .hero {
+      border: 1px solid #9f9f9f;
+      height: 158px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .hero-copy {
+      display: grid;
+      gap: 10px;
+    }
+
+    .hero-image {
+      height: 120px;
+      border: 1px solid #999;
+      background:
+        linear-gradient(to bottom right, transparent 49%, #999 50%, transparent 51%),
+        linear-gradient(to top right, transparent 49%, #999 50%, transparent 51%);
+    }
+
+    .content-layout {
+      display: grid;
+      grid-template-columns: 1fr 290px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .menu-area {
+      display: grid;
+      gap: 16px;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 1fr 160px;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+    }
+
+    .tab {
+      height: 30px;
+      border: 1px solid #777;
+      display: grid;
+      place-items: center;
+      padding: 0 10px;
+    }
+
+    .tab.active {
+      background: #111;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .product-card {
+      border: 1px solid #9f9f9f;
+      min-height: 236px;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .product-image {
+      height: 92px;
+      border: 1px solid #999;
+      position: relative;
+      background:
+        linear-gradient(to bottom right, transparent 49%, #999 50%, transparent 51%),
+        linear-gradient(to top right, transparent 49%, #999 50%, transparent 51%);
+    }
+
+    .badge {
+      position: absolute;
+      top: 7px;
+      left: 7px;
+      width: 46px;
+      height: 14px;
+      border: 1px solid #111;
+      background: #fff;
+    }
+
+    .price-row {
+      display: grid;
+      grid-template-columns: 1fr 58px;
+      gap: 10px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .qty-add {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .qty {
+      height: 28px;
+      border: 1px solid #111;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .cart {
+      border: 1px solid #9f9f9f;
+      min-height: 500px;
+      padding: 14px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+      position: sticky;
+      top: 20px;
+    }
+
+    .cart-head {
+      display: grid;
+      grid-template-columns: 1fr 34px;
+      gap: 10px;
+      align-items: center;
+      border-bottom: 1px solid #cfcfcf;
+      padding-bottom: 10px;
+    }
+
+    .cart-count {
+      height: 26px;
+      border: 1px solid #111;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      gap: 10px;
+      border-bottom: 1px solid #cfcfcf;
+      padding-bottom: 12px;
+    }
+
+    .thumb {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #999;
+      background:
+        linear-gradient(to bottom right, transparent 48%, #999 50%, transparent 52%),
+        linear-gradient(to top right, transparent 48%, #999 50%, transparent 52%);
+    }
+
+    .cart-item-body {
+      display: grid;
+      gap: 7px;
+    }
+
+    .cart-summary {
+      border-top: 1px solid #999;
+      margin-top: 4px;
+      padding-top: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .summary-row {
+      display: grid;
+      grid-template-columns: 1fr 90px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding-top: 6px;
+    }
+
+    .page-dot {
+      width: 26px;
+      height: 26px;
+      border: 1px solid #111;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .line {
+      height: 2px;
+      background: #111;
+      border-radius: 999px;
+    }
+
+    .line.bold {
+      height: 5px;
+    }
+
+    .line.light {
+      height: 1px;
+      background: #b7b7b7;
+    }
+
+    .w-34 { width: 34px; }
+    .w-45 { width: 45px; }
+    .w-58 { width: 58px; }
+    .w-72 { width: 72px; }
+    .w-90 { width: 90px; }
+    .w-108 { width: 108px; }
+    .w-132 { width: 132px; }
+    .w-160 { width: 160px; }
+    .w-198 { width: 198px; }
+    .w-260 { width: 260px; }
+    .w-full { width: 100%; }
+
+    .mobile-artboard {
+      width: 390px;
+      min-height: 780px;
+      background: #fff;
+      border: 1px solid #ececec;
+      padding: 20px;
+    }
+
+    .mobile-page {
+      display: grid;
+      gap: 16px;
+    }
+
+    .mobile-topbar {
+      display: grid;
+      grid-template-columns: 32px 1fr 34px;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid #cfcfcf;
+      padding-bottom: 14px;
+    }
+
+    .menu-icon {
+      width: 18px;
+      height: 2px;
+      background: #111;
+      box-shadow: 0 6px 0 #111, 0 12px 0 #111;
+    }
+
+    .cart-icon {
+      width: 30px;
+      height: 26px;
+      border: 1px solid #111;
+      position: relative;
+    }
+
+    .cart-icon::before,
+    .cart-icon::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      width: 6px;
+      height: 6px;
+      border: 1px solid #111;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .cart-icon::before {
+      left: 4px;
+    }
+
+    .cart-icon::after {
+      right: 4px;
+    }
+
+    .mobile-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .mobile-products {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mobile-card {
+      border: 1px solid #9f9f9f;
+      padding: 11px;
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 12px;
+      min-height: 126px;
+    }
+
+    .mobile-image {
+      border: 1px solid #999;
+      background:
+        linear-gradient(to bottom right, transparent 49%, #999 50%, transparent 51%),
+        linear-gradient(to top right, transparent 49%, #999 50%, transparent 51%);
+    }
+
+    .mobile-card-body {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    .mobile-cart-bar {
+      border: 1px solid #111;
+      height: 48px;
+      display: grid;
+      grid-template-columns: 1fr 96px;
+      gap: 12px;
+      align-items: center;
+      padding: 0 12px;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 1100px) {
+      .canvas {
+        place-items: start;
+        overflow-x: auto;
+      }
+
+      .artboard-title,
+      .artboard {
+        min-width: 1040px;
+      }
+
+      .mobile-title {
+        min-width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="canvas">
+    <section>
+      <div class="artboard-title">Desktop - Menu Produk / Customer Ordering</div>
+
+      <div class="artboard">
+        <div class="page">
+          <header class="topbar">
+            <div class="brand">
+              <div class="logo">K</div>
+              <div>
+                <div class="line bold w-132"></div>
+                <div style="height:7px"></div>
+                <div class="line light w-90"></div>
+              </div>
+            </div>
+
+            <div class="search">
+              <div class="search-icon"></div>
+              <div class="line light w-full"></div>
+            </div>
+
+            <div class="top-actions">
+              <div class="button">Dashboard</div>
+              <div class="button dark">Keranjang</div>
+            </div>
+          </header>
+
+          <section class="hero">
+            <div class="hero-copy">
+              <div class="line bold w-198"></div>
+              <div class="line light w-260"></div>
+              <div class="line light w-198"></div>
+              <div class="button dark" style="width: 118px;">Lihat Menu</div>
+            </div>
+            <div class="hero-image"></div>
+          </section>
+
+          <section class="content-layout">
+            <div class="menu-area">
+              <div class="section-head">
+                <div>
+                  <div class="line bold w-160"></div>
+                  <div style="height:8px"></div>
+                  <div class="line light w-198"></div>
+                </div>
+                <div class="button">Filter / Sort</div>
+              </div>
+
+              <div class="tabs">
+                <div class="tab active"></div>
+                <div class="tab"><div class="line w-58"></div></div>
+                <div class="tab"><div class="line w-58"></div></div>
+                <div class="tab"><div class="line w-58"></div></div>
+              </div>
+
+              <div class="product-grid">
+                <article class="product-card">
+                  <div class="product-image"><div class="badge"></div></div>
+                  <div class="line bold w-108"></div>
+                  <div class="line light w-132"></div>
+                  <div class="line light w-90"></div>
+                  <div class="price-row">
+                    <div class="line bold w-72"></div>
+                    <div class="line light w-45"></div>
+                  </div>
+                  <div class="qty-add">
+                    <div class="qty">1</div>
+                    <div class="button dark">Tambah</div>
+                  </div>
+                </article>
+
+                <article class="product-card">
+                  <div class="product-image"><div class="badge"></div></div>
+                  <div class="line bold w-108"></div>
+                  <div class="line light w-132"></div>
+                  <div class="line light w-90"></div>
+                  <div class="price-row">
+                    <div class="line bold w-72"></div>
+                    <div class="line light w-45"></div>
+                  </div>
+                  <div class="qty-add">
+                    <div class="qty">1</div>
+                    <div class="button dark">Tambah</div>
+                  </div>
+                </article>
+
+                <article class="product-card">
+                  <div class="product-image"><div class="badge"></div></div>
+                  <div class="line bold w-108"></div>
+                  <div class="line light w-132"></div>
+                  <div class="line light w-90"></div>
+                  <div class="price-row">
+                    <div class="line bold w-72"></div>
+                    <div class="line light w-45"></div>
+                  </div>
+                  <div class="qty-add">
+                    <div class="qty">1</div>
+                    <div class="button dark">Tambah</div>
+                  </div>
+                </article>
+
+                <article class="product-card">
+                  <div class="product-image"></div>
+                  <div class="line bold w-108"></div>
+                  <div class="line light w-132"></div>
+                  <div class="line light w-90"></div>
+                  <div class="price-row">
+                    <div class="line bold w-72"></div>
+                    <div class="line light w-45"></div>
+                  </div>
+                  <div class="qty-add">
+                    <div class="qty">1</div>
+                    <div class="button dark">Tambah</div>
+                  </div>
+                </article>
+
+                <article class="product-card">
+                  <div class="product-image"></div>
+                  <div class="line bold w-108"></div>
+                  <div class="line light w-132"></div>
+                  <div class="line light w-90"></div>
+                  <div class="price-row">
+                    <div class="line bold w-72"></div>
+                    <div class="line light w-45"></div>
+                  </div>
+                  <div class="qty-add">
+                    <div class="qty">1</div>
+                    <div class="button dark">Tambah</div>
+                  </div>
+                </article>
+
+                <article class="product-card">
+                  <div class="product-image"></div>
+                  <div class="line bold w-108"></div>
+                  <div class="line light w-132"></div>
+                  <div class="line light w-90"></div>
+                  <div class="price-row">
+                    <div class="line bold w-72"></div>
+                    <div class="line light w-45"></div>
+                  </div>
+                  <div class="qty-add">
+                    <div class="qty">1</div>
+                    <div class="button dark">Tambah</div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="pagination">
+                <div class="page-dot">1</div>
+                <div class="page-dot">2</div>
+                <div class="page-dot">3</div>
+              </div>
+            </div>
+
+            <aside class="cart">
+              <div class="cart-head">
+                <div>
+                  <div class="line bold w-108"></div>
+                  <div style="height:7px"></div>
+                  <div class="line light w-72"></div>
+                </div>
+                <div class="cart-count">3</div>
+              </div>
+
+              <div class="cart-item">
+                <div class="thumb"></div>
+                <div class="cart-item-body">
+                  <div class="line bold w-108"></div>
+                  <div class="line light w-72"></div>
+                  <div class="line light w-90"></div>
+                </div>
+              </div>
+
+              <div class="cart-item">
+                <div class="thumb"></div>
+                <div class="cart-item-body">
+                  <div class="line bold w-108"></div>
+                  <div class="line light w-72"></div>
+                  <div class="line light w-90"></div>
+                </div>
+              </div>
+
+              <div class="cart-item">
+                <div class="thumb"></div>
+                <div class="cart-item-body">
+                  <div class="line bold w-108"></div>
+                  <div class="line light w-72"></div>
+                  <div class="line light w-90"></div>
+                </div>
+              </div>
+
+              <div class="cart-summary">
+                <div class="summary-row">
+                  <div class="line light w-72"></div>
+                  <div class="line bold w-72"></div>
+                </div>
+                <div class="summary-row">
+                  <div class="line light w-72"></div>
+                  <div class="line bold w-72"></div>
+                </div>
+                <div class="button dark">Checkout</div>
+              </div>
+            </aside>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="artboard-title mobile-title" style="width:390px;">Mobile - Menu Produk</div>
+      <div class="mobile-artboard">
+        <div class="mobile-page">
+          <header class="mobile-topbar">
+            <div class="menu-icon"></div>
+            <div>
+              <div class="line bold w-132"></div>
+              <div style="height:7px"></div>
+              <div class="line light w-90"></div>
+            </div>
+            <div class="cart-icon"></div>
+          </header>
+
+          <div class="search">
+            <div class="search-icon"></div>
+            <div class="line light w-full"></div>
+          </div>
+
+          <section class="hero" style="height:130px; grid-template-columns:1fr; padding:14px;">
+            <div class="hero-copy">
+              <div class="line bold w-160"></div>
+              <div class="line light w-198"></div>
+              <div class="line light w-132"></div>
+            </div>
+          </section>
+
+          <div class="mobile-tabs">
+            <div class="tab active"></div>
+            <div class="tab"><div class="line w-58"></div></div>
+            <div class="tab"><div class="line w-58"></div></div>
+            <div class="tab"><div class="line w-58"></div></div>
+          </div>
+
+          <section class="mobile-products">
+            <article class="mobile-card">
+              <div class="mobile-image"></div>
+              <div class="mobile-card-body">
+                <div class="line bold w-108"></div>
+                <div class="line light w-132"></div>
+                <div class="line light w-90"></div>
+                <div class="button dark" style="height:30px;">Tambah</div>
+              </div>
+            </article>
+
+            <article class="mobile-card">
+              <div class="mobile-image"></div>
+              <div class="mobile-card-body">
+                <div class="line bold w-108"></div>
+                <div class="line light w-132"></div>
+                <div class="line light w-90"></div>
+                <div class="button dark" style="height:30px;">Tambah</div>
+              </div>
+            </article>
+
+            <article class="mobile-card">
+              <div class="mobile-image"></div>
+              <div class="mobile-card-body">
+                <div class="line bold w-108"></div>
+                <div class="line light w-132"></div>
+                <div class="line light w-90"></div>
+                <div class="button dark" style="height:30px;">Tambah</div>
+              </div>
+            </article>
+          </section>
+
+          <div class="mobile-cart-bar">
+            <div>
+              <div class="line bold w-108"></div>
+              <div style="height:7px"></div>
+              <div class="line light w-72"></div>
+            </div>
+            <div class="button dark">Checkout</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

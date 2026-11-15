@@ -8,6 +8,7 @@ use App\Models\Staff;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\View\View;
 
 class AttendanceSelfController extends Controller
 {
@@ -23,8 +24,28 @@ class AttendanceSelfController extends Controller
         ]);
     }
 
+    public function employee(): View
+    {
+        $user = auth()->user();
+        abort_unless($user && $this->isEmployeeRole($user->usertype), 403);
+
+        $staff = Staff::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        return view('attendance.employee', [
+            'staff' => $staff,
+            'backRoute' => in_array($user->usertype, ['cashier', 'kasir'], true)
+                ? 'cashier.orders.index'
+                : 'kitchen.orders.index',
+        ]);
+    }
+
     public function checkIn(Request $request): RedirectResponse
     {
+        abort_unless($request->user() && $this->isEmployeeRole($request->user()->usertype), 403);
+
         $data = $request->validate([
             'staff_id' => ['required', 'integer', 'exists:staff,id'],
         ]);
@@ -57,6 +78,8 @@ class AttendanceSelfController extends Controller
 
     public function checkOut(Request $request): RedirectResponse
     {
+        abort_unless($request->user() && $this->isEmployeeRole($request->user()->usertype), 403);
+
         $data = $request->validate([
             'staff_id' => ['required', 'integer', 'exists:staff,id'],
         ]);
@@ -80,5 +103,10 @@ class AttendanceSelfController extends Controller
         $attendance->save();
 
         return back()->with('success', 'Check-out berhasil.');
+    }
+
+    private function isEmployeeRole(?string $usertype): bool
+    {
+        return in_array($usertype, ['cashier', 'kasir', 'kitchen', 'dapur'], true);
     }
 }

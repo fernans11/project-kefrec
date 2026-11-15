@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Output Data Staff - Laravel</title>
+  <style>
+    :root {
+      --page: #09090b;
+      --topbar: #18181b;
+      --panel: #18181b;
+      --panel-2: #242427;
+      --border: #2e2e33;
+      --border-2: #3f3f46;
+      --text: #ffffff;
+      --muted: #a1a1aa;
+      --yellow: #f5b800;
+      --green: #22c55e;
+      --red: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #eeeeee;
+      font-family: Arial, "Segoe UI", sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .figure {
+      width: 1220px;
+      background: #ffffff;
+      padding: 18px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, .16);
+    }
+
+    .caption {
+      color: #111111;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .app {
+      min-height: 760px;
+      color: var(--text);
+      background: var(--page);
+      border: 1px solid #d7d7d7;
+      display: grid;
+      grid-template-rows: 64px 1fr;
+      overflow: hidden;
+    }
+
+    .topbar {
+      background: var(--topbar);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+
+    .brand { font-size: 20px; font-weight: 800; }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #050506;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 275px 1fr;
+      min-height: 696px;
+    }
+
+    .sidebar {
+      background: #09090b;
+      border-right: 1px solid var(--border);
+      padding: 22px 14px;
+    }
+
+    .nav-group { margin-bottom: 23px; }
+
+    .group-title {
+      color: #b8b8c2;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      margin: 0 8px 10px;
+    }
+
+    .nav-item {
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: 7px;
+      padding: 9px 10px;
+      color: #f4f4f5;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .nav-item.active {
+      background: #18181b;
+      color: var(--yellow);
+    }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      border: 1.7px solid currentColor;
+      border-radius: 4px;
+    }
+
+    .content {
+      padding: 32px 48px;
+    }
+
+    .breadcrumb {
+      color: #cbd5e1;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 32px;
+      letter-spacing: -0.02em;
+    }
+
+    .create {
+      background: var(--yellow);
+      color: #111111;
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 16px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 17px 18px;
+    }
+
+    .card span {
+      display: block;
+      color: #bfc5d4;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .card strong {
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .control {
+      height: 36px;
+      border: 1px solid #4b4b54;
+      background: var(--panel-2);
+      color: var(--muted);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 14px;
+    }
+
+    .search { width: 220px; }
+    .filter { width: 150px; }
+    .columns { width: 36px; justify-content: center; padding: 0; font-weight: 900; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 16px 22px;
+      border-bottom: 1px solid #2b2b31;
+      text-align: left;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #26262a;
+      font-size: 13px;
+      color: #f8fafc;
+    }
+
+    td {
+      font-weight: 650;
+    }
+
+    .checkbox {
+      width: 17px;
+      height: 17px;
+      border: 1px solid #555762;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot.green { background: var(--green); }
+    .dot.red { background: var(--red); }
+
+    .edit {
+      color: var(--yellow);
+      font-weight: 800;
+    }
+
+    .panel-foot {
+      min-height: 56px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 10px 22px;
+      color: #f8fafc;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .per-page {
+      border: 1px solid #474751;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      color: #bfc5d4;
+      background: #242428;
+    }
+
+    .per-page span {
+      padding: 9px 13px;
+      border-right: 1px solid #474751;
+    }
+
+    .per-page strong {
+      padding: 9px 14px;
+      color: #f8fafc;
+    }
+
+    .note {
+      margin-top: 18px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+  </style>
+</head>
+<body>
+  <div class="figure">
+    <div class="caption">Gambar 5.37 Halaman Output Data Staff</div>
+
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">Laravel</div>
+        <div class="avatar">F</div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <section class="nav-group">
+            <div class="group-title">Dashboard <span>^</span></div>
+            <div class="nav-item"><span class="icon"></span> Dashboard</div>
+          </section>
+
+          <section class="nav-group">
+            <div class="group-title">Master Data <span>^</span></div>
+            <div class="nav-item"><span class="icon"></span> Produk / Menu</div>
+            <div class="nav-item"><span class="icon"></span> Bahan Baku</div>
+            <div class="nav-item"><span class="icon"></span> Supplier</div>
+          </section>
+
+          <section class="nav-group">
+            <div class="group-title">Retur <span>^</span></div>
+            <div class="nav-item"><span class="icon"></span> Retur Penjualan</div>
+            <div class="nav-item"><span class="icon"></span> Retur Pembelian</div>
+          </section>
+
+          <section class="nav-group">
+            <div class="group-title">Pengguna <span>^</span></div>
+            <div class="nav-item"><span class="icon"></span> Data Admin</div>
+            <div class="nav-item"><span class="icon"></span> Data Owner</div>
+            <div class="nav-item"><span class="icon"></span> Data Karyawan</div>
+            <div class="nav-item"><span class="icon"></span> Data Pelanggan</div>
+          </section>
+
+          <section class="nav-group">
+            <div class="group-title">Manajemen Pengguna <span>^</span></div>
+            <div class="nav-item active"><span class="icon"></span> Staff</div>
+            <div class="nav-item"><span class="icon"></span> Absensi</div>
+          </section>
+
+          <section class="nav-group">
+            <div class="group-title">Sistem <span>^</span></div>
+            <div class="nav-item"><span class="icon"></span> Audit Log</div>
+          </section>
+        </aside>
+
+        <main class="content">
+          <div class="breadcrumb">Staff &nbsp; &gt; &nbsp; List</div>
+          <div class="title-row">
+            <h1>Staff</h1>
+            <button class="create">Staff Baru</button>
+          </div>
+
+          <section class="cards">
+            <div class="card">
+              <span>Total Staff</span>
+              <strong>6</strong>
+            </div>
+            <div class="card">
+              <span>Staff Aktif</span>
+              <strong>5</strong>
+            </div>
+            <div class="card">
+              <span>Staff Nonaktif</span>
+              <strong>1</strong>
+            </div>
+            <div class="card">
+              <span>Jabatan Terdaftar</span>
+              <strong>4</strong>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div class="control search">Search</div>
+              <div class="control filter">Status Aktif</div>
+              <div class="control columns">|||</div>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 54px;"><span class="checkbox"></span></th>
+                  <th>Nama</th>
+                  <th>Jabatan</th>
+                  <th>Telepon</th>
+                  <th>Aktif</th>
+                  <th>Dibuat</th>
+                  <th style="width: 100px;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="checkbox"></span></td>
+                  <td>Raka Pratama</td>
+                  <td>Kasir</td>
+                  <td>081234567801</td>
+                  <td><span class="status"><span class="dot green"></span> Aktif</span></td>
+                  <td>10 Jul 2026 08:15</td>
+                  <td><span class="edit">Ubah</span></td>
+                </tr>
+                <tr>
+                  <td><span class="checkbox"></span></td>
+                  <td>Sinta Maharani</td>
+                  <td>Dapur</td>
+                  <td>081234567802</td>
+                  <td><span class="status"><span class="dot green"></span> Aktif</span></td>
+                  <td>09 Jul 2026 13:30</td>
+                  <td><span class="edit">Ubah</span></td>
+                </tr>
+                <tr>
+                  <td><span class="checkbox"></span></td>
+                  <td>Bima Saputra</td>
+                  <td>Barista</td>
+                  <td>081234567803</td>
+                  <td><span class="status"><span class="dot green"></span> Aktif</span></td>
+                  <td>08 Jul 2026 16:05</td>
+                  <td><span class="edit">Ubah</span></td>
+                </tr>
+                <tr>
+                  <td><span class="checkbox"></span></td>
+                  <td>Dewi Lestari</td>
+                  <td>Gudang</td>
+                  <td>081234567804</td>
+                  <td><span class="status"><span class="dot red"></span> Nonaktif</span></td>
+                  <td>07 Jul 2026 11:40</td>
+                  <td><span class="edit">Ubah</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="panel-foot">
+              <div>Showing 1 to 4 of 6 results</div>
+              <div class="per-page"><span>Per page</span><strong>10</strong></div>
+              <div></div>
+            </div>
+          </section>
+
+          <section class="note">
+            Halaman output data staff menampilkan daftar staff yang digunakan pada modul manajemen pengguna
+            dan absensi. Data yang ditampilkan meliputi nama staff, jabatan, nomor telepon, status aktif,
+            tanggal dibuat, serta aksi untuk mengubah data staff.
+          </section>
+        </main>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

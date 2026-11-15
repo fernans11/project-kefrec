@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desain Input Produk - KeFrec</title>
+  <style>
+    :root {
+      --bg-page: #0b0b0d;
+      --bg-topbar: #18181b;
+      --bg-sidebar: #09090b;
+      --bg-card: #18181b;
+      --bg-card-soft: #202024;
+      --bg-input: #242428;
+      --border: #303036;
+      --border-soft: #3f3f46;
+      --text: #ffffff;
+      --muted: #a1a1aa;
+      --amber: #f5b800;
+      --amber-soft: rgba(245, 184, 0, 0.12);
+      --green: #22c55e;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #eeeeee;
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 28px;
+    }
+
+    .report-frame {
+      width: 1180px;
+      min-height: 780px;
+      background: #ffffff;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
+      padding: 22px;
+    }
+
+    .frame-title {
+      color: #202020;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .app-frame {
+      min-height: 700px;
+      border: 1px solid #dddddd;
+      background: var(--bg-page);
+      display: grid;
+      grid-template-rows: 64px 1fr;
+    }
+
+    .topbar {
+      background: var(--bg-topbar);
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 250px 1fr 42px;
+      align-items: center;
+      padding: 0 22px;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #050505;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 275px 1fr;
+    }
+
+    .sidebar {
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      display: grid;
+      align-content: start;
+      gap: 28px;
+    }
+
+    .nav-group {
+      display: grid;
+      gap: 13px;
+    }
+
+    .nav-title {
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-inline: 5px;
+    }
+
+    .nav-item {
+      min-height: 38px;
+      border-radius: 8px;
+      color: #f4f4f5;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 10px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .nav-item.active {
+      background: #171717;
+      color: var(--amber);
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid currentColor;
+      border-radius: 4px;
+      flex: 0 0 auto;
+    }
+
+    .content-shell {
+      padding: 32px 42px 42px;
+    }
+
+    .content {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      gap: 22px;
+    }
+
+    .breadcrumb {
+      color: #cbd5e1;
+      font-size: 13px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: -8px;
+    }
+
+    .page-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .page-title {
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .page-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      min-height: 38px;
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      padding: 0 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      background: var(--bg-card-soft);
+    }
+
+    .btn-primary {
+      color: #111111;
+      border-color: var(--amber);
+      background: var(--amber);
+    }
+
+    .form-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .section-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .section-body {
+      padding: 22px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .label {
+      color: #f4f4f5;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .input,
+    .select,
+    .textarea {
+      width: 100%;
+      border: 1px solid var(--border-soft);
+      border-radius: 9px;
+      background: var(--bg-input);
+      color: var(--text);
+      min-height: 42px;
+      padding: 0 13px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .select {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .textarea {
+      min-height: 86px;
+      padding: 12px 13px;
+      resize: none;
+      line-height: 1.45;
+    }
+
+    .helper {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .money-input {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      border: 1px solid var(--border-soft);
+      border-radius: 9px;
+      overflow: hidden;
+      background: var(--bg-input);
+    }
+
+    .prefix {
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      border-right: 1px solid var(--border-soft);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .money-input input {
+      border: 0;
+      border-radius: 0;
+    }
+
+    .upload-box {
+      border: 1px dashed var(--border-soft);
+      border-radius: 12px;
+      min-height: 92px;
+      background: #151518;
+      display: grid;
+      grid-template-columns: 94px 1fr;
+      gap: 16px;
+      align-items: center;
+      padding: 14px;
+    }
+
+    .image-preview {
+      width: 78px;
+      height: 64px;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      background:
+        linear-gradient(to bottom right, transparent 49%, #71717a 50%, transparent 51%),
+        linear-gradient(to top right, transparent 49%, #71717a 50%, transparent 51%);
+    }
+
+    .toggle-row {
+      min-height: 78px;
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      background: #151518;
+      padding: 14px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .toggle-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .toggle {
+      width: 44px;
+      height: 24px;
+      border-radius: 999px;
+      background: #3f3f46;
+      padding: 3px;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .toggle.on {
+      background: var(--amber);
+      justify-content: flex-end;
+    }
+
+    .toggle.disabled {
+      opacity: .55;
+    }
+
+    .knob {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+    }
+
+    .placeholder-card {
+      min-height: 78px;
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      background: #151518;
+      padding: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .recipe-table {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .recipe-toolbar {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .recipe-row {
+      display: grid;
+      grid-template-columns: 1.2fr .6fr .8fr .8fr .9fr;
+      gap: 12px;
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .recipe-row:last-child {
+      border-bottom: 0;
+    }
+
+    .recipe-row.header {
+      color: #f4f4f5;
+      font-weight: 800;
+      background: #222226;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-soft);
+      border-radius: 999px;
+      min-height: 24px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #f4f4f5;
+      background: #27272a;
+      width: fit-content;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .input-note {
+      margin-top: 18px;
+      color: #333333;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .input-note strong {
+      font-weight: 700;
+    }
+
+    @media (max-width: 1220px) {
+      .report-frame {
+        width: 100%;
+      }
+
+      .app-frame {
+        overflow-x: auto;
+      }
+
+      .layout {
+        min-width: 1080px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="report-frame">
+    <div class="frame-title">Gambar 5.x Rancangan Input Produk / Menu</div>
+
+    <div class="app-frame">
+      <header class="topbar">
+        <div class="brand">Laravel</div>
+        <div></div>
+        <div class="user-avatar">F</div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <section class="nav-group">
+            <div class="nav-item">Dashboard</div>
+          </section>
+
+          <section class="nav-group">
+            <div class="nav-title">
+              <span>Master Data</span>
+              <span>⌃</span>
+            </div>
+            <div class="nav-item active">
+              <span class="nav-icon"></span>
+              <span>Produk / Menu</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon"></span>
+              <span>Bahan Baku</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon"></span>
+              <span>Supplier</span>
+            </div>
+          </section>
+
+          <section class="nav-group">
+            <div class="nav-title">
+              <span>Manajemen Transaksi</span>
+              <span>⌃</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon"></span>
+              <span>Transaksi</span>
+            </div>
+          </section>
+
+          <section class="nav-group">
+            <div class="nav-title">
+              <span>Pengguna</span>
+              <span>⌃</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon"></span>
+              <span>Data Admin</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon"></span>
+              <span>Data Karyawan</span>
+            </div>
+          </section>
+        </aside>
+
+        <main class="content-shell">
+          <div class="content">
+            <div class="breadcrumb">
+              <span>Produk</span>
+              <span>›</span>
+              <span>Create</span>
+            </div>
+
+            <header class="page-head">
+              <h1 class="page-title">Tambah Produk</h1>
+              <div class="page-actions">
+                <button class="btn">Batal</button>
+                <button class="btn btn-primary">Simpan</button>
+              </div>
+            </header>
+
+            <section class="form-section">
+              <div class="section-header">
+                <div class="section-title">Informasi Menu</div>
+                <div class="section-subtitle">Data utama produk atau menu yang akan ditampilkan kepada pelanggan.</div>
+              </div>
+
+              <div class="section-body">
+                <div class="grid-2">
+                  <div class="field">
+                    <label class="label">Nama Menu</label>
+                    <input class="input" value="Kopi Susu Gula Aren">
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Slug</label>
+                    <input class="input" value="kopi-susu-gula-aren">
+                    <div class="helper">Otomatis dari Nama Menu. Bisa diedit bila perlu.</div>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Kategori</label>
+                    <div class="select">
+                      <span>Minuman</span>
+                      <span>⌄</span>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Harga (Rp)</label>
+                    <div class="money-input">
+                      <div class="prefix">Rp</div>
+                      <input class="input" value="18000">
+                    </div>
+                  </div>
+
+                  <div class="field full">
+                    <label class="label">Deskripsi</label>
+                    <textarea class="textarea">Kopi susu dengan gula aren, cocok untuk menu favorit pelanggan.</textarea>
+                  </div>
+
+                  <div class="field full">
+                    <label class="label">Image URL</label>
+                    <div class="upload-box">
+                      <div class="image-preview"></div>
+                      <div>
+                        <input class="input" value="https://example.com/kopi-susu.jpg">
+                        <div class="helper" style="margin-top:8px;">Saat ini menggunakan URL gambar. Gambar tampil pada halaman menu pelanggan.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="form-section">
+              <div class="section-header">
+                <div class="section-title">Stok</div>
+                <div class="section-subtitle">Pengaturan stok produk untuk proses transaksi dan pengurangan stok otomatis.</div>
+              </div>
+
+              <div class="section-body">
+                <div class="grid-3">
+                  <div class="toggle-row">
+                    <div class="toggle-head">
+                      <span class="label">Aktifkan Tracking Stok</span>
+                      <span class="toggle on"><span class="knob"></span></span>
+                    </div>
+                    <div class="helper">Jika ON, stok akan dikurangi saat transaksi.</div>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Stok</label>
+                    <input class="input" value="100">
+                    <div class="helper">Isi stok awal produk.</div>
+                  </div>
+
+                  <div class="placeholder-card">
+                    Jika menu tidak punya stok tetap, tracking stok dapat dinonaktifkan.
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="form-section">
+              <div class="section-header">
+                <div class="section-title">Pengaturan & Status</div>
+                <div class="section-subtitle">Status tampilan menu dan pengaturan urutan pada katalog pelanggan.</div>
+              </div>
+
+              <div class="section-body">
+                <div class="grid-4">
+                  <div class="toggle-row">
+                    <div class="toggle-head">
+                      <span class="label">Aktif</span>
+                      <span class="toggle on"><span class="knob"></span></span>
+                    </div>
+                    <div class="helper">Produk tampil di menu.</div>
+                  </div>
+
+                  <div class="toggle-row">
+                    <div class="toggle-head">
+                      <span class="label">Best Seller Otomatis</span>
+                      <span class="toggle disabled"><span class="knob"></span></span>
+                    </div>
+                    <div class="helper">Dihitung dari transaksi selesai.</div>
+                  </div>
+
+                  <div class="toggle-row">
+                    <div class="toggle-head">
+                      <span class="label">Produk Baru Otomatis</span>
+                      <span class="toggle disabled"><span class="knob"></span></span>
+                    </div>
+                    <div class="helper">Aktif saat menu baru dibuat.</div>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Rating</label>
+                    <input class="input" value="4.8">
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Urutan</label>
+                    <input class="input" value="1">
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="form-section">
+              <div class="section-header">
+                <div class="section-title">Resep (Bahan Baku)</div>
+                <div class="section-subtitle">Bahan yang dibutuhkan untuk membuat satu produk.</div>
+              </div>
+
+              <div class="section-body">
+                <div class="recipe-table">
+                  <div class="recipe-toolbar">
+                    <div class="label">Daftar Bahan</div>
+                    <button class="btn btn-primary">Tambah Bahan ke Resep</button>
+                  </div>
+
+                  <div class="recipe-row header">
+                    <div>Bahan</div>
+                    <div>Unit</div>
+                    <div>Qty / Produk</div>
+                    <div>Stok Bahan</div>
+                    <div>Aksi</div>
+                  </div>
+
+                  <div class="recipe-row">
+                    <div>Kopi</div>
+                    <div><span class="badge">gram</span></div>
+                    <div>10</div>
+                    <div>5000</div>
+                    <div>Ubah Qty</div>
+                  </div>
+
+                  <div class="recipe-row">
+                    <div>Susu</div>
+                    <div><span class="badge">ml</span></div>
+                    <div>120</div>
+                    <div>8000</div>
+                    <div>Ubah Qty</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div class="form-actions">
+              <button class="btn">Batal</button>
+              <button class="btn btn-primary">Simpan Produk</button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <p class="input-note">
+      <strong>Keterangan:</strong> Rancangan input produk digunakan admin untuk menambahkan atau mengubah data menu.
+      Input utama meliputi nama menu, slug, kategori, harga, deskripsi, gambar, stok, status aktif, rating, urutan, dan resep bahan baku.
+    </p>
+  </section>
+</body>
+</html>
